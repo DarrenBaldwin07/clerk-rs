@@ -8,3 +8,4 @@ extern crate reqwest;
 
 pub mod apis;
 pub mod models;
+pub mod clerk;
