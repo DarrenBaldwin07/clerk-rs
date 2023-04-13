@@ -35,8 +35,8 @@ pub enum RevokeSignInTokenError {
 
 
 /// Creates a new sign-in token and associates it with the given user. By default, sign-in tokens expire in 30 days. You can optionally supply a different duration in seconds using the `expires_in_seconds` property.
-pub async fn create_sign_in_token(configuration: &configuration::Configuration, create_sign_in_token_request: Option<crate::models::CreateSignInTokenRequest>) -> Result<crate::models::SignInToken, Error<CreateSignInTokenError>> {
-    let local_var_configuration = configuration;
+pub async fn create_sign_in_token(clerk_configuration: &configuration::ClerkConfiguration, create_sign_in_token_request: Option<crate::models::CreateSignInTokenRequest>) -> Result<crate::models::SignInToken, Error<CreateSignInTokenError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -67,8 +67,8 @@ pub async fn create_sign_in_token(configuration: &configuration::Configuration, 
 }
 
 /// Revokes a pending sign-in token
-pub async fn revoke_sign_in_token(configuration: &configuration::Configuration, sign_in_token_id: &str) -> Result<crate::models::SignInToken, Error<RevokeSignInTokenError>> {
-    let local_var_configuration = configuration;
+pub async fn revoke_sign_in_token(clerk_configuration: &configuration::ClerkConfiguration, sign_in_token_id: &str) -> Result<crate::models::SignInToken, Error<RevokeSignInTokenError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

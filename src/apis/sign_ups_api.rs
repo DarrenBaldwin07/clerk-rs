@@ -25,8 +25,8 @@ pub enum UpdateSignUpError {
 
 
 /// Update the sign-up with the given ID
-pub async fn update_sign_up(configuration: &configuration::Configuration, id: &str, update_sign_up_request: Option<crate::models::UpdateSignUpRequest>) -> Result<crate::models::SignUp, Error<UpdateSignUpError>> {
-    let local_var_configuration = configuration;
+pub async fn update_sign_up(clerk_configuration: &configuration::ClerkConfiguration, id: &str, update_sign_up_request: Option<crate::models::UpdateSignUpRequest>) -> Result<crate::models::SignUp, Error<UpdateSignUpError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

@@ -113,7 +113,7 @@ src/apis/actor_tokens_api.rs
 src/apis/allow_list_block_list_api.rs
 src/apis/beta_features_api.rs
 src/apis/clients_api.rs
-src/apis/configuration.rs
+src/apis/ClerkConfiguration.rs
 src/apis/email_addresses_api.rs
 src/apis/email_sms_templates_api.rs
 src/apis/emails_api.rs

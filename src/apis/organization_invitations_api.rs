@@ -47,8 +47,8 @@ pub enum RevokeOrganizationInvitationError {
 
 
 /// Creates a new organization invitation and sends an email to the provided `email_address` with a link to accept the invitation and join the organization. You can specify the `role` for the invited organization member.  New organization invitations get a \"pending\" status until they are revoked by an organization administrator or accepted by the invitee.  The request body supports passing an optional `redirect_url` parameter. When the invited user clicks the link to accept the invitation, they will be redirected to the URL provided. Use this parameter to implement a custom invitation acceptance flow.  You must specify the ID of the user that will send the invitation with the `inviter_user_id` parameter. That user must be a member with administrator privileges in the organization. Only \"admin\" members can create organization invitations.  You can optionally provide public metadata for the organization invitation. These metadata are visible by both the Frontend and the Backend. When the organization invitation is accepted, the metadata will be transferred to the newly created organization membership.
-pub async fn create_organization_invitation(configuration: &configuration::Configuration, organization_id: &str, create_organization_invitation_request: crate::models::CreateOrganizationInvitationRequest) -> Result<crate::models::OrganizationInvitation, Error<CreateOrganizationInvitationError>> {
-    let local_var_configuration = configuration;
+pub async fn create_organization_invitation(clerk_configuration: &configuration::ClerkConfiguration, organization_id: &str, create_organization_invitation_request: crate::models::CreateOrganizationInvitationRequest) -> Result<crate::models::OrganizationInvitation, Error<CreateOrganizationInvitationError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -79,8 +79,8 @@ pub async fn create_organization_invitation(configuration: &configuration::Confi
 }
 
 /// This request returns the list of organization invitations with \"pending\" status. These are the organization invitations that can still be used to join the organization, but have not been accepted by the invited user yet. Results can be paginated using the optional `limit` and `offset` query parameters. The organization invitations are ordered by descending creation date. Most recent invitations will be returned first.
-pub async fn list_pending_organization_invitations(configuration: &configuration::Configuration, organization_id: &str, limit: Option<f32>, offset: Option<f32>) -> Result<crate::models::OrganizationInvitations, Error<ListPendingOrganizationInvitationsError>> {
-    let local_var_configuration = configuration;
+pub async fn list_pending_organization_invitations(clerk_configuration: &configuration::ClerkConfiguration, organization_id: &str, limit: Option<f32>, offset: Option<f32>) -> Result<crate::models::OrganizationInvitations, Error<ListPendingOrganizationInvitationsError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -116,8 +116,8 @@ pub async fn list_pending_organization_invitations(configuration: &configuration
 }
 
 /// Use this request to revoke a previously issued organization invitation. Revoking an organization invitation makes it invalid; the invited user will no longer be able to join the organization with the revoked invitation. Only organization invitations with \"pending\" status can be revoked. The request needs the `requesting_user_id` parameter to specify the user which revokes the invitation. Only users with \"admin\" role can revoke invitations.
-pub async fn revoke_organization_invitation(configuration: &configuration::Configuration, organization_id: &str, invitation_id: &str, revoke_organization_invitation_request: crate::models::RevokeOrganizationInvitationRequest) -> Result<crate::models::OrganizationInvitation, Error<RevokeOrganizationInvitationError>> {
-    let local_var_configuration = configuration;
+pub async fn revoke_organization_invitation(clerk_configuration: &configuration::ClerkConfiguration, organization_id: &str, invitation_id: &str, revoke_organization_invitation_request: crate::models::RevokeOrganizationInvitationRequest) -> Result<crate::models::OrganizationInvitation, Error<RevokeOrganizationInvitationError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

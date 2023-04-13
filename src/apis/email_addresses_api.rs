@@ -62,8 +62,8 @@ pub enum UpdateEmailAddressError {
 
 
 /// Create a new email address
-pub async fn create_email_address(configuration: &configuration::Configuration, create_email_address_request: Option<crate::models::CreateEmailAddressRequest>) -> Result<crate::models::EmailAddress, Error<CreateEmailAddressError>> {
-    let local_var_configuration = configuration;
+pub async fn create_email_address(clerk_configuration: &configuration::ClerkConfiguration, create_email_address_request: Option<crate::models::CreateEmailAddressRequest>) -> Result<crate::models::EmailAddress, Error<CreateEmailAddressError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -94,8 +94,8 @@ pub async fn create_email_address(configuration: &configuration::Configuration, 
 }
 
 /// Delete the email address with the given ID
-pub async fn delete_email_address(configuration: &configuration::Configuration, email_address_id: &str) -> Result<crate::models::DeletedObject, Error<DeleteEmailAddressError>> {
-    let local_var_configuration = configuration;
+pub async fn delete_email_address(clerk_configuration: &configuration::ClerkConfiguration, email_address_id: &str) -> Result<crate::models::DeletedObject, Error<DeleteEmailAddressError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -125,8 +125,8 @@ pub async fn delete_email_address(configuration: &configuration::Configuration, 
 }
 
 /// Returns the details of an email address.
-pub async fn get_email_address(configuration: &configuration::Configuration, email_address_id: &str) -> Result<crate::models::EmailAddress, Error<GetEmailAddressError>> {
-    let local_var_configuration = configuration;
+pub async fn get_email_address(clerk_configuration: &configuration::ClerkConfiguration, email_address_id: &str) -> Result<crate::models::EmailAddress, Error<GetEmailAddressError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -156,8 +156,8 @@ pub async fn get_email_address(configuration: &configuration::Configuration, ema
 }
 
 /// Updates an email address.
-pub async fn update_email_address(configuration: &configuration::Configuration, email_address_id: &str, update_email_address_request: Option<crate::models::UpdateEmailAddressRequest>) -> Result<crate::models::EmailAddress, Error<UpdateEmailAddressError>> {
-    let local_var_configuration = configuration;
+pub async fn update_email_address(clerk_configuration: &configuration::ClerkConfiguration, email_address_id: &str, update_email_address_request: Option<crate::models::UpdateEmailAddressRequest>) -> Result<crate::models::EmailAddress, Error<UpdateEmailAddressError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

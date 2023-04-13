@@ -150,8 +150,8 @@ pub enum VerifyTotpError {
 
 
 /// Marks the given user as banned, which means that all their sessions are revoked and they are not allowed to sign in again.
-pub async fn ban_user(configuration: &configuration::Configuration, user_id: &str) -> Result<crate::models::User, Error<BanUserError>> {
-    let local_var_configuration = configuration;
+pub async fn ban_user(clerk_configuration: &configuration::ClerkConfiguration, user_id: &str) -> Result<crate::models::User, Error<BanUserError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -181,8 +181,8 @@ pub async fn ban_user(configuration: &configuration::Configuration, user_id: &st
 }
 
 /// Creates a new user. Your user management settings determine how you should setup your user model.  Any email address and phone number created using this method will be marked as verified.  Note: If you are performing a migration, check out our guide on [zero downtime migrations](https://clerk.com/docs/deployments/import-users).  A rate limit rule of 20 requests per 10 seconds is applied to this endpoint.
-pub async fn create_user(configuration: &configuration::Configuration, create_user_request: crate::models::CreateUserRequest) -> Result<crate::models::User, Error<CreateUserError>> {
-    let local_var_configuration = configuration;
+pub async fn create_user(clerk_configuration: &configuration::ClerkConfiguration, create_user_request: crate::models::CreateUserRequest) -> Result<crate::models::User, Error<CreateUserError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -213,8 +213,8 @@ pub async fn create_user(configuration: &configuration::Configuration, create_us
 }
 
 /// Delete the specified user
-pub async fn delete_user(configuration: &configuration::Configuration, user_id: &str) -> Result<crate::models::DeletedObject, Error<DeleteUserError>> {
-    let local_var_configuration = configuration;
+pub async fn delete_user(clerk_configuration: &configuration::ClerkConfiguration, user_id: &str) -> Result<crate::models::DeletedObject, Error<DeleteUserError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -244,8 +244,8 @@ pub async fn delete_user(configuration: &configuration::Configuration, user_id: 
 }
 
 /// Disable all of a user's MFA methods (e.g. OTP sent via SMS, TOTP on their authenticator app) at once.
-pub async fn disable_mfa(configuration: &configuration::Configuration, user_id: &str) -> Result<crate::models::DisableMfa200Response, Error<DisableMfaError>> {
-    let local_var_configuration = configuration;
+pub async fn disable_mfa(clerk_configuration: &configuration::ClerkConfiguration, user_id: &str) -> Result<crate::models::DisableMfa200Response, Error<DisableMfaError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -275,8 +275,8 @@ pub async fn disable_mfa(configuration: &configuration::Configuration, user_id: 
 }
 
 /// Fetch the corresponding OAuth access token for a user that has previously authenticated with a particular OAuth provider. For OAuth 2.0, if the access token has expired and we have a corresponding refresh token, the access token will be refreshed transparently the new one will be returned.
-pub async fn get_o_auth_access_token(configuration: &configuration::Configuration, user_id: &str, provider: &str) -> Result<Vec<crate::models::GetOAuthAccessToken200ResponseInner>, Error<GetOAuthAccessTokenError>> {
-    let local_var_configuration = configuration;
+pub async fn get_o_auth_access_token(clerk_configuration: &configuration::ClerkConfiguration, user_id: &str, provider: &str) -> Result<Vec<crate::models::GetOAuthAccessToken200ResponseInner>, Error<GetOAuthAccessTokenError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -306,8 +306,8 @@ pub async fn get_o_auth_access_token(configuration: &configuration::Configuratio
 }
 
 /// Retrieve the details of a user
-pub async fn get_user(configuration: &configuration::Configuration, user_id: &str) -> Result<crate::models::User, Error<GetUserError>> {
-    let local_var_configuration = configuration;
+pub async fn get_user(clerk_configuration: &configuration::ClerkConfiguration, user_id: &str) -> Result<crate::models::User, Error<GetUserError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -337,8 +337,8 @@ pub async fn get_user(configuration: &configuration::Configuration, user_id: &st
 }
 
 /// Returns a list of all users. The users are returned sorted by creation date, with the newest users appearing first.
-pub async fn get_user_list(configuration: &configuration::Configuration, email_address: Option<Vec<String>>, phone_number: Option<Vec<String>>, external_id: Option<Vec<String>>, username: Option<Vec<String>>, web3_wallet: Option<Vec<String>>, user_id: Option<Vec<String>>, organization_id: Option<Vec<String>>, query: Option<&str>, limit: Option<f32>, offset: Option<f32>, order_by: Option<&str>) -> Result<Vec<crate::models::User>, Error<GetUserListError>> {
-    let local_var_configuration = configuration;
+pub async fn get_user_list(clerk_configuration: &configuration::ClerkConfiguration, email_address: Option<Vec<String>>, phone_number: Option<Vec<String>>, external_id: Option<Vec<String>>, username: Option<Vec<String>>, web3_wallet: Option<Vec<String>>, user_id: Option<Vec<String>>, organization_id: Option<Vec<String>>, query: Option<&str>, limit: Option<f32>, offset: Option<f32>, order_by: Option<&str>) -> Result<Vec<crate::models::User>, Error<GetUserListError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -422,8 +422,8 @@ pub async fn get_user_list(configuration: &configuration::Configuration, email_a
 }
 
 /// Returns a total count of all users that match the given filtering criteria.
-pub async fn get_users_count(configuration: &configuration::Configuration, email_address: Option<Vec<String>>, phone_number: Option<Vec<String>>, external_id: Option<Vec<String>>, username: Option<Vec<String>>, web3_wallet: Option<Vec<String>>, user_id: Option<Vec<String>>, query: Option<&str>) -> Result<crate::models::TotalCount, Error<GetUsersCountError>> {
-    let local_var_configuration = configuration;
+pub async fn get_users_count(clerk_configuration: &configuration::ClerkConfiguration, email_address: Option<Vec<String>>, phone_number: Option<Vec<String>>, external_id: Option<Vec<String>>, username: Option<Vec<String>>, web3_wallet: Option<Vec<String>>, user_id: Option<Vec<String>>, query: Option<&str>) -> Result<crate::models::TotalCount, Error<GetUsersCountError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -492,8 +492,8 @@ pub async fn get_users_count(configuration: &configuration::Configuration, email
 }
 
 /// Removes the ban mark from the given user.
-pub async fn unban_user(configuration: &configuration::Configuration, user_id: &str) -> Result<crate::models::User, Error<UnbanUserError>> {
-    let local_var_configuration = configuration;
+pub async fn unban_user(clerk_configuration: &configuration::ClerkConfiguration, user_id: &str) -> Result<crate::models::User, Error<UnbanUserError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -523,8 +523,8 @@ pub async fn unban_user(configuration: &configuration::Configuration, user_id: &
 }
 
 /// Update a user's attributes.  You can set the user's primary contact identifiers (email address and phone numbers) by updating the `primary_email_address_id` and `primary_phone_number_id` attributes respectively. Both IDs should correspond to verified identifications that belong to the user.  You can remove a user's username by setting the username attribute to null or the blank string \"\". This is a destructive action; the identification will be deleted forever. Usernames can be removed only if they are optional in your instance settings and there's at least one other identifier which can be used for authentication.
-pub async fn update_user(configuration: &configuration::Configuration, user_id: &str, update_user_request: crate::models::UpdateUserRequest) -> Result<crate::models::User, Error<UpdateUserError>> {
-    let local_var_configuration = configuration;
+pub async fn update_user(clerk_configuration: &configuration::ClerkConfiguration, user_id: &str, update_user_request: crate::models::UpdateUserRequest) -> Result<crate::models::User, Error<UpdateUserError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -555,8 +555,8 @@ pub async fn update_user(configuration: &configuration::Configuration, user_id: 
 }
 
 /// Update a user's metadata attributes by merging existing values with the provided parameters.  This endpoint behaves differently than the *Update a user* endpoint. Metadata values will not be replaced entirely. Instead, a deep merge will be performed. Deep means that any nested JSON objects will be merged as well.  You can remove metadata keys at any level by setting their value to `null`.
-pub async fn update_user_metadata(configuration: &configuration::Configuration, user_id: &str, update_user_metadata_request: Option<crate::models::UpdateUserMetadataRequest>) -> Result<crate::models::User, Error<UpdateUserMetadataError>> {
-    let local_var_configuration = configuration;
+pub async fn update_user_metadata(clerk_configuration: &configuration::ClerkConfiguration, user_id: &str, update_user_metadata_request: Option<crate::models::UpdateUserMetadataRequest>) -> Result<crate::models::User, Error<UpdateUserMetadataError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -587,8 +587,8 @@ pub async fn update_user_metadata(configuration: &configuration::Configuration, 
 }
 
 /// Retrieve a paginated list of the user's organization memberships
-pub async fn users_get_organization_memberships(configuration: &configuration::Configuration, user_id: &str, limit: Option<f32>, offset: Option<f32>) -> Result<crate::models::OrganizationMemberships, Error<UsersGetOrganizationMembershipsError>> {
-    let local_var_configuration = configuration;
+pub async fn users_get_organization_memberships(clerk_configuration: &configuration::ClerkConfiguration, user_id: &str, limit: Option<f32>, offset: Option<f32>) -> Result<crate::models::OrganizationMemberships, Error<UsersGetOrganizationMembershipsError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -624,8 +624,8 @@ pub async fn users_get_organization_memberships(configuration: &configuration::C
 }
 
 /// Check that the user's password matches the supplied input. Useful for custom auth flows and re-verification.
-pub async fn verify_password(configuration: &configuration::Configuration, user_id: &str, verify_password_request: Option<crate::models::VerifyPasswordRequest>) -> Result<crate::models::VerifyPassword200Response, Error<VerifyPasswordError>> {
-    let local_var_configuration = configuration;
+pub async fn verify_password(clerk_configuration: &configuration::ClerkConfiguration, user_id: &str, verify_password_request: Option<crate::models::VerifyPasswordRequest>) -> Result<crate::models::VerifyPassword200Response, Error<VerifyPasswordError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -656,8 +656,8 @@ pub async fn verify_password(configuration: &configuration::Configuration, user_
 }
 
 /// Verify that the provided TOTP or backup code is valid for the user. Verifying a backup code will result it in being consumed (i.e. it will become invalid). Useful for custom auth flows and re-verification.
-pub async fn verify_totp(configuration: &configuration::Configuration, user_id: &str, verify_totp_request: Option<crate::models::VerifyTotpRequest>) -> Result<crate::models::VerifyTotp200Response, Error<VerifyTotpError>> {
-    let local_var_configuration = configuration;
+pub async fn verify_totp(clerk_configuration: &configuration::ClerkConfiguration, user_id: &str, verify_totp_request: Option<crate::models::VerifyTotpRequest>) -> Result<crate::models::VerifyTotp200Response, Error<VerifyTotpError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

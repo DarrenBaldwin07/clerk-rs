@@ -22,8 +22,8 @@ pub enum GetJwksError {
 
 
 /// Retrieve the JSON Web Key Set of the instance
-pub async fn get_jwks(configuration: &configuration::Configuration) -> Result<(), Error<GetJwksError>> {
-    let local_var_configuration = configuration;
+pub async fn get_jwks(clerk_configuration: &configuration::ClerkConfiguration) -> Result<(), Error<GetJwksError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

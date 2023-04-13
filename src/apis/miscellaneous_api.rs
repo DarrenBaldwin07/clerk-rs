@@ -32,8 +32,8 @@ pub enum GetPublicInterstitialError {
 
 
 /// Creates a demo development instance and returns the corresponding Frontend/Backend API keys.
-pub async fn create_demo_instance(configuration: &configuration::Configuration, ) -> Result<crate::models::CreateDemoInstance200Response, Error<CreateDemoInstanceError>> {
-    let local_var_configuration = configuration;
+pub async fn create_demo_instance(clerk_configuration: &configuration::ClerkConfiguration, ) -> Result<crate::models::CreateDemoInstance200Response, Error<CreateDemoInstanceError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -60,8 +60,8 @@ pub async fn create_demo_instance(configuration: &configuration::Configuration, 
 }
 
 /// The Clerk interstitial endpoint serves an html page that loads clerk.js in order to check the user's authentication state. It is used by Clerk SDKs when the user's authentication state cannot be immediately determined.
-pub async fn get_public_interstitial(configuration: &configuration::Configuration, frontend_api: Option<&str>, publishable_key: Option<&str>) -> Result<(), Error<GetPublicInterstitialError>> {
-    let local_var_configuration = configuration;
+pub async fn get_public_interstitial(clerk_configuration: &configuration::ClerkConfiguration, frontend_api: Option<&str>, publishable_key: Option<&str>) -> Result<(), Error<GetPublicInterstitialError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

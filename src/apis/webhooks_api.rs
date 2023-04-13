@@ -41,8 +41,8 @@ pub enum GenerateSvixAuthUrlError {
 
 
 /// Create a Svix app and associate it with the current instance
-pub async fn create_svix_app(configuration: &configuration::Configuration, ) -> Result<crate::models::SvixUrl, Error<CreateSvixAppError>> {
-    let local_var_configuration = configuration;
+pub async fn create_svix_app(clerk_configuration: &configuration::ClerkConfiguration, ) -> Result<crate::models::SvixUrl, Error<CreateSvixAppError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -72,8 +72,8 @@ pub async fn create_svix_app(configuration: &configuration::Configuration, ) -> 
 }
 
 /// Delete a Svix app and disassociate it from the current instance
-pub async fn delete_svix_app(configuration: &configuration::Configuration, ) -> Result<(), Error<DeleteSvixAppError>> {
-    let local_var_configuration = configuration;
+pub async fn delete_svix_app(clerk_configuration: &configuration::ClerkConfiguration, ) -> Result<(), Error<DeleteSvixAppError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -103,8 +103,8 @@ pub async fn delete_svix_app(configuration: &configuration::Configuration, ) -> 
 }
 
 /// Generate a new url for accessing the Svix's management dashboard for that particular instance
-pub async fn generate_svix_auth_url(configuration: &configuration::Configuration, ) -> Result<crate::models::SvixUrl, Error<GenerateSvixAuthUrlError>> {
-    let local_var_configuration = configuration;
+pub async fn generate_svix_auth_url(clerk_configuration: &configuration::ClerkConfiguration, ) -> Result<crate::models::SvixUrl, Error<GenerateSvixAuthUrlError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

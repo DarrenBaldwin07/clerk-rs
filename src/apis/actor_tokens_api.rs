@@ -36,8 +36,8 @@ pub enum RevokeActorTokenError {
 
 
 /// Create an actor token that can be used to impersonate the given user.
-pub async fn create_actor_token(configuration: &configuration::Configuration, create_actor_token_request: Option<crate::models::CreateActorTokenRequest>) -> Result<crate::models::ActorToken, Error<CreateActorTokenError>> {
-    let local_var_configuration = configuration;
+pub async fn create_actor_token(clerk_configuration: &configuration::ClerkConfiguration, create_actor_token_request: Option<crate::models::CreateActorTokenRequest>) -> Result<crate::models::ActorToken, Error<CreateActorTokenError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -68,8 +68,8 @@ pub async fn create_actor_token(configuration: &configuration::Configuration, cr
 }
 
 /// Revokes a pending actor token.
-pub async fn revoke_actor_token(configuration: &configuration::Configuration, actor_token_id: &str) -> Result<crate::models::ActorToken, Error<RevokeActorTokenError>> {
-    let local_var_configuration = configuration;
+pub async fn revoke_actor_token(clerk_configuration: &configuration::ClerkConfiguration, actor_token_id: &str) -> Result<crate::models::ActorToken, Error<RevokeActorTokenError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

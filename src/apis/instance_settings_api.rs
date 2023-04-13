@@ -41,8 +41,8 @@ pub enum UpdateInstanceRestrictionsError {
 
 
 /// Updates the settings of an instance
-pub async fn update_instance(configuration: &configuration::Configuration, update_instance_request: Option<crate::models::UpdateInstanceRequest>) -> Result<(), Error<UpdateInstanceError>> {
-    let local_var_configuration = configuration;
+pub async fn update_instance(clerk_configuration: &configuration::ClerkConfiguration, update_instance_request: Option<crate::models::UpdateInstanceRequest>) -> Result<(), Error<UpdateInstanceError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -73,8 +73,8 @@ pub async fn update_instance(configuration: &configuration::Configuration, updat
 }
 
 /// Updates the organization settings of the instance
-pub async fn update_instance_organization_settings(configuration: &configuration::Configuration, update_instance_organization_settings_request: Option<crate::models::UpdateInstanceOrganizationSettingsRequest>) -> Result<crate::models::OrganizationSettings, Error<UpdateInstanceOrganizationSettingsError>> {
-    let local_var_configuration = configuration;
+pub async fn update_instance_organization_settings(clerk_configuration: &configuration::ClerkConfiguration, update_instance_organization_settings_request: Option<crate::models::UpdateInstanceOrganizationSettingsRequest>) -> Result<crate::models::OrganizationSettings, Error<UpdateInstanceOrganizationSettingsError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -105,8 +105,8 @@ pub async fn update_instance_organization_settings(configuration: &configuration
 }
 
 /// Updates the restriction settings of an instance
-pub async fn update_instance_restrictions(configuration: &configuration::Configuration, update_instance_restrictions_request: Option<crate::models::UpdateInstanceRestrictionsRequest>) -> Result<crate::models::InstanceRestrictions, Error<UpdateInstanceRestrictionsError>> {
-    let local_var_configuration = configuration;
+pub async fn update_instance_restrictions(clerk_configuration: &configuration::ClerkConfiguration, update_instance_restrictions_request: Option<crate::models::UpdateInstanceRestrictionsRequest>) -> Result<crate::models::InstanceRestrictions, Error<UpdateInstanceRestrictionsError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

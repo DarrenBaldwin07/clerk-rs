@@ -40,8 +40,8 @@ pub enum RevokeInvitationError {
 
 
 /// Creates a new invitation for the given email address and sends the invitation email. Keep in mind that you cannot create an invitation if there is already one for the given email address. Also, trying to create an invitation for an email address that already exists in your application will result to an error.
-pub async fn create_invitation(configuration: &configuration::Configuration, create_invitation_request: Option<crate::models::CreateInvitationRequest>) -> Result<crate::models::Invitation, Error<CreateInvitationError>> {
-    let local_var_configuration = configuration;
+pub async fn create_invitation(clerk_configuration: &configuration::ClerkConfiguration, create_invitation_request: Option<crate::models::CreateInvitationRequest>) -> Result<crate::models::Invitation, Error<CreateInvitationError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -72,8 +72,8 @@ pub async fn create_invitation(configuration: &configuration::Configuration, cre
 }
 
 /// Returns all non-revoked invitations for your application, sorted by creation date
-pub async fn list_invitations(configuration: &configuration::Configuration, status: Option<&str>) -> Result<Vec<crate::models::Invitation>, Error<ListInvitationsError>> {
-    let local_var_configuration = configuration;
+pub async fn list_invitations(clerk_configuration: &configuration::ClerkConfiguration, status: Option<&str>) -> Result<Vec<crate::models::Invitation>, Error<ListInvitationsError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -106,8 +106,8 @@ pub async fn list_invitations(configuration: &configuration::Configuration, stat
 }
 
 /// Revokes the given invitation. Revoking an invitation will prevent the user from using the invitation link that was sent to them. However, it doesn't prevent the user from signing up if they follow the sign up flow. Only active (i.e. non-revoked) invitations can be revoked.
-pub async fn revoke_invitation(configuration: &configuration::Configuration, invitation_id: &str) -> Result<crate::models::Invitation, Error<RevokeInvitationError>> {
-    let local_var_configuration = configuration;
+pub async fn revoke_invitation(clerk_configuration: &configuration::ClerkConfiguration, invitation_id: &str) -> Result<crate::models::Invitation, Error<RevokeInvitationError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

@@ -62,8 +62,8 @@ pub enum UpdatePhoneNumberError {
 
 
 /// Create a new phone number
-pub async fn create_phone_number(configuration: &configuration::Configuration, create_phone_number_request: Option<crate::models::CreatePhoneNumberRequest>) -> Result<crate::models::PhoneNumber, Error<CreatePhoneNumberError>> {
-    let local_var_configuration = configuration;
+pub async fn create_phone_number(clerk_configuration: &configuration::ClerkConfiguration, create_phone_number_request: Option<crate::models::CreatePhoneNumberRequest>) -> Result<crate::models::PhoneNumber, Error<CreatePhoneNumberError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -94,8 +94,8 @@ pub async fn create_phone_number(configuration: &configuration::Configuration, c
 }
 
 /// Delete the phone number with the given ID
-pub async fn delete_phone_number(configuration: &configuration::Configuration, phone_number_id: &str) -> Result<crate::models::DeletedObject, Error<DeletePhoneNumberError>> {
-    let local_var_configuration = configuration;
+pub async fn delete_phone_number(clerk_configuration: &configuration::ClerkConfiguration, phone_number_id: &str) -> Result<crate::models::DeletedObject, Error<DeletePhoneNumberError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -125,8 +125,8 @@ pub async fn delete_phone_number(configuration: &configuration::Configuration, p
 }
 
 /// Returns the details of a phone number
-pub async fn get_phone_number(configuration: &configuration::Configuration, phone_number_id: &str) -> Result<crate::models::PhoneNumber, Error<GetPhoneNumberError>> {
-    let local_var_configuration = configuration;
+pub async fn get_phone_number(clerk_configuration: &configuration::ClerkConfiguration, phone_number_id: &str) -> Result<crate::models::PhoneNumber, Error<GetPhoneNumberError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -156,8 +156,8 @@ pub async fn get_phone_number(configuration: &configuration::Configuration, phon
 }
 
 /// Updates a phone number
-pub async fn update_phone_number(configuration: &configuration::Configuration, phone_number_id: &str, update_phone_number_request: Option<crate::models::UpdatePhoneNumberRequest>) -> Result<crate::models::PhoneNumber, Error<UpdatePhoneNumberError>> {
-    let local_var_configuration = configuration;
+pub async fn update_phone_number(clerk_configuration: &configuration::ClerkConfiguration, phone_number_id: &str, update_phone_number_request: Option<crate::models::UpdatePhoneNumberRequest>) -> Result<crate::models::PhoneNumber, Error<UpdatePhoneNumberError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

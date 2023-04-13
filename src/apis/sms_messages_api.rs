@@ -28,8 +28,8 @@ pub enum CreateSmsMessageError {
 
 
 /// Create and send an SMS message to the supplied phone number ID
-pub async fn create_sms_message(configuration: &configuration::Configuration, create_sms_message_request: Option<crate::models::CreateSmsMessageRequest>) -> Result<crate::models::SmsMessage, Error<CreateSmsMessageError>> {
-    let local_var_configuration = configuration;
+pub async fn create_sms_message(clerk_configuration: &configuration::ClerkConfiguration, create_sms_message_request: Option<crate::models::CreateSmsMessageRequest>) -> Result<crate::models::SmsMessage, Error<CreateSmsMessageError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

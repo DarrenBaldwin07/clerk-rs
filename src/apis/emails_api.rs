@@ -29,8 +29,8 @@ pub enum CreateEmailError {
 
 
 /// Create and send an email to the supplied email address ID.
-pub async fn create_email(configuration: &configuration::Configuration, create_email_request: Option<crate::models::CreateEmailRequest>) -> Result<crate::models::Email, Error<CreateEmailError>> {
-    let local_var_configuration = configuration;
+pub async fn create_email(clerk_configuration: &configuration::ClerkConfiguration, create_email_request: Option<crate::models::CreateEmailRequest>) -> Result<crate::models::Email, Error<CreateEmailError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

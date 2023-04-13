@@ -57,8 +57,8 @@ pub enum VerifyClientError {
 
 
 /// Returns the details of a client.
-pub async fn get_client(configuration: &configuration::Configuration, client_id: &str) -> Result<crate::models::Client, Error<GetClientError>> {
-    let local_var_configuration = configuration;
+pub async fn get_client(clerk_configuration: &configuration::ClerkConfiguration, client_id: &str) -> Result<crate::models::Client, Error<GetClientError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -88,8 +88,8 @@ pub async fn get_client(configuration: &configuration::Configuration, client_id:
 }
 
 /// Returns the details of the last active session of a client.
-pub async fn get_client_last_active_session(configuration: &configuration::Configuration, client_id: &str) -> Result<crate::models::Session, Error<GetClientLastActiveSessionError>> {
-    let local_var_configuration = configuration;
+pub async fn get_client_last_active_session(clerk_configuration: &configuration::ClerkConfiguration, client_id: &str) -> Result<crate::models::Session, Error<GetClientLastActiveSessionError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -119,8 +119,8 @@ pub async fn get_client_last_active_session(configuration: &configuration::Confi
 }
 
 /// Returns a list of all clients. The clients are returned sorted by creation date, with the newest clients appearing first.
-pub async fn get_client_list(configuration: &configuration::Configuration, limit: Option<f32>, offset: Option<f32>) -> Result<Vec<crate::models::Client>, Error<GetClientListError>> {
-    let local_var_configuration = configuration;
+pub async fn get_client_list(clerk_configuration: &configuration::ClerkConfiguration, limit: Option<f32>, offset: Option<f32>) -> Result<Vec<crate::models::Client>, Error<GetClientListError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -156,8 +156,8 @@ pub async fn get_client_list(configuration: &configuration::Configuration, limit
 }
 
 /// Verifies the client in the provided token
-pub async fn verify_client(configuration: &configuration::Configuration, verify_client_request: Option<crate::models::VerifyClientRequest>) -> Result<crate::models::Client, Error<VerifyClientError>> {
-    let local_var_configuration = configuration;
+pub async fn verify_client(clerk_configuration: &configuration::ClerkConfiguration, verify_client_request: Option<crate::models::VerifyClientRequest>) -> Result<crate::models::Client, Error<VerifyClientError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 

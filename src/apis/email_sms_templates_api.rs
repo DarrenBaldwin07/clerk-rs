@@ -71,8 +71,8 @@ pub enum UpsertTemplateError {
 
 
 /// Returns the details of a template
-pub async fn get_template(configuration: &configuration::Configuration, template_type: &str, slug: &str) -> Result<crate::models::Template, Error<GetTemplateError>> {
-    let local_var_configuration = configuration;
+pub async fn get_template(clerk_configuration: &configuration::ClerkConfiguration, template_type: &str, slug: &str) -> Result<crate::models::Template, Error<GetTemplateError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -102,8 +102,8 @@ pub async fn get_template(configuration: &configuration::Configuration, template
 }
 
 /// Returns a list of all templates. The templates are returned sorted by position.
-pub async fn get_template_list(configuration: &configuration::Configuration, template_type: &str) -> Result<Vec<crate::models::Template>, Error<GetTemplateListError>> {
-    let local_var_configuration = configuration;
+pub async fn get_template_list(clerk_configuration: &configuration::ClerkConfiguration, template_type: &str) -> Result<Vec<crate::models::Template>, Error<GetTemplateListError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -133,8 +133,8 @@ pub async fn get_template_list(configuration: &configuration::Configuration, tem
 }
 
 /// Returns a preview of a template for a given template_type, slug and body
-pub async fn preview_template(configuration: &configuration::Configuration, template_type: &str, slug: &str, preview_template_request: Option<crate::models::PreviewTemplateRequest>) -> Result<serde_json::Value, Error<PreviewTemplateError>> {
-    let local_var_configuration = configuration;
+pub async fn preview_template(clerk_configuration: &configuration::ClerkConfiguration, template_type: &str, slug: &str, preview_template_request: Option<crate::models::PreviewTemplateRequest>) -> Result<serde_json::Value, Error<PreviewTemplateError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -165,8 +165,8 @@ pub async fn preview_template(configuration: &configuration::Configuration, temp
 }
 
 /// Reverts an updated template to its default state
-pub async fn revert_template(configuration: &configuration::Configuration, template_type: &str, slug: &str) -> Result<crate::models::Template, Error<RevertTemplateError>> {
-    let local_var_configuration = configuration;
+pub async fn revert_template(clerk_configuration: &configuration::ClerkConfiguration, template_type: &str, slug: &str) -> Result<crate::models::Template, Error<RevertTemplateError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
@@ -196,8 +196,8 @@ pub async fn revert_template(configuration: &configuration::Configuration, templ
 }
 
 /// Updates the existing template of the given type and slug
-pub async fn upsert_template(configuration: &configuration::Configuration, template_type: &str, slug: &str, upsert_template_request: Option<crate::models::UpsertTemplateRequest>) -> Result<crate::models::Template, Error<UpsertTemplateError>> {
-    let local_var_configuration = configuration;
+pub async fn upsert_template(clerk_configuration: &configuration::ClerkConfiguration, template_type: &str, slug: &str, upsert_template_request: Option<crate::models::UpsertTemplateRequest>) -> Result<crate::models::Template, Error<UpsertTemplateError>> {
+    let local_var_configuration = clerk_configuration;
 
     let local_var_client = &local_var_configuration.client;
 
