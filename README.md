@@ -23,6 +23,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ### Using a clerk-rs method
 ```rust
+use tokio;
+use clerk_rs::{clerk::Clerk, ClerkConfiguration, endpoints::ClerkGetEndpoint, apis::emails_api::Email};
+
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
     let client = Clerk::new(config);
