@@ -19,6 +19,10 @@ pub const USER_AGENT: &str = concat!("Clerk/v1 RustBindings/", env!("CARGO_PKG_V
  * use clerk_rs::Clerk;
  * use clerk_rs::apis::configuration::ClerkConfiguration;
  *
+ * let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_owned()), None);
+ * let client = Clerk::new(config);
+ *
+ * let res = client.get(ClerkGetEndpoint::GetUserList).await?;
  *
  * ```
  *
@@ -205,6 +209,4 @@ impl Clerk {
 			Err(e) => Err(e),
 		}
 	}
-
-	// TODO: support methods for all http methods but with dynamic params
 }
