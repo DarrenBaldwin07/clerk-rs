@@ -1,5 +1,5 @@
 use crate::clerk::USER_AGENT;
-use reqwest::header::{HeaderMap, USER_AGENT as REQWEST_USER_AGENT};
+use reqwest::header::{HeaderMap, AUTHORIZATION, USER_AGENT as REQWEST_USER_AGENT};
 
 /*
  * Clerk Backend API
@@ -38,9 +38,16 @@ impl ClerkConfiguration {
 		bearer_access_token: Option<String>,
 		api_key: Option<ApiKey>,
 	) -> Self {
-		// Initialize our Clerk SDK with the default user_agent
+		// Initialize our Clerk SDK with the default user_agent and auth headers
 		let mut headers = HeaderMap::new();
 		headers.insert(REQWEST_USER_AGENT, USER_AGENT.parse().unwrap());
+		headers.insert(
+			AUTHORIZATION,
+			format!("Bearer {}", bearer_access_token.clone().unwrap_or(String::from("")))
+				.parse()
+				.unwrap(),
+		);
+
 		let client = reqwest::Client::builder()
 			.default_headers(headers)
 			.build()

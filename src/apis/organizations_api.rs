@@ -96,9 +96,7 @@ pub async fn create_organization(
 	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
 		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
 	}
-	if let Some(ref local_var_token) = local_var_configuration.bearer_access_token {
-		local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-	};
+
 	local_var_req_builder = local_var_req_builder.json(&create_organization_request);
 
 	let local_var_req = local_var_req_builder.build()?;
@@ -139,9 +137,6 @@ pub async fn delete_organization(
 	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
 		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
 	}
-	if let Some(ref local_var_token) = local_var_configuration.bearer_access_token {
-		local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-	};
 
 	let local_var_req = local_var_req_builder.build()?;
 	let local_var_resp = local_var_client.execute(local_var_req).await?;
@@ -181,9 +176,6 @@ pub async fn get_organization(
 	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
 		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
 	}
-	if let Some(ref local_var_token) = local_var_configuration.bearer_access_token {
-		local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-	};
 
 	let local_var_req = local_var_req_builder.build()?;
 	let local_var_resp = local_var_client.execute(local_var_req).await?;
@@ -234,9 +226,6 @@ pub async fn list_organizations(
 	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
 		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
 	}
-	if let Some(ref local_var_token) = local_var_configuration.bearer_access_token {
-		local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-	};
 
 	let local_var_req = local_var_req_builder.build()?;
 	let local_var_resp = local_var_client.execute(local_var_req).await?;
@@ -277,9 +266,7 @@ pub async fn merge_organization_metadata(
 	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
 		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
 	}
-	if let Some(ref local_var_token) = local_var_configuration.bearer_access_token {
-		local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-	};
+
 	local_var_req_builder = local_var_req_builder.json(&merge_organization_metadata_request);
 
 	let local_var_req = local_var_req_builder.build()?;
@@ -321,9 +308,7 @@ pub async fn update_organization(
 	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
 		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
 	}
-	if let Some(ref local_var_token) = local_var_configuration.bearer_access_token {
-		local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-	};
+
 	local_var_req_builder = local_var_req_builder.json(&update_organization_request);
 
 	let local_var_req = local_var_req_builder.build()?;
@@ -366,9 +351,7 @@ pub async fn upload_organization_logo(
 	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
 		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
 	}
-	if let Some(ref local_var_token) = local_var_configuration.bearer_access_token {
-		local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-	};
+
 	let mut local_var_form = reqwest::multipart::Form::new();
 	if let Some(local_var_param_value) = uploader_user_id {
 		local_var_form = local_var_form.text("uploader_user_id", local_var_param_value.to_string());
