@@ -11,7 +11,8 @@
 use reqwest;
 
 use super::{configuration, Error};
-use crate::apis::ResponseContent;
+use crate::{apis::ResponseContent, clerk::Clerk};
+
 
 /// struct for typed errors of method [`create_svix_app`]
 #[derive(Debug, Clone, Serialize, Deserialize)]

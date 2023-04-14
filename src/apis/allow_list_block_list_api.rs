@@ -11,7 +11,7 @@
 use reqwest;
 
 use super::{configuration, Error};
-use crate::apis::ResponseContent;
+use crate::{apis::ResponseContent, clerk::Clerk};
 
 /// struct for typed errors of method [`create_allowlist_identifier`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
