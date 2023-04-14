@@ -10,9 +10,8 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
-
 
 /// struct for typed errors of method [`create_organization_membership`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -69,11 +68,11 @@ pub struct OragnizationMebership;
 impl OragnizationMebership {
 	/// Adds a user as a member to the given organization. Only users in the same instance as the organization can be added as members.
 	pub async fn create(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		organization_id: &str,
 		create_organization_membership_request: crate::models::CreateOrganizationMembershipRequest,
 	) -> Result<crate::models::OrganizationMembership, Error<CreateOrganizationMembershipError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -111,11 +110,11 @@ impl OragnizationMebership {
 
 	/// Removes the given membership from the organization
 	pub async fn delete_organization_membership(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		organization_id: &str,
 		user_id: &str,
 	) -> Result<crate::models::OrganizationMembership, Error<DeleteOrganizationMembershipError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -152,12 +151,12 @@ impl OragnizationMebership {
 
 	/// Retrieves all user memberships for the given organization
 	pub async fn list_organization_memberships(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		organization_id: &str,
 		limit: Option<f32>,
 		offset: Option<f32>,
 	) -> Result<crate::models::OrganizationMemberships, Error<ListOrganizationMembershipsError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -199,12 +198,12 @@ impl OragnizationMebership {
 
 	/// Updates the properties of an existing organization membership
 	pub async fn update_organization_membership(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		organization_id: &str,
 		user_id: &str,
 		update_organization_membership_request: crate::models::UpdateOrganizationMembershipRequest,
 	) -> Result<crate::models::OrganizationMembership, Error<UpdateOrganizationMembershipError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -243,12 +242,12 @@ impl OragnizationMebership {
 
 	/// Update an organization membership's metadata attributes by merging existing values with the provided parameters. Metadata values will be updated via a deep merge. Deep means that any nested JSON objects will be merged as well. You can remove metadata keys at any level by setting their value to `null`.
 	pub async fn update_organization_membership_metadata(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		organization_id: &str,
 		user_id: &str,
 		update_organization_membership_metadata_request: crate::models::UpdateOrganizationMembershipMetadataRequest,
 	) -> Result<crate::models::OrganizationMembership, Error<UpdateOrganizationMembershipMetadataError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -285,4 +284,3 @@ impl OragnizationMebership {
 		}
 	}
 }
-

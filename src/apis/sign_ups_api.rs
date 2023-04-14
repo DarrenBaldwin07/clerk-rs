@@ -10,9 +10,8 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
-
 
 /// struct for typed errors of method [`update_sign_up`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -22,17 +21,16 @@ pub enum UpdateSignUpError {
 	UnknownValue(serde_json::Value),
 }
 
-
 pub struct SignUps;
 
 impl SignUps {
 	/// Update the sign-up with the given ID
 	pub async fn update_sign_up(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		id: &str,
 		update_sign_up_request: Option<crate::models::UpdateSignUpRequest>,
 	) -> Result<crate::models::SignUp, Error<UpdateSignUpError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -64,4 +62,3 @@ impl SignUps {
 		}
 	}
 }
-

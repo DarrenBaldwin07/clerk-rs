@@ -10,9 +10,8 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
-
 
 /// struct for typed errors of method [`create_organization`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -82,16 +81,15 @@ pub enum UploadOrganizationLogoError {
 	UnknownValue(serde_json::Value),
 }
 
-
 pub struct Organization;
 
 impl Organization {
 	/// Creates a new organization with the given name for an instance. In order to successfully create an organization you need to provide the ID of the User who will become the organization administrator. You can specify an optional slug for the new organization. If provided, the organization slug can contain only lowercase alphanumeric characters (letters and digits) and the dash \"-\". Organization slugs must be unique for the instance. You can provide additional metadata for the organization and set any custom attribute you want. Organizations support private and public metadata. Private metadata can only be accessed from the Backend API. Public metadata can be accessed from the Backend API, and are read-only from the Frontend API.
 	pub async fn create_organization(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		create_organization_request: Option<crate::models::CreateOrganizationRequest>,
 	) -> Result<crate::models::Organization, Error<CreateOrganizationError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -125,10 +123,10 @@ impl Organization {
 
 	/// Deletes the given organization. Please note that deleting an organization will also delete all memberships and invitations. This is not reversible.
 	pub async fn delete_organization(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		organization_id: &str,
 	) -> Result<crate::models::DeletedObject, Error<DeleteOrganizationError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -163,11 +161,8 @@ impl Organization {
 	}
 
 	/// Fetches the organization whose ID or slug matches the provided `id_or_slug` URL query parameter.
-	pub async fn get_organization(
-		clerk_configuration: &configuration::ClerkConfiguration,
-		organization_id: &str,
-	) -> Result<crate::models::Organization, Error<GetOrganizationError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn get_organization(clerk_client: &Clerk, organization_id: &str) -> Result<crate::models::Organization, Error<GetOrganizationError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -203,13 +198,13 @@ impl Organization {
 
 	/// This request returns the list of organizations for an instance. Results can be paginated using the optional `limit` and `offset` query parameters. The organizations are ordered by descending creation date. Most recent organizations will be returned first.
 	pub async fn list_organizations(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		limit: Option<f32>,
 		offset: Option<f32>,
 		include_members_count: Option<bool>,
 		query: Option<&str>,
 	) -> Result<crate::models::Organizations, Error<ListOrganizationsError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -253,11 +248,11 @@ impl Organization {
 
 	/// Update organization metadata attributes by merging existing values with the provided parameters. Metadata values will be updated via a deep merge. Deep meaning that any nested JSON objects will be merged as well. You can remove metadata keys at any level by setting their value to `null`.
 	pub async fn merge_organization_metadata(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		organization_id: &str,
 		merge_organization_metadata_request: crate::models::MergeOrganizationMetadataRequest,
 	) -> Result<crate::models::Organization, Error<MergeOrganizationMetadataError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -295,11 +290,11 @@ impl Organization {
 
 	/// Updates an existing organization
 	pub async fn update_organization(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		organization_id: &str,
 		update_organization_request: crate::models::UpdateOrganizationRequest,
 	) -> Result<crate::models::Organization, Error<UpdateOrganizationError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -337,12 +332,12 @@ impl Organization {
 
 	/// Set or replace an organization's logo, by uploading an image file. This endpoint uses the `multipart/form-data` request content type and accepts a file of image type. The file size cannot exceed 10MB. Only the following file content types are supported: `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/x-icon`, `image/vnd.microsoft.icon`.
 	pub async fn upload_organization_logo(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		organization_id: &str,
 		uploader_user_id: Option<&str>,
 		file: Option<std::path::PathBuf>,
 	) -> Result<crate::models::OrganizationWithLogo, Error<UploadOrganizationLogoError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -383,4 +378,3 @@ impl Organization {
 		}
 	}
 }
-

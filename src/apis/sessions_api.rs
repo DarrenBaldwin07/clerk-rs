@@ -10,9 +10,8 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
-
 
 /// struct for typed errors of method [`create_session_token_from_template`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -65,15 +64,14 @@ pub enum VerifySessionError {
 
 pub struct Session;
 
-
 impl Session {
 	/// Creates a JSON Web Token(JWT) based on a session and a JWT Template name defined for your instance
 	pub async fn create_session_token_from_template(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		session_id: &str,
 		template_name: &str,
 	) -> Result<crate::models::CreateSessionTokenFromTemplate200Response, Error<CreateSessionTokenFromTemplateError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -109,11 +107,8 @@ impl Session {
 	}
 
 	/// Retrieve the details of a session
-	pub async fn get_session(
-		clerk_configuration: &configuration::ClerkConfiguration,
-		session_id: &str,
-	) -> Result<crate::models::Session, Error<GetSessionError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn get_session(clerk_client: &Clerk, session_id: &str) -> Result<crate::models::Session, Error<GetSessionError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -149,14 +144,14 @@ impl Session {
 
 	/// Returns a list of all sessions. The sessions are returned sorted by creation date, with the newest sessions appearing first.
 	pub async fn get_session_list(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		client_id: Option<&str>,
 		user_id: Option<&str>,
 		status: Option<&str>,
 		limit: Option<f32>,
 		offset: Option<f32>,
 	) -> Result<Vec<crate::models::Session>, Error<GetSessionListError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -202,11 +197,8 @@ impl Session {
 	}
 
 	/// Sets the status of a session as \"revoked\", which is an unauthenticated state. In multi-session mode, a revoked session will still be returned along with its client object, however the user will need to sign in again.
-	pub async fn revoke_session(
-		clerk_configuration: &configuration::ClerkConfiguration,
-		session_id: &str,
-	) -> Result<crate::models::Session, Error<RevokeSessionError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn revoke_session(clerk_client: &Clerk, session_id: &str) -> Result<crate::models::Session, Error<RevokeSessionError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -242,11 +234,11 @@ impl Session {
 
 	/// Returns the session if it is authenticated, otherwise returns an error.
 	pub async fn verify_session(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		session_id: &str,
 		verify_session_request: Option<crate::models::VerifySessionRequest>,
 	) -> Result<crate::models::Session, Error<VerifySessionError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -282,4 +274,3 @@ impl Session {
 		}
 	}
 }
-

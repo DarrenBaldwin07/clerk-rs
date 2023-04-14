@@ -10,7 +10,7 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
 
 /// struct for typed errors of method [`create_email`]
@@ -30,10 +30,10 @@ pub struct Email;
 impl Email {
 	/// Create and send an email to the supplied email address ID.
 	pub async fn create(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		create_email_request: Option<crate::models::CreateEmailRequest>,
 	) -> Result<crate::models::Email, Error<CreateEmailError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -65,4 +65,3 @@ impl Email {
 		}
 	}
 }
-

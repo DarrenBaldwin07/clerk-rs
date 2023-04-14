@@ -10,7 +10,7 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
 /// struct for typed errors of method [`create_demo_instance`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -31,10 +31,8 @@ pub struct Miscellaneous;
 
 impl Miscellaneous {
 	/// Creates a demo development instance and returns the corresponding Frontend/Backend API keys.
-	pub async fn create_demo_instance(
-		clerk_configuration: &configuration::ClerkConfiguration,
-	) -> Result<crate::models::CreateDemoInstance200Response, Error<CreateDemoInstanceError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn create_demo_instance(clerk_client: &Clerk) -> Result<crate::models::CreateDemoInstance200Response, Error<CreateDemoInstanceError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -66,11 +64,11 @@ impl Miscellaneous {
 
 	/// The Clerk interstitial endpoint serves an html page that loads clerk.js in order to check the user's authentication state. It is used by Clerk SDKs when the user's authentication state cannot be immediately determined.
 	pub async fn get_public_interstitial(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		frontend_api: Option<&str>,
 		publishable_key: Option<&str>,
 	) -> Result<(), Error<GetPublicInterstitialError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -106,4 +104,3 @@ impl Miscellaneous {
 		}
 	}
 }
-

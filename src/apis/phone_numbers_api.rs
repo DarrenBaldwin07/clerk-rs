@@ -10,9 +10,8 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
-
 
 /// struct for typed errors of method [`create_phone_number`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -64,10 +63,10 @@ pub struct PhoneNumber;
 impl PhoneNumber {
 	/// Create a new phone number
 	pub async fn create_phone_number(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		create_phone_number_request: Option<crate::models::CreatePhoneNumberRequest>,
 	) -> Result<crate::models::PhoneNumber, Error<CreatePhoneNumberError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -101,10 +100,10 @@ impl PhoneNumber {
 
 	/// Delete the phone number with the given ID
 	pub async fn delete_phone_number(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		phone_number_id: &str,
 	) -> Result<crate::models::DeletedObject, Error<DeletePhoneNumberError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -139,11 +138,8 @@ impl PhoneNumber {
 	}
 
 	/// Returns the details of a phone number
-	pub async fn get_phone_number(
-		clerk_configuration: &configuration::ClerkConfiguration,
-		phone_number_id: &str,
-	) -> Result<crate::models::PhoneNumber, Error<GetPhoneNumberError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn get_phone_number(clerk_client: &Clerk, phone_number_id: &str) -> Result<crate::models::PhoneNumber, Error<GetPhoneNumberError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -179,11 +175,11 @@ impl PhoneNumber {
 
 	/// Updates a phone number
 	pub async fn update_phone_number(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		phone_number_id: &str,
 		update_phone_number_request: Option<crate::models::UpdatePhoneNumberRequest>,
 	) -> Result<crate::models::PhoneNumber, Error<UpdatePhoneNumberError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -219,4 +215,3 @@ impl PhoneNumber {
 		}
 	}
 }
-

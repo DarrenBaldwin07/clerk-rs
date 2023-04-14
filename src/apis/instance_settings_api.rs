@@ -10,7 +10,7 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
 
 /// struct for typed errors of method [`update_instance`]
@@ -37,16 +37,15 @@ pub enum UpdateInstanceRestrictionsError {
 	UnknownValue(serde_json::Value),
 }
 
-
 pub struct InstanceSettings;
 
 impl InstanceSettings {
 	/// Updates the settings of an instance
 	pub async fn update_instance(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		update_instance_request: Option<crate::models::UpdateInstanceRequest>,
 	) -> Result<(), Error<UpdateInstanceError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -80,10 +79,10 @@ impl InstanceSettings {
 
 	/// Updates the organization settings of the instance
 	pub async fn update_instance_organization_settings(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		update_instance_organization_settings_request: Option<crate::models::UpdateInstanceOrganizationSettingsRequest>,
 	) -> Result<crate::models::OrganizationSettings, Error<UpdateInstanceOrganizationSettingsError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -117,10 +116,10 @@ impl InstanceSettings {
 
 	/// Updates the restriction settings of an instance
 	pub async fn update_instance_restrictions(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		update_instance_restrictions_request: Option<crate::models::UpdateInstanceRestrictionsRequest>,
 	) -> Result<crate::models::InstanceRestrictions, Error<UpdateInstanceRestrictionsError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -152,4 +151,3 @@ impl InstanceSettings {
 		}
 	}
 }
-

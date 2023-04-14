@@ -9,9 +9,8 @@
  */
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
-
 
 /// struct for typed errors of method [`get_jwks`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -24,8 +23,8 @@ pub struct Jwks;
 
 impl Jwks {
 	/// Retrieve the JSON Web Key Set of the instance
-	pub async fn get_jwks(clerk_configuration: &configuration::ClerkConfiguration) -> Result<(), Error<GetJwksError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn get_jwks(clerk_client: &Clerk) -> Result<(), Error<GetJwksError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -55,4 +54,3 @@ impl Jwks {
 		}
 	}
 }
-

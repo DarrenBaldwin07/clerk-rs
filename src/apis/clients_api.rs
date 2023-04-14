@@ -10,9 +10,8 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
-
 
 /// struct for typed errors of method [`get_client`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -58,11 +57,8 @@ pub struct ClientApis;
 
 impl ClientApis {
 	/// Returns the details of a client.
-	pub async fn get_client(
-		clerk_configuration: &configuration::ClerkConfiguration,
-		client_id: &str,
-	) -> Result<crate::models::Client, Error<GetClientError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn get_client(clerk_client: &Clerk, client_id: &str) -> Result<crate::models::Client, Error<GetClientError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -98,10 +94,10 @@ impl ClientApis {
 
 	/// Returns the details of the last active session of a client.
 	pub async fn get_client_last_active_session(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		client_id: &str,
 	) -> Result<crate::models::Session, Error<GetClientLastActiveSessionError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -137,11 +133,11 @@ impl ClientApis {
 
 	/// Returns a list of all clients. The clients are returned sorted by creation date, with the newest clients appearing first.
 	pub async fn get_client_list(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		limit: Option<f32>,
 		offset: Option<f32>,
 	) -> Result<Vec<crate::models::Client>, Error<GetClientListError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -179,10 +175,10 @@ impl ClientApis {
 
 	/// Verifies the client in the provided token
 	pub async fn verify_client(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		verify_client_request: Option<crate::models::VerifyClientRequest>,
 	) -> Result<crate::models::Client, Error<VerifyClientError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 

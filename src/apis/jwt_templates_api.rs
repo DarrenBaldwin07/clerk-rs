@@ -10,7 +10,7 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
 
 /// struct for typed errors of method [`create_jwt_template`]
@@ -57,16 +57,15 @@ pub enum UpdateJwtTemplateError {
 	UnknownValue(serde_json::Value),
 }
 
-
 pub struct JwtTemplate;
 
 impl JwtTemplate {
 	/// Create a new JWT template
 	pub async fn create_jwt_template(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		create_jwt_template_request: Option<crate::models::CreateJwtTemplateRequest>,
 	) -> Result<crate::models::JwtTemplate, Error<CreateJwtTemplateError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -99,11 +98,8 @@ impl JwtTemplate {
 	}
 
 	///
-	pub async fn delete_jwt_template(
-		clerk_configuration: &configuration::ClerkConfiguration,
-		template_id: &str,
-	) -> Result<crate::models::DeletedObject, Error<DeleteJwtTemplateError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn delete_jwt_template(clerk_client: &Clerk, template_id: &str) -> Result<crate::models::DeletedObject, Error<DeleteJwtTemplateError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -138,11 +134,8 @@ impl JwtTemplate {
 	}
 
 	/// Retrieve the details of a given JWT template
-	pub async fn get_jwt_template(
-		clerk_configuration: &configuration::ClerkConfiguration,
-		template_id: &str,
-	) -> Result<crate::models::JwtTemplate, Error<GetJwtTemplateError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn get_jwt_template(clerk_client: &Clerk, template_id: &str) -> Result<crate::models::JwtTemplate, Error<GetJwtTemplateError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -176,10 +169,8 @@ impl JwtTemplate {
 		}
 	}
 
-	pub async fn list_jwt_templates(
-		clerk_configuration: &configuration::ClerkConfiguration,
-	) -> Result<Vec<crate::models::JwtTemplate>, Error<ListJwtTemplatesError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn list_jwt_templates(clerk_client: &Clerk) -> Result<Vec<crate::models::JwtTemplate>, Error<ListJwtTemplatesError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -211,11 +202,11 @@ impl JwtTemplate {
 
 	/// Updates an existing JWT template
 	pub async fn update_jwt_template(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		template_id: &str,
 		create_jwt_template_request: Option<crate::models::CreateJwtTemplateRequest>,
 	) -> Result<crate::models::JwtTemplate, Error<UpdateJwtTemplateError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -251,4 +242,3 @@ impl JwtTemplate {
 		}
 	}
 }
-

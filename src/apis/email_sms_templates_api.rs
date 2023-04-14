@@ -10,7 +10,7 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
 
 /// struct for typed errors of method [`get_template`]
@@ -67,18 +67,12 @@ pub enum UpsertTemplateError {
 	UnknownValue(serde_json::Value),
 }
 
-
 pub struct EmailSmSTemplates;
-
 
 impl EmailSmSTemplates {
 	/// Returns the details of a template
-	pub async fn get_template(
-		clerk_configuration: &configuration::ClerkConfiguration,
-		template_type: &str,
-		slug: &str,
-	) -> Result<crate::models::Template, Error<GetTemplateError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn get_template(clerk_client: &Clerk, template_type: &str, slug: &str) -> Result<crate::models::Template, Error<GetTemplateError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -114,11 +108,8 @@ impl EmailSmSTemplates {
 	}
 
 	/// Returns a list of all templates. The templates are returned sorted by position.
-	pub async fn get_template_list(
-		clerk_configuration: &configuration::ClerkConfiguration,
-		template_type: &str,
-	) -> Result<Vec<crate::models::Template>, Error<GetTemplateListError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn get_template_list(clerk_client: &Clerk, template_type: &str) -> Result<Vec<crate::models::Template>, Error<GetTemplateListError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -154,12 +145,12 @@ impl EmailSmSTemplates {
 
 	/// Returns a preview of a template for a given template_type, slug and body
 	pub async fn preview_template(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		template_type: &str,
 		slug: &str,
 		preview_template_request: Option<crate::models::PreviewTemplateRequest>,
 	) -> Result<serde_json::Value, Error<PreviewTemplateError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -198,11 +189,11 @@ impl EmailSmSTemplates {
 
 	/// Reverts an updated template to its default state
 	pub async fn revert_template(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		template_type: &str,
 		slug: &str,
 	) -> Result<crate::models::Template, Error<RevertTemplateError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -239,12 +230,12 @@ impl EmailSmSTemplates {
 
 	/// Updates the existing template of the given type and slug
 	pub async fn upsert_template(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		template_type: &str,
 		slug: &str,
 		upsert_template_request: Option<crate::models::UpsertTemplateRequest>,
 	) -> Result<crate::models::Template, Error<UpsertTemplateError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 

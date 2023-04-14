@@ -10,9 +10,8 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
-
 
 /// struct for typed errors of method [`create_sms_message`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -25,16 +24,15 @@ pub enum CreateSmsMessageError {
 	UnknownValue(serde_json::Value),
 }
 
-
 pub struct SmsMessage;
 
 impl SmsMessage {
 	/// Create and send an SMS message to the supplied phone number ID
 	pub async fn create_sms_message(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		create_sms_message_request: Option<crate::models::CreateSmsMessageRequest>,
 	) -> Result<crate::models::SmsMessage, Error<CreateSmsMessageError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -66,4 +64,3 @@ impl SmsMessage {
 		}
 	}
 }
-

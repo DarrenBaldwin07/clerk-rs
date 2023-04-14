@@ -10,7 +10,7 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
 
 /// struct for typed errors of method [`create_allowlist_identifier`]
@@ -74,9 +74,9 @@ pub struct ListIdentifier;
 impl ListIdentifier {
 	/// Create an identifier allowed to sign up to an instance
 	pub async fn create_allowlist_identifier(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 	) -> Result<crate::models::AllowlistIdentifier, Error<CreateAllowlistIdentifierError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -108,9 +108,9 @@ impl ListIdentifier {
 
 	/// Create an identifier that is blocked from accessing an instance
 	pub async fn create_blocklist_identifier(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 	) -> Result<crate::models::BlocklistIdentifier, Error<CreateBlocklistIdentifierError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -142,10 +142,10 @@ impl ListIdentifier {
 
 	/// Delete an identifier from the instance allow-list
 	pub async fn delete_allowlist_identifier(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		identifier_id: &str,
 	) -> Result<crate::models::DeletedObject, Error<DeleteAllowlistIdentifierError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -181,10 +181,10 @@ impl ListIdentifier {
 
 	/// Delete an identifier from the instance block-list
 	pub async fn delete_blocklist_identifier(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		identifier_id: &str,
 	) -> Result<crate::models::DeletedObject, Error<DeleteBlocklistIdentifierError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -220,9 +220,9 @@ impl ListIdentifier {
 
 	/// Get a list of all identifiers allowed to sign up to an instance
 	pub async fn list_allowlist_identifiers(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 	) -> Result<Vec<crate::models::AllowlistIdentifier>, Error<ListAllowlistIdentifiersError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -254,9 +254,9 @@ impl ListIdentifier {
 
 	/// Get a list of all identifiers which are not allowed to access an instance
 	pub async fn list_blocklist_identifiers(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 	) -> Result<crate::models::BlocklistIdentifiers, Error<ListBlocklistIdentifiersError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 

@@ -10,9 +10,8 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
-
 
 /// struct for typed errors of method [`create_redirect_url`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -51,10 +50,10 @@ pub struct Redirect;
 impl Redirect {
 	/// Create a redirect URL
 	pub async fn create_redirect_url(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		create_redirect_url_request: Option<crate::models::CreateRedirectUrlRequest>,
 	) -> Result<crate::models::RedirectUrl, Error<CreateRedirectUrlError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -87,11 +86,8 @@ impl Redirect {
 	}
 
 	/// Remove the selected redirect URL from the whitelist of the instance
-	pub async fn delete_redirect_url(
-		clerk_configuration: &configuration::ClerkConfiguration,
-		id: &str,
-	) -> Result<crate::models::DeletedObject, Error<DeleteRedirectUrlError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn delete_redirect_url(clerk_client: &Clerk, id: &str) -> Result<crate::models::DeletedObject, Error<DeleteRedirectUrlError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -126,11 +122,8 @@ impl Redirect {
 	}
 
 	/// Retrieve the details of the redirect URL with the given ID
-	pub async fn get_redirect_url(
-		clerk_configuration: &configuration::ClerkConfiguration,
-		id: &str,
-	) -> Result<crate::models::RedirectUrl, Error<GetRedirectUrlError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn get_redirect_url(clerk_client: &Clerk, id: &str) -> Result<crate::models::RedirectUrl, Error<GetRedirectUrlError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -165,10 +158,8 @@ impl Redirect {
 	}
 
 	/// Lists all whitelisted redirect_urls for the instance
-	pub async fn list_redirect_urls(
-		clerk_configuration: &configuration::ClerkConfiguration,
-	) -> Result<Vec<crate::models::RedirectUrl>, Error<ListRedirectUrlsError>> {
-		let local_var_configuration = clerk_configuration;
+	pub async fn list_redirect_urls(clerk_client: &Clerk) -> Result<Vec<crate::models::RedirectUrl>, Error<ListRedirectUrlsError>> {
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -198,4 +189,3 @@ impl Redirect {
 		}
 	}
 }
-

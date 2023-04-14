@@ -10,7 +10,7 @@
 
 use reqwest;
 
-use super::{configuration, Error};
+use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
 
 /// struct for typed errors of method [`update_instance_auth_config`]
@@ -33,14 +33,13 @@ pub enum UpdateProductionInstanceDomainError {
 
 pub struct BetaFeatures;
 
-
 impl BetaFeatures {
 	/// Updates the settings of an instance
 	pub async fn update_instance_auth_config(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		update_instance_auth_config_request: Option<crate::models::UpdateInstanceAuthConfigRequest>,
 	) -> Result<crate::models::UpdateInstanceAuthConfig200Response, Error<UpdateInstanceAuthConfigError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -74,10 +73,10 @@ impl BetaFeatures {
 
 	/// Change the domain of a production instance.  Changing the domain requires updating the [DNS records](https://clerk.com/docs/deployments/overview#dns-records) accordingly, deploying new [SSL certificates](https://clerk.com/docs/deployments/overview#deploy), updating your Social Connection's redirect URLs and setting the new keys in your code.  WARNING: Changing your domain will invalidate all current user sessions (i.e. users will be logged out). Also, while your application is being deployed, a small downtime is expected to occur.
 	pub async fn update_production_instance_domain(
-		clerk_configuration: &configuration::ClerkConfiguration,
+		clerk_client: &Clerk,
 		update_production_instance_domain_request: Option<crate::models::UpdateProductionInstanceDomainRequest>,
 	) -> Result<(), Error<UpdateProductionInstanceDomainError>> {
-		let local_var_configuration = clerk_configuration;
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
