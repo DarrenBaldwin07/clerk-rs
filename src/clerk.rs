@@ -1,7 +1,7 @@
 use crate::{
 	apis::configuration,
-	endpoints::{ClerkDeleteEndpoint, ClerkGetEndpoint, ClerkPostEndpoint, ClerkPutEndpoint, ClerkDynamicGetEndpoint},
-	util::generate_path_from_params
+	endpoints::{ClerkDeleteEndpoint, ClerkDynamicGetEndpoint, ClerkGetEndpoint, ClerkPostEndpoint, ClerkPutEndpoint},
+	util::generate_path_from_params,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -120,7 +120,7 @@ impl Clerk {
 		}
 	}
 
-	pub async fn get_with_params(&self, endpoint: ClerkDynamicGetEndpoint, params: Vec<&str>) -> Result<serde_json::value::Value, reqwest::Error>  {
+	pub async fn get_with_params(&self, endpoint: ClerkDynamicGetEndpoint, params: Vec<&str>) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.to_string();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
@@ -139,7 +139,7 @@ impl Clerk {
 		&self,
 		endpoint: ClerkPostEndpoint,
 		body: T,
-		params: Vec<&str>
+		params: Vec<&str>,
 	) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.to_string();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
@@ -153,7 +153,6 @@ impl Clerk {
 			Err(e) => Err(e),
 		}
 	}
-
 
 	/// Make a DELETE request to the specified Clerk API endpoint
 	pub async fn delete_with_params(&self, endpoint: ClerkDeleteEndpoint, params: Vec<&str>) -> Result<serde_json::value::Value, reqwest::Error> {
@@ -175,7 +174,7 @@ impl Clerk {
 		&self,
 		endpoint: ClerkPutEndpoint,
 		body: T,
-		params: Vec<&str>
+		params: Vec<&str>,
 	) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.to_string();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
@@ -195,7 +194,7 @@ impl Clerk {
 		&self,
 		endpoint: ClerkPutEndpoint,
 		body: T,
-		params: Vec<&str>
+		params: Vec<&str>,
 	) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.to_string();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
