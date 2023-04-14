@@ -12,59 +12,70 @@ use reqwest::header::{HeaderMap, USER_AGENT as REQWEST_USER_AGENT};
  */
 #[derive(Debug, Clone)]
 pub struct ClerkConfiguration {
-    pub base_path: String,
-    pub user_agent: Option<String>,
-    pub client: reqwest::Client,
-    pub basic_auth: Option<BasicAuth>,
-    pub oauth_access_token: Option<String>,
-    pub bearer_access_token: Option<String>,
-    pub api_key: Option<ApiKey>,
-    // TODO: take an oauth2 token source, similar to the Go one
+	pub base_path: String,
+	pub user_agent: Option<String>,
+	pub client: reqwest::Client,
+	pub basic_auth: Option<BasicAuth>,
+	pub oauth_access_token: Option<String>,
+	pub bearer_access_token: Option<String>,
+	pub api_key: Option<ApiKey>,
+	// TODO: take an oauth2 token source, similar to the Go one
 }
 
 pub type BasicAuth = (String, Option<String>);
 
 #[derive(Debug, Clone)]
 pub struct ApiKey {
-    pub prefix: Option<String>,
-    pub key: String,
+	pub prefix: Option<String>,
+	pub key: String,
 }
 
 impl ClerkConfiguration {
-    // Creates a new client ClerkConfiguration object used to authenticate requests to the clerk.dev api
-    pub fn new(basic_auth: Option<BasicAuth>, oauth_access_token: Option<String>, bearer_access_token: Option<String>, api_key: Option<ApiKey>) -> Self {
-        // Initialize our Clerk SDK with the default user_agent
-        let mut headers = HeaderMap::new();
-        headers.insert(REQWEST_USER_AGENT, USER_AGENT.parse().unwrap());
-        let client = reqwest::Client::builder().default_headers(headers).build().expect("Error: could not initialize Clerk SDK client. Please try again!");
+	// Creates a new client ClerkConfiguration object used to authenticate requests to the clerk.dev api
+	pub fn new(
+		basic_auth: Option<BasicAuth>,
+		oauth_access_token: Option<String>,
+		bearer_access_token: Option<String>,
+		api_key: Option<ApiKey>,
+	) -> Self {
+		// Initialize our Clerk SDK with the default user_agent
+		let mut headers = HeaderMap::new();
+		headers.insert(REQWEST_USER_AGENT, USER_AGENT.parse().unwrap());
+		let client = reqwest::Client::builder()
+			.default_headers(headers)
+			.build()
+			.expect("Error: could not initialize Clerk SDK client. Please try again!");
 
-        Self {
-            base_path: "https://api.clerk.dev/v1".to_owned(),
-            user_agent: Some(USER_AGENT.to_owned()),
-            client,
-            basic_auth,
-            oauth_access_token,
-            bearer_access_token,
-            api_key
-        }
-    }
+		Self {
+			base_path: "https://api.clerk.dev/v1".to_owned(),
+			user_agent: Some(USER_AGENT.to_owned()),
+			client,
+			basic_auth,
+			oauth_access_token,
+			bearer_access_token,
+			api_key,
+		}
+	}
 }
 
 impl Default for ClerkConfiguration {
-    fn default() -> Self {
-        // Initialize our Clerk SDK with the default user_agent
-        let mut headers = HeaderMap::new();
-        headers.insert(REQWEST_USER_AGENT, USER_AGENT.parse().unwrap());
-        let client = reqwest::Client::builder().default_headers(headers).build().expect("Error: could not initialize Clerk SDK client. Please try again!");
+	fn default() -> Self {
+		// Initialize our Clerk SDK with the default user_agent
+		let mut headers = HeaderMap::new();
+		headers.insert(REQWEST_USER_AGENT, USER_AGENT.parse().unwrap());
+		let client = reqwest::Client::builder()
+			.default_headers(headers)
+			.build()
+			.expect("Error: could not initialize Clerk SDK client. Please try again!");
 
-        Self {
-            base_path: "https://api.clerk.dev/v1".to_owned(),
-            user_agent: Some(USER_AGENT.to_owned()),
-            client,
-            basic_auth: None,
-            oauth_access_token: None,
-            bearer_access_token: None,
-            api_key: None,
-        }
-    }
+		Self {
+			base_path: "https://api.clerk.dev/v1".to_owned(),
+			user_agent: Some(USER_AGENT.to_owned()),
+			client,
+			basic_auth: None,
+			oauth_access_token: None,
+			bearer_access_token: None,
+			api_key: None,
+		}
+	}
 }

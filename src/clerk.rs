@@ -1,48 +1,91 @@
-use crate::apis::configuration;
+use crate::{
+	apis::configuration,
+	endpoints::{ClerkDeleteEndpoint, ClerkGetEndpoint, ClerkPostEndpoint, ClerkPutEndpoint},
+};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::fmt::{self, Debug};
-
 
 // Default user agent used for clerk-rs sdk (this is sent with every clerk api request)
 pub const USER_AGENT: &str = concat!("Clerk/v1 RustBindings/", env!("CARGO_PKG_VERSION"));
 
+/*
+ * Unofficial Clerk SDK
+ *
+ * Please refer to the clerk.dev official documentation for more information: https://docs.clerk.dev
+ *
+ * NOTE: This SDK is based on the official clerk openAPI spec found here: https://clerk.com/docs/reference/backend-api
+ */
 pub struct Clerk {
-    pub config: configuration::ClerkConfiguration
+	pub config: configuration::ClerkConfiguration,
 }
 
 impl Clerk {
-    // Creates a new Clerk SDK client for making requests out to the public Clerk api:
-    pub fn new(clerk_configuration: configuration::ClerkConfiguration) -> Self {
-        Self {
-            config: clerk_configuration
-        }
-    }
+	// Creates a new Clerk SDK client for making requests out to the public Clerk api:
+	pub fn new(clerk_configuration: configuration::ClerkConfiguration) -> Self {
+		Self { config: clerk_configuration }
+	}
 
-    /// Function for submitting a GET request to a specifed clerk api endpoint
-    pub async fn get(&self, endpoint: String) -> Result<serde_json::value::Value, reqwest::Error> {
-        let url = format!("{}{}", self.config.base_path, endpoint);
+	/// Make a GET request to the specified Clerk API endpoint
+	pub async fn get(&self, endpoint: ClerkGetEndpoint) -> Result<serde_json::value::Value, reqwest::Error> {
+		let parsed_endpoint = endpoint.to_string();
+		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
-        match self.config.client.get(&url).send().await {
-            Ok(response) => {
-                match response.json::<Value>().await {
-                    Ok(user) => Ok(user),
-                    Err(e) => Err(e),
-                }
-            }
-            Err(e) => Err(e)
-        }
-    }
+		match self.config.client.get(&url).send().await {
+			Ok(response) => match response.json::<Value>().await {
+				Ok(user) => Ok(user),
+				Err(e) => Err(e),
+			},
+			Err(e) => Err(e),
+		}
+	}
 
-    pub async fn post() {
+	/// Make a POST request to the specified Clerk API endpoint
+	pub async fn post<'a, T: Serialize + Deserialize<'a>>(
+		&self,
+		endpoint: ClerkPostEndpoint,
+		body: T,
+	) -> Result<serde_json::value::Value, reqwest::Error> {
+		let parsed_endpoint = endpoint.to_string();
+		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
-    }
+		match self.config.client.post(&url).json(&body).send().await {
+			Ok(response) => match response.json::<Value>().await {
+				Ok(user) => Ok(user),
+				Err(e) => Err(e),
+			},
+			Err(e) => Err(e),
+		}
+	}
 
-    pub async fn delete() {
+	/// Make a DELETE request to the specified Clerk API endpoint
+	pub async fn delete(&self, endpoint: ClerkDeleteEndpoint) -> Result<serde_json::value::Value, reqwest::Error> {
+		let parsed_endpoint = endpoint.to_string();
+		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
-    }
+		match self.config.client.delete(&url).send().await {
+			Ok(response) => match response.json::<Value>().await {
+				Ok(user) => Ok(user),
+				Err(e) => Err(e),
+			},
+			Err(e) => Err(e),
+		}
+	}
 
-    pub async fn put() {
+	/// Make a PUT request to the specified Clerk API endpoint
+	pub async fn put<'a, T: Serialize + Deserialize<'a>>(
+		&self,
+		endpoint: ClerkPutEndpoint,
+		body: T,
+	) -> Result<serde_json::value::Value, reqwest::Error> {
+		let parsed_endpoint = endpoint.to_string();
+		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
-    }
-
+		match self.config.client.put(&url).json(&body).send().await {
+			Ok(response) => match response.json::<Value>().await {
+				Ok(user) => Ok(user),
+				Err(e) => Err(e),
+			},
+			Err(e) => Err(e),
+		}
+	}
 }
