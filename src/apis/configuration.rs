@@ -37,7 +37,7 @@ impl ClerkConfiguration {
 		api_key: Option<ApiKey>,
 	) -> Self {
 		// Generate our auth token
-		let construct_bearer_token = format!("Bearer {}", bearer_access_token.clone().unwrap_or(String::from("")));
+		let construct_bearer_token = format!("Bearer {}", bearer_access_token.as_ref().unwrap_or(&String::from("")));
 		// Initialize our Clerk SDK with the default user_agent and auth headers
 		let mut headers = HeaderMap::new();
 		headers.insert(REQWEST_USER_AGENT, USER_AGENT.parse().unwrap());

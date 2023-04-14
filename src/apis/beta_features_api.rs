@@ -31,76 +31,81 @@ pub enum UpdateProductionInstanceDomainError {
 	UnknownValue(serde_json::Value),
 }
 
-/// Updates the settings of an instance
-pub async fn update_instance_auth_config(
-	clerk_configuration: &configuration::ClerkConfiguration,
-	update_instance_auth_config_request: Option<crate::models::UpdateInstanceAuthConfigRequest>,
-) -> Result<crate::models::UpdateInstanceAuthConfig200Response, Error<UpdateInstanceAuthConfigError>> {
-	let local_var_configuration = clerk_configuration;
+pub struct BetaFeatures;
 
-	let local_var_client = &local_var_configuration.client;
 
-	let local_var_uri_str = format!("{}/beta_features/instance_settings", local_var_configuration.base_path);
-	let mut local_var_req_builder = local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
+impl BetaFeatures {
+	/// Updates the settings of an instance
+	pub async fn update_instance_auth_config(
+		clerk_configuration: &configuration::ClerkConfiguration,
+		update_instance_auth_config_request: Option<crate::models::UpdateInstanceAuthConfigRequest>,
+	) -> Result<crate::models::UpdateInstanceAuthConfig200Response, Error<UpdateInstanceAuthConfigError>> {
+		let local_var_configuration = clerk_configuration;
 
-	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		let local_var_client = &local_var_configuration.client;
+
+		let local_var_uri_str = format!("{}/beta_features/instance_settings", local_var_configuration.base_path);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
+
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
+
+		local_var_req_builder = local_var_req_builder.json(&update_instance_auth_config_request);
+
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
+
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			serde_json::from_str(&local_var_content).map_err(Error::from)
+		} else {
+			let local_var_entity: Option<UpdateInstanceAuthConfigError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
 	}
 
-	local_var_req_builder = local_var_req_builder.json(&update_instance_auth_config_request);
+	/// Change the domain of a production instance.  Changing the domain requires updating the [DNS records](https://clerk.com/docs/deployments/overview#dns-records) accordingly, deploying new [SSL certificates](https://clerk.com/docs/deployments/overview#deploy), updating your Social Connection's redirect URLs and setting the new keys in your code.  WARNING: Changing your domain will invalidate all current user sessions (i.e. users will be logged out). Also, while your application is being deployed, a small downtime is expected to occur.
+	pub async fn update_production_instance_domain(
+		clerk_configuration: &configuration::ClerkConfiguration,
+		update_production_instance_domain_request: Option<crate::models::UpdateProductionInstanceDomainRequest>,
+	) -> Result<(), Error<UpdateProductionInstanceDomainError>> {
+		let local_var_configuration = clerk_configuration;
 
-	let local_var_req = local_var_req_builder.build()?;
-	let local_var_resp = local_var_client.execute(local_var_req).await?;
+		let local_var_client = &local_var_configuration.client;
 
-	let local_var_status = local_var_resp.status();
-	let local_var_content = local_var_resp.text().await?;
+		let local_var_uri_str = format!("{}/beta_features/domain", local_var_configuration.base_path);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::PUT, local_var_uri_str.as_str());
 
-	if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-		serde_json::from_str(&local_var_content).map_err(Error::from)
-	} else {
-		let local_var_entity: Option<UpdateInstanceAuthConfigError> = serde_json::from_str(&local_var_content).ok();
-		let local_var_error = ResponseContent {
-			status: local_var_status,
-			content: local_var_content,
-			entity: local_var_entity,
-		};
-		Err(Error::ResponseError(local_var_error))
-	}
-}
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
 
-/// Change the domain of a production instance.  Changing the domain requires updating the [DNS records](https://clerk.com/docs/deployments/overview#dns-records) accordingly, deploying new [SSL certificates](https://clerk.com/docs/deployments/overview#deploy), updating your Social Connection's redirect URLs and setting the new keys in your code.  WARNING: Changing your domain will invalidate all current user sessions (i.e. users will be logged out). Also, while your application is being deployed, a small downtime is expected to occur.
-pub async fn update_production_instance_domain(
-	clerk_configuration: &configuration::ClerkConfiguration,
-	update_production_instance_domain_request: Option<crate::models::UpdateProductionInstanceDomainRequest>,
-) -> Result<(), Error<UpdateProductionInstanceDomainError>> {
-	let local_var_configuration = clerk_configuration;
+		local_var_req_builder = local_var_req_builder.json(&update_production_instance_domain_request);
 
-	let local_var_client = &local_var_configuration.client;
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
 
-	let local_var_uri_str = format!("{}/beta_features/domain", local_var_configuration.base_path);
-	let mut local_var_req_builder = local_var_client.request(reqwest::Method::PUT, local_var_uri_str.as_str());
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
 
-	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-	}
-
-	local_var_req_builder = local_var_req_builder.json(&update_production_instance_domain_request);
-
-	let local_var_req = local_var_req_builder.build()?;
-	let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-	let local_var_status = local_var_resp.status();
-	let local_var_content = local_var_resp.text().await?;
-
-	if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-		Ok(())
-	} else {
-		let local_var_entity: Option<UpdateProductionInstanceDomainError> = serde_json::from_str(&local_var_content).ok();
-		let local_var_error = ResponseContent {
-			status: local_var_status,
-			content: local_var_content,
-			entity: local_var_entity,
-		};
-		Err(Error::ResponseError(local_var_error))
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			Ok(())
+		} else {
+			let local_var_entity: Option<UpdateProductionInstanceDomainError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
 	}
 }

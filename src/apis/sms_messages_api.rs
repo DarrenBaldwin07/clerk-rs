@@ -24,39 +24,45 @@ pub enum CreateSmsMessageError {
 	UnknownValue(serde_json::Value),
 }
 
-/// Create and send an SMS message to the supplied phone number ID
-pub async fn create_sms_message(
-	clerk_configuration: &configuration::ClerkConfiguration,
-	create_sms_message_request: Option<crate::models::CreateSmsMessageRequest>,
-) -> Result<crate::models::SmsMessage, Error<CreateSmsMessageError>> {
-	let local_var_configuration = clerk_configuration;
 
-	let local_var_client = &local_var_configuration.client;
+pub struct SmsMessage;
 
-	let local_var_uri_str = format!("{}/sms_messages", local_var_configuration.base_path);
-	let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+impl SmsMessage {
+	/// Create and send an SMS message to the supplied phone number ID
+	pub async fn create_sms_message(
+		clerk_configuration: &configuration::ClerkConfiguration,
+		create_sms_message_request: Option<crate::models::CreateSmsMessageRequest>,
+	) -> Result<crate::models::SmsMessage, Error<CreateSmsMessageError>> {
+		let local_var_configuration = clerk_configuration;
 
-	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-	}
+		let local_var_client = &local_var_configuration.client;
 
-	local_var_req_builder = local_var_req_builder.json(&create_sms_message_request);
+		let local_var_uri_str = format!("{}/sms_messages", local_var_configuration.base_path);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
 
-	let local_var_req = local_var_req_builder.build()?;
-	let local_var_resp = local_var_client.execute(local_var_req).await?;
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
 
-	let local_var_status = local_var_resp.status();
-	let local_var_content = local_var_resp.text().await?;
+		local_var_req_builder = local_var_req_builder.json(&create_sms_message_request);
 
-	if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-		serde_json::from_str(&local_var_content).map_err(Error::from)
-	} else {
-		let local_var_entity: Option<CreateSmsMessageError> = serde_json::from_str(&local_var_content).ok();
-		let local_var_error = ResponseContent {
-			status: local_var_status,
-			content: local_var_content,
-			entity: local_var_entity,
-		};
-		Err(Error::ResponseError(local_var_error))
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
+
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			serde_json::from_str(&local_var_content).map_err(Error::from)
+		} else {
+			let local_var_entity: Option<CreateSmsMessageError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
 	}
 }
+

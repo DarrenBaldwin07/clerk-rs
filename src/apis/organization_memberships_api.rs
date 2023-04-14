@@ -63,220 +63,225 @@ pub enum UpdateOrganizationMembershipMetadataError {
 	UnknownValue(serde_json::Value),
 }
 
-/// Adds a user as a member to the given organization. Only users in the same instance as the organization can be added as members.
-pub async fn create_organization_membership(
-	clerk_configuration: &configuration::ClerkConfiguration,
-	organization_id: &str,
-	create_organization_membership_request: crate::models::CreateOrganizationMembershipRequest,
-) -> Result<crate::models::OrganizationMembership, Error<CreateOrganizationMembershipError>> {
-	let local_var_configuration = clerk_configuration;
+pub struct OragnizationMebership;
 
-	let local_var_client = &local_var_configuration.client;
+impl OragnizationMebership {
+	/// Adds a user as a member to the given organization. Only users in the same instance as the organization can be added as members.
+	pub async fn create(
+		clerk_configuration: &configuration::ClerkConfiguration,
+		organization_id: &str,
+		create_organization_membership_request: crate::models::CreateOrganizationMembershipRequest,
+	) -> Result<crate::models::OrganizationMembership, Error<CreateOrganizationMembershipError>> {
+		let local_var_configuration = clerk_configuration;
 
-	let local_var_uri_str = format!(
-		"{}/organizations/{organization_id}/memberships",
-		local_var_configuration.base_path,
-		organization_id = crate::apis::urlencode(organization_id)
-	);
-	let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+		let local_var_client = &local_var_configuration.client;
 
-	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		let local_var_uri_str = format!(
+			"{}/organizations/{organization_id}/memberships",
+			local_var_configuration.base_path,
+			organization_id = crate::apis::urlencode(organization_id)
+		);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
+
+		local_var_req_builder = local_var_req_builder.json(&create_organization_membership_request);
+
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
+
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			serde_json::from_str(&local_var_content).map_err(Error::from)
+		} else {
+			let local_var_entity: Option<CreateOrganizationMembershipError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
 	}
 
-	local_var_req_builder = local_var_req_builder.json(&create_organization_membership_request);
+	/// Removes the given membership from the organization
+	pub async fn delete_organization_membership(
+		clerk_configuration: &configuration::ClerkConfiguration,
+		organization_id: &str,
+		user_id: &str,
+	) -> Result<crate::models::OrganizationMembership, Error<DeleteOrganizationMembershipError>> {
+		let local_var_configuration = clerk_configuration;
 
-	let local_var_req = local_var_req_builder.build()?;
-	let local_var_resp = local_var_client.execute(local_var_req).await?;
+		let local_var_client = &local_var_configuration.client;
 
-	let local_var_status = local_var_resp.status();
-	let local_var_content = local_var_resp.text().await?;
+		let local_var_uri_str = format!(
+			"{}/organizations/{organization_id}/memberships/{user_id}",
+			local_var_configuration.base_path,
+			organization_id = crate::apis::urlencode(organization_id),
+			user_id = crate::apis::urlencode(user_id)
+		);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
 
-	if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-		serde_json::from_str(&local_var_content).map_err(Error::from)
-	} else {
-		let local_var_entity: Option<CreateOrganizationMembershipError> = serde_json::from_str(&local_var_content).ok();
-		let local_var_error = ResponseContent {
-			status: local_var_status,
-			content: local_var_content,
-			entity: local_var_entity,
-		};
-		Err(Error::ResponseError(local_var_error))
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
+
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
+
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			serde_json::from_str(&local_var_content).map_err(Error::from)
+		} else {
+			let local_var_entity: Option<DeleteOrganizationMembershipError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
+	}
+
+	/// Retrieves all user memberships for the given organization
+	pub async fn list_organization_memberships(
+		clerk_configuration: &configuration::ClerkConfiguration,
+		organization_id: &str,
+		limit: Option<f32>,
+		offset: Option<f32>,
+	) -> Result<crate::models::OrganizationMemberships, Error<ListOrganizationMembershipsError>> {
+		let local_var_configuration = clerk_configuration;
+
+		let local_var_client = &local_var_configuration.client;
+
+		let local_var_uri_str = format!(
+			"{}/organizations/{organization_id}/memberships",
+			local_var_configuration.base_path,
+			organization_id = crate::apis::urlencode(organization_id)
+		);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+		if let Some(ref local_var_str) = limit {
+			local_var_req_builder = local_var_req_builder.query(&[("limit", &local_var_str.to_string())]);
+		}
+		if let Some(ref local_var_str) = offset {
+			local_var_req_builder = local_var_req_builder.query(&[("offset", &local_var_str.to_string())]);
+		}
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
+
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
+
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			serde_json::from_str(&local_var_content).map_err(Error::from)
+		} else {
+			let local_var_entity: Option<ListOrganizationMembershipsError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
+	}
+
+	/// Updates the properties of an existing organization membership
+	pub async fn update_organization_membership(
+		clerk_configuration: &configuration::ClerkConfiguration,
+		organization_id: &str,
+		user_id: &str,
+		update_organization_membership_request: crate::models::UpdateOrganizationMembershipRequest,
+	) -> Result<crate::models::OrganizationMembership, Error<UpdateOrganizationMembershipError>> {
+		let local_var_configuration = clerk_configuration;
+
+		let local_var_client = &local_var_configuration.client;
+
+		let local_var_uri_str = format!(
+			"{}/organizations/{organization_id}/memberships/{user_id}",
+			local_var_configuration.base_path,
+			organization_id = crate::apis::urlencode(organization_id),
+			user_id = crate::apis::urlencode(user_id)
+		);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
+
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
+
+		local_var_req_builder = local_var_req_builder.json(&update_organization_membership_request);
+
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
+
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			serde_json::from_str(&local_var_content).map_err(Error::from)
+		} else {
+			let local_var_entity: Option<UpdateOrganizationMembershipError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
+	}
+
+	/// Update an organization membership's metadata attributes by merging existing values with the provided parameters. Metadata values will be updated via a deep merge. Deep means that any nested JSON objects will be merged as well. You can remove metadata keys at any level by setting their value to `null`.
+	pub async fn update_organization_membership_metadata(
+		clerk_configuration: &configuration::ClerkConfiguration,
+		organization_id: &str,
+		user_id: &str,
+		update_organization_membership_metadata_request: crate::models::UpdateOrganizationMembershipMetadataRequest,
+	) -> Result<crate::models::OrganizationMembership, Error<UpdateOrganizationMembershipMetadataError>> {
+		let local_var_configuration = clerk_configuration;
+
+		let local_var_client = &local_var_configuration.client;
+
+		let local_var_uri_str = format!(
+			"{}/organizations/{organization_id}/memberships/{user_id}/metadata",
+			local_var_configuration.base_path,
+			organization_id = crate::apis::urlencode(organization_id),
+			user_id = crate::apis::urlencode(user_id)
+		);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
+
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
+
+		local_var_req_builder = local_var_req_builder.json(&update_organization_membership_metadata_request);
+
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
+
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			serde_json::from_str(&local_var_content).map_err(Error::from)
+		} else {
+			let local_var_entity: Option<UpdateOrganizationMembershipMetadataError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
 	}
 }
 
-/// Removes the given membership from the organization
-pub async fn delete_organization_membership(
-	clerk_configuration: &configuration::ClerkConfiguration,
-	organization_id: &str,
-	user_id: &str,
-) -> Result<crate::models::OrganizationMembership, Error<DeleteOrganizationMembershipError>> {
-	let local_var_configuration = clerk_configuration;
-
-	let local_var_client = &local_var_configuration.client;
-
-	let local_var_uri_str = format!(
-		"{}/organizations/{organization_id}/memberships/{user_id}",
-		local_var_configuration.base_path,
-		organization_id = crate::apis::urlencode(organization_id),
-		user_id = crate::apis::urlencode(user_id)
-	);
-	let mut local_var_req_builder = local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
-
-	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-	}
-
-	let local_var_req = local_var_req_builder.build()?;
-	let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-	let local_var_status = local_var_resp.status();
-	let local_var_content = local_var_resp.text().await?;
-
-	if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-		serde_json::from_str(&local_var_content).map_err(Error::from)
-	} else {
-		let local_var_entity: Option<DeleteOrganizationMembershipError> = serde_json::from_str(&local_var_content).ok();
-		let local_var_error = ResponseContent {
-			status: local_var_status,
-			content: local_var_content,
-			entity: local_var_entity,
-		};
-		Err(Error::ResponseError(local_var_error))
-	}
-}
-
-/// Retrieves all user memberships for the given organization
-pub async fn list_organization_memberships(
-	clerk_configuration: &configuration::ClerkConfiguration,
-	organization_id: &str,
-	limit: Option<f32>,
-	offset: Option<f32>,
-) -> Result<crate::models::OrganizationMemberships, Error<ListOrganizationMembershipsError>> {
-	let local_var_configuration = clerk_configuration;
-
-	let local_var_client = &local_var_configuration.client;
-
-	let local_var_uri_str = format!(
-		"{}/organizations/{organization_id}/memberships",
-		local_var_configuration.base_path,
-		organization_id = crate::apis::urlencode(organization_id)
-	);
-	let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
-
-	if let Some(ref local_var_str) = limit {
-		local_var_req_builder = local_var_req_builder.query(&[("limit", &local_var_str.to_string())]);
-	}
-	if let Some(ref local_var_str) = offset {
-		local_var_req_builder = local_var_req_builder.query(&[("offset", &local_var_str.to_string())]);
-	}
-	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-	}
-
-	let local_var_req = local_var_req_builder.build()?;
-	let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-	let local_var_status = local_var_resp.status();
-	let local_var_content = local_var_resp.text().await?;
-
-	if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-		serde_json::from_str(&local_var_content).map_err(Error::from)
-	} else {
-		let local_var_entity: Option<ListOrganizationMembershipsError> = serde_json::from_str(&local_var_content).ok();
-		let local_var_error = ResponseContent {
-			status: local_var_status,
-			content: local_var_content,
-			entity: local_var_entity,
-		};
-		Err(Error::ResponseError(local_var_error))
-	}
-}
-
-/// Updates the properties of an existing organization membership
-pub async fn update_organization_membership(
-	clerk_configuration: &configuration::ClerkConfiguration,
-	organization_id: &str,
-	user_id: &str,
-	update_organization_membership_request: crate::models::UpdateOrganizationMembershipRequest,
-) -> Result<crate::models::OrganizationMembership, Error<UpdateOrganizationMembershipError>> {
-	let local_var_configuration = clerk_configuration;
-
-	let local_var_client = &local_var_configuration.client;
-
-	let local_var_uri_str = format!(
-		"{}/organizations/{organization_id}/memberships/{user_id}",
-		local_var_configuration.base_path,
-		organization_id = crate::apis::urlencode(organization_id),
-		user_id = crate::apis::urlencode(user_id)
-	);
-	let mut local_var_req_builder = local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
-
-	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-	}
-
-	local_var_req_builder = local_var_req_builder.json(&update_organization_membership_request);
-
-	let local_var_req = local_var_req_builder.build()?;
-	let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-	let local_var_status = local_var_resp.status();
-	let local_var_content = local_var_resp.text().await?;
-
-	if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-		serde_json::from_str(&local_var_content).map_err(Error::from)
-	} else {
-		let local_var_entity: Option<UpdateOrganizationMembershipError> = serde_json::from_str(&local_var_content).ok();
-		let local_var_error = ResponseContent {
-			status: local_var_status,
-			content: local_var_content,
-			entity: local_var_entity,
-		};
-		Err(Error::ResponseError(local_var_error))
-	}
-}
-
-/// Update an organization membership's metadata attributes by merging existing values with the provided parameters. Metadata values will be updated via a deep merge. Deep means that any nested JSON objects will be merged as well. You can remove metadata keys at any level by setting their value to `null`.
-pub async fn update_organization_membership_metadata(
-	clerk_configuration: &configuration::ClerkConfiguration,
-	organization_id: &str,
-	user_id: &str,
-	update_organization_membership_metadata_request: crate::models::UpdateOrganizationMembershipMetadataRequest,
-) -> Result<crate::models::OrganizationMembership, Error<UpdateOrganizationMembershipMetadataError>> {
-	let local_var_configuration = clerk_configuration;
-
-	let local_var_client = &local_var_configuration.client;
-
-	let local_var_uri_str = format!(
-		"{}/organizations/{organization_id}/memberships/{user_id}/metadata",
-		local_var_configuration.base_path,
-		organization_id = crate::apis::urlencode(organization_id),
-		user_id = crate::apis::urlencode(user_id)
-	);
-	let mut local_var_req_builder = local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
-
-	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-	}
-
-	local_var_req_builder = local_var_req_builder.json(&update_organization_membership_metadata_request);
-
-	let local_var_req = local_var_req_builder.build()?;
-	let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-	let local_var_status = local_var_resp.status();
-	let local_var_content = local_var_resp.text().await?;
-
-	if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-		serde_json::from_str(&local_var_content).map_err(Error::from)
-	} else {
-		let local_var_entity: Option<UpdateOrganizationMembershipMetadataError> = serde_json::from_str(&local_var_content).ok();
-		let local_var_error = ResponseContent {
-			status: local_var_status,
-			content: local_var_content,
-			entity: local_var_entity,
-		};
-		Err(Error::ResponseError(local_var_error))
-	}
-}

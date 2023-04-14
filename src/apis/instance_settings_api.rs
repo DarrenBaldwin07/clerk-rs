@@ -37,113 +37,119 @@ pub enum UpdateInstanceRestrictionsError {
 	UnknownValue(serde_json::Value),
 }
 
-/// Updates the settings of an instance
-pub async fn update_instance(
-	clerk_configuration: &configuration::ClerkConfiguration,
-	update_instance_request: Option<crate::models::UpdateInstanceRequest>,
-) -> Result<(), Error<UpdateInstanceError>> {
-	let local_var_configuration = clerk_configuration;
 
-	let local_var_client = &local_var_configuration.client;
+pub struct InstanceSettings;
 
-	let local_var_uri_str = format!("{}/instance", local_var_configuration.base_path);
-	let mut local_var_req_builder = local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
+impl InstanceSettings {
+	/// Updates the settings of an instance
+	pub async fn update_instance(
+		clerk_configuration: &configuration::ClerkConfiguration,
+		update_instance_request: Option<crate::models::UpdateInstanceRequest>,
+	) -> Result<(), Error<UpdateInstanceError>> {
+		let local_var_configuration = clerk_configuration;
 
-	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		let local_var_client = &local_var_configuration.client;
+
+		let local_var_uri_str = format!("{}/instance", local_var_configuration.base_path);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
+
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
+
+		local_var_req_builder = local_var_req_builder.json(&update_instance_request);
+
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
+
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			Ok(())
+		} else {
+			let local_var_entity: Option<UpdateInstanceError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
 	}
 
-	local_var_req_builder = local_var_req_builder.json(&update_instance_request);
+	/// Updates the organization settings of the instance
+	pub async fn update_instance_organization_settings(
+		clerk_configuration: &configuration::ClerkConfiguration,
+		update_instance_organization_settings_request: Option<crate::models::UpdateInstanceOrganizationSettingsRequest>,
+	) -> Result<crate::models::OrganizationSettings, Error<UpdateInstanceOrganizationSettingsError>> {
+		let local_var_configuration = clerk_configuration;
 
-	let local_var_req = local_var_req_builder.build()?;
-	let local_var_resp = local_var_client.execute(local_var_req).await?;
+		let local_var_client = &local_var_configuration.client;
 
-	let local_var_status = local_var_resp.status();
-	let local_var_content = local_var_resp.text().await?;
+		let local_var_uri_str = format!("{}/instance/organization_settings", local_var_configuration.base_path);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
 
-	if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-		Ok(())
-	} else {
-		let local_var_entity: Option<UpdateInstanceError> = serde_json::from_str(&local_var_content).ok();
-		let local_var_error = ResponseContent {
-			status: local_var_status,
-			content: local_var_content,
-			entity: local_var_entity,
-		};
-		Err(Error::ResponseError(local_var_error))
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
+
+		local_var_req_builder = local_var_req_builder.json(&update_instance_organization_settings_request);
+
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
+
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			serde_json::from_str(&local_var_content).map_err(Error::from)
+		} else {
+			let local_var_entity: Option<UpdateInstanceOrganizationSettingsError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
+	}
+
+	/// Updates the restriction settings of an instance
+	pub async fn update_instance_restrictions(
+		clerk_configuration: &configuration::ClerkConfiguration,
+		update_instance_restrictions_request: Option<crate::models::UpdateInstanceRestrictionsRequest>,
+	) -> Result<crate::models::InstanceRestrictions, Error<UpdateInstanceRestrictionsError>> {
+		let local_var_configuration = clerk_configuration;
+
+		let local_var_client = &local_var_configuration.client;
+
+		let local_var_uri_str = format!("{}/instance/restrictions", local_var_configuration.base_path);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
+
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
+
+		local_var_req_builder = local_var_req_builder.json(&update_instance_restrictions_request);
+
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
+
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			serde_json::from_str(&local_var_content).map_err(Error::from)
+		} else {
+			let local_var_entity: Option<UpdateInstanceRestrictionsError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
 	}
 }
 
-/// Updates the organization settings of the instance
-pub async fn update_instance_organization_settings(
-	clerk_configuration: &configuration::ClerkConfiguration,
-	update_instance_organization_settings_request: Option<crate::models::UpdateInstanceOrganizationSettingsRequest>,
-) -> Result<crate::models::OrganizationSettings, Error<UpdateInstanceOrganizationSettingsError>> {
-	let local_var_configuration = clerk_configuration;
-
-	let local_var_client = &local_var_configuration.client;
-
-	let local_var_uri_str = format!("{}/instance/organization_settings", local_var_configuration.base_path);
-	let mut local_var_req_builder = local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
-
-	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-	}
-
-	local_var_req_builder = local_var_req_builder.json(&update_instance_organization_settings_request);
-
-	let local_var_req = local_var_req_builder.build()?;
-	let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-	let local_var_status = local_var_resp.status();
-	let local_var_content = local_var_resp.text().await?;
-
-	if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-		serde_json::from_str(&local_var_content).map_err(Error::from)
-	} else {
-		let local_var_entity: Option<UpdateInstanceOrganizationSettingsError> = serde_json::from_str(&local_var_content).ok();
-		let local_var_error = ResponseContent {
-			status: local_var_status,
-			content: local_var_content,
-			entity: local_var_entity,
-		};
-		Err(Error::ResponseError(local_var_error))
-	}
-}
-
-/// Updates the restriction settings of an instance
-pub async fn update_instance_restrictions(
-	clerk_configuration: &configuration::ClerkConfiguration,
-	update_instance_restrictions_request: Option<crate::models::UpdateInstanceRestrictionsRequest>,
-) -> Result<crate::models::InstanceRestrictions, Error<UpdateInstanceRestrictionsError>> {
-	let local_var_configuration = clerk_configuration;
-
-	let local_var_client = &local_var_configuration.client;
-
-	let local_var_uri_str = format!("{}/instance/restrictions", local_var_configuration.base_path);
-	let mut local_var_req_builder = local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
-
-	if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-		local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-	}
-
-	local_var_req_builder = local_var_req_builder.json(&update_instance_restrictions_request);
-
-	let local_var_req = local_var_req_builder.build()?;
-	let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-	let local_var_status = local_var_resp.status();
-	let local_var_content = local_var_resp.text().await?;
-
-	if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-		serde_json::from_str(&local_var_content).map_err(Error::from)
-	} else {
-		let local_var_entity: Option<UpdateInstanceRestrictionsError> = serde_json::from_str(&local_var_content).ok();
-		let local_var_error = ResponseContent {
-			status: local_var_status,
-			content: local_var_content,
-			entity: local_var_entity,
-		};
-		Err(Error::ResponseError(local_var_error))
-	}
-}
