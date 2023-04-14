@@ -43,4 +43,4 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 </br>
 
-[![name](https://user-images.githubusercontent.com/68653294/232106249-fcb88fc1-c6cb-4c07-902d-7f8bed8444a0.svg)](https://cincinnati.ventures)
+[![name](https://user-images.githubusercontent.com/68653294/232151991-265606f7-e31c-4c0e-8659-4e339a0b99a0.svg)](https://cincinnati.ventures)
