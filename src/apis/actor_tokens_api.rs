@@ -32,7 +32,7 @@ pub enum RevokeActorTokenError {
 	UnknownValue(serde_json::Value),
 }
 
-pub struct ActorToken {}
+pub struct ActorToken;
 
 impl ActorToken {
 	/// Create an actor token that can be used to impersonate the given user.

@@ -69,6 +69,8 @@ pub enum ListBlocklistIdentifiersError {
 	UnknownValue(serde_json::Value),
 }
 
+pub struct ListIdentifier;
+
 /// Create an identifier allowed to sign up to an instance
 pub async fn create_allowlist_identifier(
 	clerk_configuration: &configuration::ClerkConfiguration,

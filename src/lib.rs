@@ -11,3 +11,4 @@ pub mod clerk;
 pub mod endpoints;
 pub mod models;
 pub(crate) mod util;
+pub use apis::configuration::ClerkConfiguration;
