@@ -8,6 +8,5 @@ A unofficial clerk.dev SDK. For more detailed documentation, please reference th
  - [ ] Tokio and async-std async runtimes for hyper clients
 
 </br>
-</br>
 
 [![name](https://user-images.githubusercontent.com/68653294/232106249-fcb88fc1-c6cb-4c07-902d-7f8bed8444a0.svg)](https://cincinnati.ventures)
