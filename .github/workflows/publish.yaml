@@ -2,8 +2,8 @@ name: Publish crate to crates.io
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+' # We only want to publish when a tag is pushed
 
 jobs:
   publish-clerk:

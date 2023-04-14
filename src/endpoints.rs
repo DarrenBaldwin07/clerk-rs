@@ -83,7 +83,7 @@ pub enum ClerkDynamicPatchEndpoint {
 	UpdateEmailAddress,
 	UpdateJwtTemplate,
 	UpdateOrganizationMembershipMetadata,
-	MergOrganizationMetadata,
+	MergeOrganizationMetadata,
 	UpdateOrganizationMembership,
 	UpdateOrganization,
 	UpdatePhoneNumber,
@@ -159,7 +159,7 @@ impl ClerkGetEndpoint {
 			ClerkGetEndpoint::GetClientList => String::from("/clients"),
 			ClerkGetEndpoint::ListInvitations => String::from("/invitations"),
 			ClerkGetEndpoint::ListJwtTemplates => String::from("/jwt_templates"),
-			ClerkGetEndpoint::GetPublicInterstitial => String::from("/public_interstitial"),
+			ClerkGetEndpoint::GetPublicInterstitial => String::from("/public/interstitial"),
 			ClerkGetEndpoint::ListOrganizations => String::from("/organizations"),
 			ClerkGetEndpoint::ListRedirectUrls => String::from("/redirect_urls"),
 			ClerkGetEndpoint::GetSessionList => String::from("/sessions"),
@@ -229,20 +229,20 @@ impl ClerkDynamicGetEndpoint {
 		match self {
 			ClerkDynamicGetEndpoint::GetOrganization => String::from("/organizations/{organization_id}"),
 			ClerkDynamicGetEndpoint::GetPhoneNumber => String::from("/phone_numbers/{phone_number_id}"),
-			ClerkDynamicGetEndpoint::GetRedirectUrl => String::from("/redirect_urls/{redirect_url_id}"),
+			ClerkDynamicGetEndpoint::GetRedirectUrl => String::from("/redirect_urls/{id}"),
 			ClerkDynamicGetEndpoint::GetSession => String::from("/sessions/{session_id}"),
 			ClerkDynamicGetEndpoint::GetUser => String::from("/users/{user_id}"),
 			ClerkDynamicGetEndpoint::GetClient => String::from("/clients/{client_id}"),
 			ClerkDynamicGetEndpoint::GetJwks => String::from("/jwks"),
 			ClerkDynamicGetEndpoint::ListOrganizationMemberships => String::from("/organizations/{organization_id}/memberships"),
-			ClerkDynamicGetEndpoint::ListPendingOrganizationInvitations => String::from("/organizations/{organization_id}/pending_invitations"),
+			ClerkDynamicGetEndpoint::ListPendingOrganizationInvitations => String::from("/organizations/{organization_id}/invitations/pending"),
 			ClerkDynamicGetEndpoint::GetClientLastActiveSession => String::from("/clients/{client_id}/last_active_session"),
 			ClerkDynamicGetEndpoint::GetEmailAddress => String::from("/email_addresses/{email_address_id}"),
-			ClerkDynamicGetEndpoint::GetTemplate => String::from("/templates/{template_id}"),
-			ClerkDynamicGetEndpoint::GetTemplateList => String::from("/templates"),
+			ClerkDynamicGetEndpoint::GetTemplate => String::from("/templates/{template_type}/{slug}"),
+			ClerkDynamicGetEndpoint::GetTemplateList => String::from("/templates/{template_type}"),
 			ClerkDynamicGetEndpoint::GetJwtTemplate => String::from("/jwt_templates/{jwt_template_id}"),
-			ClerkDynamicGetEndpoint::GetOAuthAccessToken => String::from("/oauth/access_tokens/{access_token_id}"),
-			ClerkDynamicGetEndpoint::UsersGetOrganizationMemberships => String::from("/users/{user_id}/memberships"),
+			ClerkDynamicGetEndpoint::GetOAuthAccessToken => String::from("/users/{user_id}/oauth_access_tokens/{provider}"),
+			ClerkDynamicGetEndpoint::UsersGetOrganizationMemberships => String::from("/users/{user_id}/organization_memberships"),
 		}
 	}
 }
@@ -254,14 +254,14 @@ impl ClerkDynamicPostEndpoint {
 			ClerkDynamicPostEndpoint::CreateOrganizationMembership => String::from("/organizations/{organization_id}/memberships"),
 			ClerkDynamicPostEndpoint::CreateOrganizationInvitation => String::from("/organizations/{organization_id}/invitations"),
 			ClerkDynamicPostEndpoint::RevokeActorToken => String::from("/actor_tokens/{actor_token_id}/revoke"),
-			ClerkDynamicPostEndpoint::DeleteBlocklistIdentifier => String::from("/blocklist_identifiers/{blocklist_identifier_id}"),
-			ClerkDynamicPostEndpoint::PreviewTemplate => String::from("/templates/{template_id}/preview"),
-			ClerkDynamicPostEndpoint::RevertTemplate => String::from("/templates/{template_id}/revert"),
+			ClerkDynamicPostEndpoint::DeleteBlocklistIdentifier => String::from("/blocklist_identifiers/{identifier_id}"),
+			ClerkDynamicPostEndpoint::PreviewTemplate => String::from("/templates/{template_type}/{slug}/preview"),
+			ClerkDynamicPostEndpoint::RevertTemplate => String::from("/templates/{template_type}/{slug}/revert"),
 			ClerkDynamicPostEndpoint::RevokeInvitation => String::from("/invitations/{invitation_id}/revoke"),
 			ClerkDynamicPostEndpoint::RevokeOrganizationInvitation => {
 				String::from("/organizations/{organization_id}/invitations/{invitation_id}/revoke")
 			}
-			ClerkDynamicPostEndpoint::CreateSessionTokenFromTemplate => String::from("/templates/{template_id}/session_tokens"),
+			ClerkDynamicPostEndpoint::CreateSessionTokenFromTemplate => String::from("/sessions/{session_id}/tokens/{template_name}"),
 			ClerkDynamicPostEndpoint::RevokeSession => String::from("/sessions/{session_id}/revoke"),
 			ClerkDynamicPostEndpoint::VerifySession => String::from("/sessions/{session_id}/verify"),
 			ClerkDynamicPostEndpoint::RevokeSignInToken => String::from("/sign_in_tokens/{sign_in_token_id}/revoke"),
@@ -278,13 +278,13 @@ impl ClerkDynamicDeleteEndpoint {
 	pub fn to_string(&self) -> String {
 		match self {
 			ClerkDynamicDeleteEndpoint::DeleteOrganization => String::from("/organizations/{organization_id}"),
-			ClerkDynamicDeleteEndpoint::DeleteOrganizationMembership => String::from("/organizations/{organization_id}/memberships/{membership_id}"),
+			ClerkDynamicDeleteEndpoint::DeleteOrganizationMembership => String::from("/organizations/{organization_id}/memberships/{user_id}"),
 			ClerkDynamicDeleteEndpoint::DeletePhoneNumber => String::from("/phone_numbers/{phone_number_id}"),
-			ClerkDynamicDeleteEndpoint::DeleteRedirectUrl => String::from("/redirect_urls/{redirect_url_id}"),
+			ClerkDynamicDeleteEndpoint::DeleteRedirectUrl => String::from("/redirect_urls/{id}"),
 			ClerkDynamicDeleteEndpoint::DeleteUser => String::from("/users/{user_id}"),
 			ClerkDynamicDeleteEndpoint::DeleteEmailAddress => String::from("/email_addresses/{email_address_id}"),
 			ClerkDynamicDeleteEndpoint::DeleteJwtTemplate => String::from("/jwt_templates/{jwt_template_id}"),
-			ClerkDynamicDeleteEndpoint::DeleteAllowlistIdentifier => String::from("/allowlist_identifiers/{allowlist_identifier_id}"),
+			ClerkDynamicDeleteEndpoint::DeleteAllowlistIdentifier => String::from("/allowlist_identifiers/{identifier_id}"),
 			ClerkDynamicDeleteEndpoint::DisableMfa => String::from("/users/{user_id}/disable_mfa"),
 		}
 	}
@@ -295,7 +295,7 @@ impl ClerkDynamicPutEndpoint {
 	pub fn to_string(&self) -> String {
 		match self {
 			ClerkDynamicPutEndpoint::UploadOrganizationLogo => String::from("/organizations/{organization_id}/logo"),
-			ClerkDynamicPutEndpoint::UpsertTemplate => String::from("/templates/{template_id}"),
+			ClerkDynamicPutEndpoint::UpsertTemplate => String::from("/templates/{template_type}/{slug}"),
 		}
 	}
 }
@@ -305,16 +305,16 @@ impl ClerkDynamicPatchEndpoint {
 	pub fn to_string(&self) -> String {
 		match self {
 			ClerkDynamicPatchEndpoint::UpdateOrganization => String::from("/organizations/{organization_id}"),
-			ClerkDynamicPatchEndpoint::UpdateOrganizationMembership => String::from("/organizations/{organization_id}/memberships/{membership_id}"),
+			ClerkDynamicPatchEndpoint::UpdateOrganizationMembership => String::from("/organizations/{organization_id}/memberships/{user_id}"),
 			ClerkDynamicPatchEndpoint::UpdatePhoneNumber => String::from("/phone_numbers/{phone_number_id}"),
 			ClerkDynamicPatchEndpoint::UpdateUser => String::from("/users/{user_id}"),
 			ClerkDynamicPatchEndpoint::UpdateEmailAddress => String::from("/email_addresses/{email_address_id}"),
 			ClerkDynamicPatchEndpoint::UpdateJwtTemplate => String::from("/jwt_templates/{jwt_template_id}"),
-			ClerkDynamicPatchEndpoint::MergOrganizationMetadata => String::from("/organizations/{organization_id}/metadata"),
+			ClerkDynamicPatchEndpoint::MergeOrganizationMetadata => String::from("/organizations/{organization_id}/metadata"),
 			ClerkDynamicPatchEndpoint::UpdateOrganizationMembershipMetadata => {
-				String::from("/organizations/{organization_id}/memberships/{membership_id}/metadata")
+				String::from("/organizations/{organization_id}/memberships/{user_id}/metadata")
 			}
-			ClerkDynamicPatchEndpoint::UpdateSignUp => String::from("/sign_ups/{sign_up_id}"),
+			ClerkDynamicPatchEndpoint::UpdateSignUp => String::from("/sign_ups/{id}"),
 			ClerkDynamicPatchEndpoint::UpdateUserMetadata => String::from("/users/{user_id}/metadata"),
 		}
 	}
