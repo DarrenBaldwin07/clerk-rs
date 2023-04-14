@@ -4,6 +4,7 @@
 A unofficial clerk.dev SDK. For more detailed documentation, please reference the clerk docs: https://clerk.com/docs/reference/backend-api
 
 ## Example
+> More examples in a `/examples` directory coming soon...
 
 ### Using a traditional http request to a valid clerk endpoint:
 ```rust
@@ -21,7 +22,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-### Using a clerk-rs method
+### Using a clerk-rs method:
 ```rust
 use tokio;
 use clerk_rs::{clerk::Clerk, ClerkConfiguration, endpoints::ClerkGetEndpoint, apis::emails_api::Email};
