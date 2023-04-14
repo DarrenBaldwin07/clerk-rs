@@ -13,6 +13,14 @@ pub const USER_AGENT: &str = concat!("Clerk/v1 RustBindings/", env!("CARGO_PKG_V
  *
  * Please refer to the clerk.dev official documentation for more information: https://docs.clerk.dev
  *
+ * # Examples
+ * ```
+ * use clerk_rs::Clerk;
+ * use clerk_rs::apis::configuration::ClerkConfiguration;
+ *
+ *
+ * ```
+ *
  * NOTE: This SDK is based on the official clerk openAPI spec found here: https://clerk.com/docs/reference/backend-api
  */
 pub struct Clerk {
@@ -88,4 +96,6 @@ impl Clerk {
 			Err(e) => Err(e),
 		}
 	}
+
+	// TODO: support methods for all http methods but with dynamic params
 }
