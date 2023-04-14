@@ -9,130 +9,142 @@
  */
 use reqwest;
 
-use crate::apis::ResponseContent;
-use super::{Error, configuration};
-
+use super::Error;
+use crate::{apis::ResponseContent, clerk::Clerk};
 
 /// struct for typed errors of method [`create_invitation`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum CreateInvitationError {
-    Status400(crate::models::ClerkErrors),
-    Status422(crate::models::ClerkErrors),
-    UnknownValue(serde_json::Value),
+	Status400(crate::models::ClerkErrors),
+	Status422(crate::models::ClerkErrors),
+	UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`list_invitations`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ListInvitationsError {
-    UnknownValue(serde_json::Value),
+	UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`revoke_invitation`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum RevokeInvitationError {
-    Status400(crate::models::ClerkErrors),
-    Status404(crate::models::ClerkErrors),
-    UnknownValue(serde_json::Value),
+	Status400(crate::models::ClerkErrors),
+	Status404(crate::models::ClerkErrors),
+	UnknownValue(serde_json::Value),
 }
 
+pub struct Invitation;
 
-/// Creates a new invitation for the given email address and sends the invitation email. Keep in mind that you cannot create an invitation if there is already one for the given email address. Also, trying to create an invitation for an email address that already exists in your application will result to an error.
-pub async fn create_invitation(configuration: &configuration::Configuration, create_invitation_request: Option<crate::models::CreateInvitationRequest>) -> Result<crate::models::Invitation, Error<CreateInvitationError>> {
-    let local_var_configuration = configuration;
+impl Invitation {
+	/// Creates a new invitation for the given email address and sends the invitation email. Keep in mind that you cannot create an invitation if there is already one for the given email address. Also, trying to create an invitation for an email address that already exists in your application will result to an error.
+	pub async fn create_invitation(
+		clerk_client: &Clerk,
+		create_invitation_request: Option<crate::models::CreateInvitationRequest>,
+	) -> Result<crate::models::Invitation, Error<CreateInvitationError>> {
+		let local_var_configuration = &clerk_client.config;
 
-    let local_var_client = &local_var_configuration.client;
+		let local_var_client = &local_var_configuration.client;
 
-    let local_var_uri_str = format!("{}/invitations", local_var_configuration.base_path);
-    let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+		let local_var_uri_str = format!("{}/invitations", local_var_configuration.base_path);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
 
-    if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_token) = local_var_configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
-    local_var_req_builder = local_var_req_builder.json(&create_invitation_request);
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
 
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
+		local_var_req_builder = local_var_req_builder.json(&create_invitation_request);
 
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
 
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<CreateInvitationError> = serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
-        Err(Error::ResponseError(local_var_error))
-    }
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
+
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			serde_json::from_str(&local_var_content).map_err(Error::from)
+		} else {
+			let local_var_entity: Option<CreateInvitationError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
+	}
+
+	/// Returns all non-revoked invitations for your application, sorted by creation date
+	pub async fn list_invitations(clerk_client: &Clerk, status: Option<&str>) -> Result<Vec<crate::models::Invitation>, Error<ListInvitationsError>> {
+		let local_var_configuration = &clerk_client.config;
+
+		let local_var_client = &local_var_configuration.client;
+
+		let local_var_uri_str = format!("{}/invitations", local_var_configuration.base_path);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+		if let Some(ref local_var_str) = status {
+			local_var_req_builder = local_var_req_builder.query(&[("status", &local_var_str.to_string())]);
+		}
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
+
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
+
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			serde_json::from_str(&local_var_content).map_err(Error::from)
+		} else {
+			let local_var_entity: Option<ListInvitationsError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
+	}
+
+	/// Revokes the given invitation. Revoking an invitation will prevent the user from using the invitation link that was sent to them. However, it doesn't prevent the user from signing up if they follow the sign up flow. Only active (i.e. non-revoked) invitations can be revoked.
+	pub async fn revoke_invitation(clerk_client: &Clerk, invitation_id: &str) -> Result<crate::models::Invitation, Error<RevokeInvitationError>> {
+		let local_var_configuration = &clerk_client.config;
+
+		let local_var_client = &local_var_configuration.client;
+
+		let local_var_uri_str = format!(
+			"{}/invitations/{invitation_id}/revoke",
+			local_var_configuration.base_path,
+			invitation_id = crate::apis::urlencode(invitation_id)
+		);
+		let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		}
+
+		let local_var_req = local_var_req_builder.build()?;
+		let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+		let local_var_status = local_var_resp.status();
+		let local_var_content = local_var_resp.text().await?;
+
+		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+			serde_json::from_str(&local_var_content).map_err(Error::from)
+		} else {
+			let local_var_entity: Option<RevokeInvitationError> = serde_json::from_str(&local_var_content).ok();
+			let local_var_error = ResponseContent {
+				status: local_var_status,
+				content: local_var_content,
+				entity: local_var_entity,
+			};
+			Err(Error::ResponseError(local_var_error))
+		}
+	}
 }
-
-/// Returns all non-revoked invitations for your application, sorted by creation date
-pub async fn list_invitations(configuration: &configuration::Configuration, status: Option<&str>) -> Result<Vec<crate::models::Invitation>, Error<ListInvitationsError>> {
-    let local_var_configuration = configuration;
-
-    let local_var_client = &local_var_configuration.client;
-
-    let local_var_uri_str = format!("{}/invitations", local_var_configuration.base_path);
-    let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_str) = status {
-        local_var_req_builder = local_var_req_builder.query(&[("status", &local_var_str.to_string())]);
-    }
-    if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_token) = local_var_configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<ListInvitationsError> = serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
-/// Revokes the given invitation. Revoking an invitation will prevent the user from using the invitation link that was sent to them. However, it doesn't prevent the user from signing up if they follow the sign up flow. Only active (i.e. non-revoked) invitations can be revoked.
-pub async fn revoke_invitation(configuration: &configuration::Configuration, invitation_id: &str) -> Result<crate::models::Invitation, Error<RevokeInvitationError>> {
-    let local_var_configuration = configuration;
-
-    let local_var_client = &local_var_configuration.client;
-
-    let local_var_uri_str = format!("{}/invitations/{invitation_id}/revoke", local_var_configuration.base_path, invitation_id=crate::apis::urlencode(invitation_id));
-    let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_token) = local_var_configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<RevokeInvitationError> = serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
