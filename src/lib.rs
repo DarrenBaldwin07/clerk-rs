@@ -10,3 +10,4 @@ pub mod apis;
 pub mod clerk;
 pub mod endpoints;
 pub mod models;
+pub(crate) mod util;
