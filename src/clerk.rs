@@ -97,5 +97,9 @@ impl Clerk {
 		}
 	}
 
+	pub async fn get_with_params() {
+
+	}
+
 	// TODO: support methods for all http methods but with dynamic params
 }
