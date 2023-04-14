@@ -4,7 +4,34 @@
 A unofficial clerk.dev SDK. For more detailed documentation, please reference the clerk docs: https://clerk.com/docs/reference/backend-api
 
 ## Example
-> Coming soon...
+
+### Using a traditional http request to a valid clerk endpoint:
+```rust
+use tokio;
+use clerk_rs::{clerk::Clerk, ClerkConfiguration, endpoints::ClerkGetEndpoint};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+    let client = Clerk::new(config);
+
+    let res = client.get(ClerkGetEndpoint::GetUserList).await?;
+
+    Ok(())
+}
+```
+
+### Using a clerk-rs method
+```rust
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+    let client = Clerk::new(config);
+
+    Email::create(&client, Some(your_clerk_email));
+
+    Ok(())
+}
+```
 
 ## Roadmap
  - [ ] Support other http clients along with the default reqwest client (like hyper)
