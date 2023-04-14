@@ -1,7 +1,7 @@
 use regex::Regex;
 
 /// Method for converting a dynamic query string (ex: /getUser/{id}) and converting it to something like: "/getUser/1741897489174891"
-pub fn generate_path_from_params(route_path: String, params: Vec<String>) -> String {
+pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> String {
     let dynamic_regex = Regex::new(r"\{[^\{\}]*\}").unwrap();
     let mut matches: Vec<String> = Vec::new();
     let mut new_route_path = route_path;

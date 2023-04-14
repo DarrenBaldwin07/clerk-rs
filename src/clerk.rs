@@ -1,6 +1,7 @@
 use crate::{
 	apis::configuration,
-	endpoints::{ClerkDeleteEndpoint, ClerkGetEndpoint, ClerkPostEndpoint, ClerkPutEndpoint},
+	endpoints::{ClerkDeleteEndpoint, ClerkGetEndpoint, ClerkPostEndpoint, ClerkPutEndpoint, ClerkDynamicGetEndpoint},
+	util::generate_path_from_params
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -97,8 +98,112 @@ impl Clerk {
 		}
 	}
 
-	pub async fn get_with_params() {
+	/// Make a PUT request to the specified Clerk API endpoint
+	pub async fn patch<'a, T: Serialize + Deserialize<'a>>(
+		&self,
+		endpoint: ClerkPutEndpoint,
+		body: T,
+	) -> Result<serde_json::value::Value, reqwest::Error> {
+		let parsed_endpoint = endpoint.to_string();
+		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
+		match self.config.client.patch(&url).json(&body).send().await {
+			Ok(response) => match response.json::<Value>().await {
+				Ok(user) => Ok(user),
+				Err(e) => Err(e),
+			},
+			Err(e) => Err(e),
+		}
+	}
+
+	pub async fn get_with_params(&self, endpoint: ClerkDynamicGetEndpoint, params: Vec<&str>) -> Result<serde_json::value::Value, reqwest::Error>  {
+		let parsed_endpoint = endpoint.to_string();
+		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
+		let url_with_params = generate_path_from_params(url, params);
+
+		match self.config.client.get(&url_with_params).send().await {
+			Ok(response) => match response.json::<Value>().await {
+				Ok(user) => Ok(user),
+				Err(e) => Err(e),
+			},
+			Err(e) => Err(e),
+		}
+	}
+
+	/// Make a POST request to the specified Clerk API endpoint
+	pub async fn post_with_params<'a, T: Serialize + Deserialize<'a>>(
+		&self,
+		endpoint: ClerkPostEndpoint,
+		body: T,
+		params: Vec<&str>
+	) -> Result<serde_json::value::Value, reqwest::Error> {
+		let parsed_endpoint = endpoint.to_string();
+		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
+		let url_with_params = generate_path_from_params(url, params);
+
+		match self.config.client.post(&url_with_params).json(&body).send().await {
+			Ok(response) => match response.json::<Value>().await {
+				Ok(user) => Ok(user),
+				Err(e) => Err(e),
+			},
+			Err(e) => Err(e),
+		}
+	}
+
+
+	/// Make a DELETE request to the specified Clerk API endpoint
+	pub async fn delete_with_params(&self, endpoint: ClerkDeleteEndpoint, params: Vec<&str>) -> Result<serde_json::value::Value, reqwest::Error> {
+		let parsed_endpoint = endpoint.to_string();
+		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
+		let url_with_params = generate_path_from_params(url, params);
+
+		match self.config.client.delete(&url_with_params).send().await {
+			Ok(response) => match response.json::<Value>().await {
+				Ok(user) => Ok(user),
+				Err(e) => Err(e),
+			},
+			Err(e) => Err(e),
+		}
+	}
+
+	/// Make a PUT request to the specified Clerk API endpoint
+	pub async fn put_with_params<'a, T: Serialize + Deserialize<'a>>(
+		&self,
+		endpoint: ClerkPutEndpoint,
+		body: T,
+		params: Vec<&str>
+	) -> Result<serde_json::value::Value, reqwest::Error> {
+		let parsed_endpoint = endpoint.to_string();
+		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
+		let url_with_params = generate_path_from_params(url, params);
+
+		match self.config.client.put(&url_with_params).json(&body).send().await {
+			Ok(response) => match response.json::<Value>().await {
+				Ok(user) => Ok(user),
+				Err(e) => Err(e),
+			},
+			Err(e) => Err(e),
+		}
+	}
+
+	/// Make a PUT request to the specified Clerk API endpoint
+	pub async fn patch_with_params<'a, T: Serialize + Deserialize<'a>>(
+		&self,
+		endpoint: ClerkPutEndpoint,
+		body: T,
+		params: Vec<&str>
+	) -> Result<serde_json::value::Value, reqwest::Error> {
+		let parsed_endpoint = endpoint.to_string();
+		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
+		let url_with_params = generate_path_from_params(url, params);
+
+		match self.config.client.patch(&url_with_params).json(&body).send().await {
+			Ok(response) => match response.json::<Value>().await {
+				Ok(user) => Ok(user),
+				Err(e) => Err(e),
+			},
+			Err(e) => Err(e),
+		}
 	}
 
 	// TODO: support methods for all http methods but with dynamic params
