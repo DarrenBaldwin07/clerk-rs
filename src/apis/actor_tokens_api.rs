@@ -36,7 +36,7 @@ pub struct ActorToken {}
 
 impl ActorToken {
 	/// Create an actor token that can be used to impersonate the given user.
-	pub async fn create_actor_token(
+	pub async fn create(
 		clerk_client: &Clerk,
 		create_actor_token_request: Option<crate::models::CreateActorTokenRequest>,
 	) -> Result<crate::models::ActorToken, Error<CreateActorTokenError>> {
@@ -72,7 +72,7 @@ impl ActorToken {
 	}
 
 	/// Revokes a pending actor token.
-	pub async fn revoke_actor_token(clerk_client: &Clerk, actor_token_id: &str) -> Result<crate::models::ActorToken, Error<RevokeActorTokenError>> {
+	pub async fn revoke(clerk_client: &Clerk, actor_token_id: &str) -> Result<crate::models::ActorToken, Error<RevokeActorTokenError>> {
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
