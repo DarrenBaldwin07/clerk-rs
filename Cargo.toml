@@ -9,14 +9,32 @@ keywords = ["clerk", "auth", "sdk"]
 license = "MIT"
 edition = "2021"
 
+[[example]]
+name = "http"
+path = "examples/http.rs"
+
+[[example]]
+name = "api"
+path = "examples/api.rs"
+
+[[example]]
+name = "actix"
+path = "examples/actix.rs"
+
 [dependencies]
-serde = "^1.0"
+serde = { version = "1.0", features = ["derive"] }
 serde_derive = "^1.0"
 serde_with = "^2.0"
 serde_json = "^1.0"
 url = "^2.2"
-uuid = { version = "^1.0", features = ["serde"] }
 regex = "1.7.3"
+jsonwebtoken = "8.3.0"
+actix-web = "4.3.1"
+futures-util = "0.3.28"
 [dependencies.reqwest]
 version = "^0.11"
 features = ["json", "multipart"]
+
+[dev-dependencies]
+clerk-rs = { path = "../clerk-rs" }
+tokio = { version = "1.27.0", features = ["full"] }

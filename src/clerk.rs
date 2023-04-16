@@ -120,6 +120,7 @@ impl Clerk {
 		}
 	}
 
+	/// Make a GET request with params to the specified Clerk API endpoint
 	pub async fn get_with_params(&self, endpoint: ClerkDynamicGetEndpoint, params: Vec<&str>) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.to_string();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
@@ -134,7 +135,7 @@ impl Clerk {
 		}
 	}
 
-	/// Make a POST request to the specified Clerk API endpoint
+	/// Make a POST request with params to the specified Clerk API endpoint
 	pub async fn post_with_params<'a, T: Serialize + Deserialize<'a>>(
 		&self,
 		endpoint: ClerkPostEndpoint,
@@ -154,7 +155,7 @@ impl Clerk {
 		}
 	}
 
-	/// Make a DELETE request to the specified Clerk API endpoint
+	/// Make a DELETE request with params to the specified Clerk API endpoint
 	pub async fn delete_with_params(&self, endpoint: ClerkDeleteEndpoint, params: Vec<&str>) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.to_string();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
@@ -169,7 +170,7 @@ impl Clerk {
 		}
 	}
 
-	/// Make a PUT request to the specified Clerk API endpoint
+	/// Make a PUT request with params to the specified Clerk API endpoint
 	pub async fn put_with_params<'a, T: Serialize + Deserialize<'a>>(
 		&self,
 		endpoint: ClerkPutEndpoint,
@@ -189,7 +190,7 @@ impl Clerk {
 		}
 	}
 
-	/// Make a PUT request to the specified Clerk API endpoint
+	/// Make a PUT request with params to the specified Clerk API endpoint
 	pub async fn patch_with_params<'a, T: Serialize + Deserialize<'a>>(
 		&self,
 		endpoint: ClerkPutEndpoint,
