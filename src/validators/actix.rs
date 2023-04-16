@@ -1,6 +1,5 @@
-use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation, decode_header};
-use actix_web::{HttpResponse,  body::EitherBody, dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform,},
-Error, http::header::HeaderValue,};
+use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation, decode_header, Header, errors::Error as jwtError};
+use actix_web::{HttpResponse,  body::EitherBody, dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform,}, http::header::HeaderValue, error::Error};
 use std::{future::{ready, Ready}, rc::Rc};
 use crate::{clerk::Clerk, apis::jwks_api::{JwksModel, Jwks}, ClerkConfiguration};
 use futures_util::future::LocalBoxFuture;
@@ -18,17 +17,23 @@ pub struct ClerkJwt {
 
 
 /// Extract token kid from a jwt passed as header to an actix-web endpoint
-pub fn token_kid(jwt: String) -> String {
-    let header = decode_header(&jwt).expect("Error: could not parse token kid!");
-    header.kid.expect("Error: Token doesn't have a `kid` header field!")
+pub fn token_kid(jwt: String) -> Result<Header, jwtError> {
+    let header = decode_header(&jwt);
+    header
 }
 
 /// Validate a jwt using a jwks set
 pub fn validate_jwt(token: &str, jwks: JwksModel) -> bool {
     let parsed_jwt = token.replace("Bearer ", "");
-    let kid = token_kid(parsed_jwt.to_owned());
+    // If we were not able to parse the kid field we want to output an invalid case...
+    let kid = match token_kid(parsed_jwt.to_owned()) {
+        Ok(val) => val.kid,
+        Err(_) => {
+            return false;
+        }
+    };
 
-    let jwk = jwks.keys.iter().find(|k| k.kid == kid);
+    let jwk = jwks.keys.iter().find(|k| &k.kid == kid.as_ref().unwrap());
 
     // Check to see if we found a valid jwk key with the token kid
     if let Some(j) = jwk {
@@ -81,6 +86,14 @@ pub fn parse_cookies(req: &ServiceRequest) -> Option<&HeaderValue> {
 /// Actix-web middleware for protecting a http endpoint with Cerk.dev
 pub struct ClerkMiddleware {
     pub clerk_config: ClerkConfiguration
+}
+
+impl ClerkMiddleware {
+    pub fn new(config: ClerkConfiguration) -> Self {
+        Self {
+            clerk_config: config
+        }
+    }
 }
 
 
