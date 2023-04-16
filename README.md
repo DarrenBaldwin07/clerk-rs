@@ -38,7 +38,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-### Protecting a actix-web endpoint with Clerk.dev
+### Protecting a actix-web endpoint with Clerk.dev:
 ```rust
 use actix_web::{web, App, HttpServer, Responder};
 use clerk_rs::{ClerkConfiguration, validators::actix::ClerkMiddleware};
