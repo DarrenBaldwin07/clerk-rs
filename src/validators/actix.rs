@@ -1,5 +1,5 @@
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation, decode_header};
-use actix_web::{HttpResponse, dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
+use actix_web::{HttpResponse,  body::EitherBody, dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform,},
 Error, http::header::HeaderValue,};
 use std::{future::{ready, Ready}, rc::Rc};
 use crate::{clerk::Clerk, apis::jwks_api::{JwksModel, Jwks}, ClerkConfiguration};
@@ -73,14 +73,15 @@ pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk) -> Resu
     Ok(is_valid_jwt)
 }
 
-
 pub fn parse_cookies(req: &ServiceRequest) -> Option<&HeaderValue> {
     req.headers().get("cookie")
 }
 
 
 /// Actix-web middleware for protecting a http endpoint with Cerk.dev
-pub struct ClerkMiddleware;
+pub struct ClerkMiddleware {
+    pub clerk_config: ClerkConfiguration
+}
 
 
 impl<S: 'static, B> Transform<S, ServiceRequest> for ClerkMiddleware
@@ -89,19 +90,20 @@ where
     S::Future: 'static,
     B: 'static,
 {
-    type Response = ServiceResponse<B>;
+    type Response = ServiceResponse<EitherBody<B>>;
     type Error = Error;
     type InitError = ();
     type Transform = ClerkMiddlewareService<S>;
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        ready(Ok(ClerkMiddlewareService { service: Rc::new(service) }))
+        ready(Ok(ClerkMiddlewareService { service: Rc::new(service), config: self.clerk_config.clone() }))
     }
 }
 
 pub struct ClerkMiddlewareService<S> {
     service: Rc<S>,
+    config: ClerkConfiguration
 }
 
 impl<S: 'static, B> Service<ServiceRequest> for ClerkMiddlewareService<S>
@@ -110,27 +112,41 @@ where
     S::Future: 'static,
     B: 'static,
 {
-    type Response = ServiceResponse<B>;
+    type Response = ServiceResponse<EitherBody<B>>;
     type Error = Error;
     type Future = LocalBoxFuture<'static, Result<Self::Response, Self::Error>>;
 
     forward_ready!(service);
 
     fn call(&self, req: ServiceRequest) -> Self::Future {
-        println!("Hi from start. You requested: {}", req.path());
-
-        // Create a new clerk configuration so that we can make authed requests
-        let config = ClerkConfiguration::new(None, None, Some("sk_test_iMGT8MozGDT47hkZd2FyEeoSKtE6MTy9f2tpVjkRUy".to_string()), None);
         // Initialize our Clerk client with the newly created configuration
-        let client = Clerk::new(config);
-
+        let client = Clerk::new(self.config.clone());
 
         let svc = self.service.clone();
+
         Box::pin(async move {
+            // Check if the request is authenticated
             let is_authed = clerk_authorize(&req, &client).await;
 
-			let res = svc.call(req).await?;
-			Ok(res)
+            match is_authed {
+                // If we got a boolean response then lets check if it was either true or false
+                Ok(val) => match val {
+                    // If it was true then we have authed request and can pass the user onto the next body
+                    true => {
+                        let res = svc.call(req).await?;
+                        return Ok(res.map_into_left_body());
+                    },
+                    // If it was false we want to throw an unauthed error
+                    false => {
+                        return Ok(ServiceResponse::new(req.into_parts().0, HttpResponse::Unauthorized().body("Unauthorized. All requests must contain a valid Clerk jwt.").map_into_right_body()));
+                    }
+                },
+                // Output any other errors thrown fromn the clerk_authorize function
+                Err(e) => {
+                    return Ok(ServiceResponse::new(req.into_parts().0, e.map_into_right_body()));
+                }
+            }
+
 		})
     }
 }
