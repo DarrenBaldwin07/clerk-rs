@@ -42,6 +42,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
  - [ ] Support other http clients along with the default reqwest client (like hyper)
  - [ ] Tokio and async-std async runtimes for hyper clients
  - [ ] Optional reqwest blocking client
+ - [ ] Support authorization via __session cookie on same-origin
+ - [ ] Add validator support for axum, rocket, warp
 
 
 > Note: This SDK is completely maintained by the Rust community and is by no means affiliated with Clerk.dev.
