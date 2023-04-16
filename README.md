@@ -4,7 +4,7 @@
 A unofficial clerk.dev SDK. For more detailed documentation, please reference the clerk docs: https://clerk.com/docs/reference/backend-api
 
 ## Example
-> More examples in a `/examples` directory coming soon...
+> Checkout examples in the `/examples` directory
 
 ### Using a traditional http request to a valid clerk endpoint:
 ```rust
@@ -35,6 +35,34 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Email::create(&client, Some(your_clerk_email));
 
     Ok(())
+}
+```
+
+### Protecting a actix-web endpoint with Clerk.dev
+```rust
+use actix_web::{web, App, HttpServer, Responder};
+use clerk_rs::{ClerkConfiguration, validators::actix::ClerkMiddleware};
+
+async fn index() -> impl Responder {
+    "Hello world!"
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+
+    HttpServer::new(|| {
+        let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+        App::new().service(
+            // prefixes all resources and routes attached to it...
+            web::scope("/app")
+                .wrap(ClerkMiddleware::new(config))
+                // ...so this handles requests for `GET /app/index.html`
+                .route("/index", web::get().to(index)),
+        )
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 }
 ```
 
