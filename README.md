@@ -53,10 +53,8 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
         App::new().service(
-            // prefixes all resources and routes attached to it...
             web::scope("/app")
                 .wrap(ClerkMiddleware::new(config))
-                // ...so this handles requests for `GET /app/index.html`
                 .route("/index", web::get().to(index)),
         )
     })
