@@ -67,9 +67,12 @@ pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk) -> Resu
         Err(_) => return Err(HttpResponse::InternalServerError().json("Error: Could not fetch JWKS!"))
     };
     // Parse the request headers
-    let access_token: &str = match req.headers().get("Authorization").unwrap().to_str() {
-        Ok(val) => val,
-        Err(_) => return Err(HttpResponse::InternalServerError().json("Error: No Authorization header found on the request payload!"))
+    let access_token: &str = match req.headers().get("Authorization") {
+        Some(val) => { match val.to_str() {
+            Ok(val) => val,
+            Err(_) => return Err(HttpResponse::BadRequest().json("Error: Unable to parse http header"))
+        }},
+        None => return Err(HttpResponse::BadRequest().json("Error: No Authorization header found on the request payload!"))
     };
 
     // Finally, check if the jwt is valid...
