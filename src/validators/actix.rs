@@ -99,11 +99,12 @@ pub fn parse_cookies(req: &ServiceRequest) -> Option<&HeaderValue> {
 /// Actix-web middleware for protecting a http endpoint with Cerk.dev
 pub struct ClerkMiddleware {
 	pub clerk_config: ClerkConfiguration,
+	pub routes: Option<Vec<String>>
 }
 
 impl ClerkMiddleware {
-	pub fn new(config: ClerkConfiguration) -> Self {
-		Self { clerk_config: config }
+	pub fn new(config: ClerkConfiguration, routes: Option<Vec<String>>) -> Self {
+		Self { clerk_config: config, routes }
 	}
 }
 
@@ -123,6 +124,7 @@ where
 		ready(Ok(ClerkMiddlewareService {
 			service: Rc::new(service),
 			config: self.clerk_config.clone(),
+			routes: self.routes.clone()
 		}))
 	}
 }
@@ -130,6 +132,7 @@ where
 pub struct ClerkMiddlewareService<S> {
 	service: Rc<S>,
 	config: ClerkConfiguration,
+	routes: Option<Vec<String>>
 }
 
 impl<S: 'static, B> Service<ServiceRequest> for ClerkMiddlewareService<S>
@@ -149,6 +152,23 @@ where
 		let client = Clerk::new(self.config.clone());
 
 		let svc = self.service.clone();
+
+		match self.routes.clone() {
+			Some(route_matches) => {
+				// If the user only wants to apply authentication to a select amount of routes, we handle that logic here
+				let path = req.path();
+				// Check if the path was NOT contained inside of the routes specified by the user...
+				if !route_matches.contains(&path.to_owned()) {
+					// Since the path was not inside of the listed routes we want to trigger an early exit
+					return Box::pin(async move {
+						let res = svc.call(req).await?;
+						return Ok(res.map_into_left_body());
+					});
+				}
+			},
+			// Since we did find a matching route we can simply do nothing here and start the actual auth logic...
+			None => {}
+		}
 
 		Box::pin(async move {
 			// Check if the request is authenticated

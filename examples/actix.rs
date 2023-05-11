@@ -12,7 +12,7 @@ async fn main() -> std::io::Result<()> {
 		App::new().service(
 			// prefixes all resources and routes attached to it...
 			web::scope("/app")
-				.wrap(ClerkMiddleware::new(config))
+				.wrap(ClerkMiddleware::new(config, None))
 				// ...so this handles requests for `GET /app/index.html`
 				.route("/index", web::get().to(index)),
 		)
