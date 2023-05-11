@@ -153,6 +153,7 @@ where
 
 		let svc = self.service.clone();
 
+		// We want to skip running the validator if we are not able to find a matching path from the listed valid paths provided by the user
 		match self.routes.clone() {
 			Some(route_matches) => {
 				// If the user only wants to apply authentication to a select amount of routes, we handle that logic here
