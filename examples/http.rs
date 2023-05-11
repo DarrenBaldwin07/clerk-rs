@@ -10,5 +10,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 	// Make the api call to the specified clerk endpoint
 	let res = client.get(ClerkGetEndpoint::GetUserList).await?;
 
+	// ...
 	Ok(())
 }
