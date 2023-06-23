@@ -35,13 +35,13 @@ pub fn token_kid(jwt: String) -> Result<Header, jwtError> {
 }
 
 /// Validate a jwt using a jwks set
-pub fn validate_jwt(token: &str, jwks: JwksModel) -> bool {
+pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bool> {
 	let parsed_jwt = token.replace("Bearer ", "");
 	// If we were not able to parse the kid field we want to output an invalid case...
 	let kid = match token_kid(parsed_jwt.to_owned()) {
 		Ok(val) => val.kid,
 		Err(_) => {
-			return false;
+			return Err(false);
 		}
 	};
 
@@ -58,20 +58,20 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> bool {
 				let decoded_token = decode::<ClerkJwt>(&parsed_jwt, &decoding_key, &validation);
 
 				return match decoded_token {
-					Ok(_) => true,
-					_ => false,
+					Ok(token) => Ok((true, token.claims)),
+					_ => Err(false),
 				};
 			}
 			_ => unreachable!("this should be a RSA"),
 		}
 	// In the event that a matching jwk was not found we want to output a false result (showing that the jwt was invalid)
 	} else {
-		return false;
+		return Err(false);
 	}
 }
 
 /// Authorize a actix-web route given a `clerk_client` and a valid service request to an actix-web endpoint
-pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk) -> Result<bool, HttpResponse> {
+pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk) -> Result<(bool, ClerkJwt), HttpResponse> {
 	// Get our jwks from Clerk.dev
 	let jwks = match Jwks::get_jwks(clerk_client).await {
 		Ok(val) => val,
@@ -87,9 +87,10 @@ pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk) -> Resu
 	};
 
 	// Finally, check if the jwt is valid...
-	let is_valid_jwt = validate_jwt(access_token, jwks);
-
-	Ok(is_valid_jwt)
+	match validate_jwt(access_token, jwks) {
+		Ok(val) => Ok(val),
+		Err(_) => return Err(HttpResponse::Unauthorized().json("Error: Invalid JWT!")),
+	}
 }
 
 pub fn parse_cookies(req: &ServiceRequest) -> Option<&HeaderValue> {
@@ -177,7 +178,7 @@ where
 
 			match is_authed {
 				// If we got a boolean response then lets check if it was either true or false
-				Ok(val) => match val {
+				Ok(val) => match val.0 {
 					// If it was true then we have authed request and can pass the user onto the next body
 					true => {
 						let res = svc.call(req).await?;
