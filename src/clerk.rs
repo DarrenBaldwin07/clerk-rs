@@ -40,7 +40,7 @@ impl Clerk {
 
 	/// Make a GET request to the specified Clerk API endpoint
 	pub async fn get(&self, endpoint: ClerkGetEndpoint) -> Result<serde_json::value::Value, reqwest::Error> {
-		let parsed_endpoint = endpoint.to_string();
+		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
 		match self.config.client.get(&url).send().await {
@@ -58,7 +58,7 @@ impl Clerk {
 		endpoint: ClerkPostEndpoint,
 		body: T,
 	) -> Result<serde_json::value::Value, reqwest::Error> {
-		let parsed_endpoint = endpoint.to_string();
+		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
 		match self.config.client.post(&url).json(&body).send().await {
@@ -72,7 +72,7 @@ impl Clerk {
 
 	/// Make a DELETE request to the specified Clerk API endpoint
 	pub async fn delete(&self, endpoint: ClerkDeleteEndpoint) -> Result<serde_json::value::Value, reqwest::Error> {
-		let parsed_endpoint = endpoint.to_string();
+		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
 		match self.config.client.delete(&url).send().await {
@@ -90,7 +90,7 @@ impl Clerk {
 		endpoint: ClerkPutEndpoint,
 		body: T,
 	) -> Result<serde_json::value::Value, reqwest::Error> {
-		let parsed_endpoint = endpoint.to_string();
+		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
 		match self.config.client.put(&url).json(&body).send().await {
@@ -108,7 +108,7 @@ impl Clerk {
 		endpoint: ClerkPutEndpoint,
 		body: T,
 	) -> Result<serde_json::value::Value, reqwest::Error> {
-		let parsed_endpoint = endpoint.to_string();
+		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
 		match self.config.client.patch(&url).json(&body).send().await {
@@ -142,7 +142,7 @@ impl Clerk {
 		body: T,
 		params: Vec<&str>,
 	) -> Result<serde_json::value::Value, reqwest::Error> {
-		let parsed_endpoint = endpoint.to_string();
+		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
 
@@ -157,7 +157,7 @@ impl Clerk {
 
 	/// Make a DELETE request with params to the specified Clerk API endpoint
 	pub async fn delete_with_params(&self, endpoint: ClerkDeleteEndpoint, params: Vec<&str>) -> Result<serde_json::value::Value, reqwest::Error> {
-		let parsed_endpoint = endpoint.to_string();
+		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
 
@@ -177,7 +177,7 @@ impl Clerk {
 		body: T,
 		params: Vec<&str>,
 	) -> Result<serde_json::value::Value, reqwest::Error> {
-		let parsed_endpoint = endpoint.to_string();
+		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
 
@@ -197,7 +197,7 @@ impl Clerk {
 		body: T,
 		params: Vec<&str>,
 	) -> Result<serde_json::value::Value, reqwest::Error> {
-		let parsed_endpoint = endpoint.to_string();
+		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
 
