@@ -100,12 +100,15 @@ pub fn parse_cookies(req: &ServiceRequest) -> Option<&HeaderValue> {
 /// Actix-web middleware for protecting a http endpoint with Cerk.dev
 pub struct ClerkMiddleware {
 	pub clerk_config: ClerkConfiguration,
-	pub routes: Option<Vec<String>>
+	pub routes: Option<Vec<String>>,
 }
 
 impl ClerkMiddleware {
 	pub fn new(config: ClerkConfiguration, routes: Option<Vec<String>>) -> Self {
-		Self { clerk_config: config, routes }
+		Self {
+			clerk_config: config,
+			routes,
+		}
 	}
 }
 
@@ -125,7 +128,7 @@ where
 		ready(Ok(ClerkMiddlewareService {
 			service: Rc::new(service),
 			config: self.clerk_config.clone(),
-			routes: self.routes.clone()
+			routes: self.routes.clone(),
 		}))
 	}
 }
@@ -133,7 +136,7 @@ where
 pub struct ClerkMiddlewareService<S> {
 	service: Rc<S>,
 	config: ClerkConfiguration,
-	routes: Option<Vec<String>>
+	routes: Option<Vec<String>>,
 }
 
 impl<S: 'static, B> Service<ServiceRequest> for ClerkMiddlewareService<S>
@@ -155,19 +158,21 @@ where
 		let svc = self.service.clone();
 
 		// We want to skip running the validator if we are not able to find a matching path from the listed valid paths provided by the user
-		match self.routes.clone() {
+		match &self.routes {
 			Some(route_matches) => {
 				// If the user only wants to apply authentication to a select amount of routes, we handle that logic here
 				let path = req.path();
 				// Check if the path was NOT contained inside of the routes specified by the user...
-				if !route_matches.contains(&path.to_owned()) {
+				let path_not_in_specified_routes = route_matches.iter().find(|&route| route == path).is_none();
+
+				if path_not_in_specified_routes {
 					// Since the path was not inside of the listed routes we want to trigger an early exit
 					return Box::pin(async move {
 						let res = svc.call(req).await?;
 						return Ok(res.map_into_left_body());
 					});
 				}
-			},
+			}
 			// Since we did find a matching route we can simply do nothing here and start the actual auth logic...
 			None => {}
 		}
