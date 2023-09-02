@@ -23,7 +23,7 @@ pub struct Domain {
     pub is_satellite: bool,
     #[serde(rename = "frontend_api_url")]
     pub frontend_api_url: String,
-    /// Null for satellite domains. 
+    /// Null for satellite domains.
     #[serde(rename = "accounts_portal_url", default, with = "::serde_with::rust::double_option", skip_serializing_if = "Option::is_none")]
     pub accounts_portal_url: Option<Option<String>>,
     #[serde(rename = "proxy_url", default, with = "::serde_with::rust::double_option", skip_serializing_if = "Option::is_none")]
@@ -45,12 +45,12 @@ impl Domain {
             accounts_portal_url: None,
             proxy_url: None,
             development_origin,
-            cname_targets: None: None,
+            cname_targets: None,
         }
     }
 }
 
-/// 
+///
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum Object {
     #[serde(rename = "domain")]
