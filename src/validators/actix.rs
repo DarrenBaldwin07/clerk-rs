@@ -211,8 +211,37 @@ where
 
 #[cfg(test)]
 mod tests {
+	use super::*;
+	use crate::ClerkConfiguration;
+	use actix_web::http::{header, header::HeaderValue};
+	use actix_web::{test as actix_test, App, HttpRequest, HttpResponse};
+	use actix_web::dev::ServiceRequest;
+
 	#[test]
 	fn test_clerk_authorize() {
+		let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+	}
 
+	#[test]
+	fn test_validate_jwt() {
+
+	}
+
+	#[actix_rt::test]
+	async fn test_parse_cookies() {
+		// Create a request with a "cookie" header
+		let req = actix_test::TestRequest::default().append_header((actix_web::http::header::COOKIE, HeaderValue::from_static("cookie_value=12345"))).to_srv_request();
+
+		// Call the parse_cookies function to get the Cookie header value
+		let cookie_value = parse_cookies(&req);
+
+		// Assert that the cookie_value is Some(HeaderValue)
+		assert!(cookie_value.is_some());
+
+		// Extract the HeaderValue from the Option
+		let cookie_value = cookie_value.unwrap();
+
+		// Assert that the Cookie value matches the expected value
+		assert_eq!(cookie_value.to_str().unwrap(), "cookie_value=12345");
 	}
 }
