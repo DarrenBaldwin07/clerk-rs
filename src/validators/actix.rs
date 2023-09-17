@@ -34,7 +34,7 @@ pub fn token_kid(jwt: String) -> Result<Header, jwtError> {
 	header
 }
 
-/// Validate a jwt using a jwks set
+/// Validate a jwt using a jwks
 pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bool> {
 	let parsed_jwt = token.replace("Bearer ", "");
 	// If we were not able to parse the kid field we want to output an invalid case...
@@ -50,7 +50,7 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bo
 	// Check to see if we found a valid jwk key with the token kid
 	if let Some(j) = jwk {
 		match j.alg.as_str() {
-			// Currently, clerk only supports Rs256 by default (could be wrong here -- might need to look into this)
+			// Currently, clerk only supports Rs256 by default
 			"RS256" => {
 				let decoding_key = DecodingKey::from_rsa_components(&j.n, &j.e).unwrap();
 				let mut validation = Validation::new(Algorithm::RS256);
@@ -62,7 +62,7 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bo
 					_ => Err(false),
 				};
 			}
-			_ => unreachable!("this should be a RSA"),
+			_ => unreachable!("This should be a RSA"),
 		}
 	// In the event that a matching jwk was not found we want to output a false result (showing that the jwt was invalid)
 	} else {
@@ -224,6 +224,8 @@ mod tests {
 
 	#[test]
 	fn test_validate_jwt() {
+		let invalid_token = "Bearer invalid-json-web-token";
+		let valid_token = "Bearer ";
 
 	}
 
