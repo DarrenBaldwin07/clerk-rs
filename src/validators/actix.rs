@@ -17,7 +17,7 @@ use std::{
 	rc::Rc,
 };
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct ClerkJwt {
 	pub azp: String,
 	pub exp: i32,
@@ -213,21 +213,39 @@ where
 mod tests {
 	use super::*;
 	use crate::ClerkConfiguration;
+	use crate::apis::jwks_api::JwksKey;
 	use actix_web::http::{header, header::HeaderValue};
 	use actix_web::{test as actix_test, App, HttpRequest, HttpResponse};
-	use actix_web::dev::ServiceRequest;
 
 	#[test]
 	fn test_clerk_authorize() {
 		let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
 	}
 
-	#[test]
-	fn test_validate_jwt() {
-		let invalid_token = "Bearer invalid-json-web-token";
-		let valid_token = "Bearer ";
+    #[test]
+    fn test_validate_jwt() {
+        // Create a sample invalid JWT and a corresponding JwksModel
+        let invalid_jwt = "Bearer invalid_token";
+        let jwks = JwksModel {
+            keys: vec![
+                JwksKey {
+                    use_key: "sig".to_string(),
+                    kty: "RSA".to_string(),
+                    kid: "valid_kid".to_string(),
+                    alg: "RS256".to_string(),
+                    n: "valid_n".to_string(),
+                    e: "valid_e".to_string(),
+                },
+            ],
+        };
 
-	}
+        // Call the validate_jwt function with the invalid token and JwksModel
+        let result = validate_jwt(invalid_jwt, jwks);
+
+        // Assert that the result is Err(false) and the JWT is invalid
+        assert_eq!(result, Err(false));
+    }
+
 
 	#[actix_rt::test]
 	async fn test_parse_cookies() {
