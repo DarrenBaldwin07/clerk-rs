@@ -211,5 +211,8 @@ where
 
 #[cfg(test)]
 mod tests {
+	#[test]
+	fn test_clerk_authorize() {
 
+	}
 }
