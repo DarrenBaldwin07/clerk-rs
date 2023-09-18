@@ -208,49 +208,42 @@ where
 	}
 }
 
-
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use crate::ClerkConfiguration;
 	use crate::apis::jwks_api::JwksKey;
+	use crate::ClerkConfiguration;
 	use actix_web::http::{header, header::HeaderValue};
 	use actix_web::{test as actix_test, App, HttpRequest, HttpResponse};
 
 	#[test]
-	fn test_clerk_authorize() {
-		let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+	fn test_validate_jwt() {
+		// Create a sample invalid JWT and a corresponding JwksModel
+		let invalid_jwt = "Bearer invalid_token";
+		let jwks = JwksModel {
+			keys: vec![JwksKey {
+				use_key: "sig".to_string(),
+				kty: "RSA".to_string(),
+				kid: "valid_kid".to_string(),
+				alg: "RS256".to_string(),
+				n: "valid_n".to_string(),
+				e: "valid_e".to_string(),
+			}],
+		};
+
+		// Call the validate_jwt function with the invalid token and JwksModel
+		let result = validate_jwt(invalid_jwt, jwks);
+
+		// Assert that the result is Err(false) and the JWT is invalid
+		assert_eq!(result, Err(false));
 	}
-
-    #[test]
-    fn test_validate_jwt() {
-        // Create a sample invalid JWT and a corresponding JwksModel
-        let invalid_jwt = "Bearer invalid_token";
-        let jwks = JwksModel {
-            keys: vec![
-                JwksKey {
-                    use_key: "sig".to_string(),
-                    kty: "RSA".to_string(),
-                    kid: "valid_kid".to_string(),
-                    alg: "RS256".to_string(),
-                    n: "valid_n".to_string(),
-                    e: "valid_e".to_string(),
-                },
-            ],
-        };
-
-        // Call the validate_jwt function with the invalid token and JwksModel
-        let result = validate_jwt(invalid_jwt, jwks);
-
-        // Assert that the result is Err(false) and the JWT is invalid
-        assert_eq!(result, Err(false));
-    }
-
 
 	#[actix_rt::test]
 	async fn test_parse_cookies() {
 		// Create a request with a "cookie" header
-		let req = actix_test::TestRequest::default().append_header((actix_web::http::header::COOKIE, HeaderValue::from_static("cookie_value=12345"))).to_srv_request();
+		let req = actix_test::TestRequest::default()
+			.append_header((actix_web::http::header::COOKIE, HeaderValue::from_static("cookie_value=12345")))
+			.to_srv_request();
 
 		// Call the parse_cookies function to get the Cookie header value
 		let cookie_value = parse_cookies(&req);
