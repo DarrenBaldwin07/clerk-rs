@@ -10,7 +10,7 @@
 
 /// OrganizationMembership : Hello world
 
-#[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationMembership {
 	#[serde(rename = "id", skip_serializing_if = "Option::is_none")]
 	pub id: Option<String>,
@@ -26,7 +26,7 @@ pub struct OrganizationMembership {
 	#[serde(rename = "updated_at", skip_serializing_if = "Option::is_none")]
 	pub updated_at: Option<i64>,
 	#[serde(rename = "organization", skip_serializing_if = "Option::is_none")]
-	pub organization: Option<Box<crate::models::OrganizationMembershipOrganization>>,
+	pub organization: Option<Box<crate::models::Organization>>,
 	#[serde(rename = "public_user_data", skip_serializing_if = "Option::is_none")]
 	pub public_user_data: Option<Box<crate::models::OrganizationMembershipPublicUserData>>,
 }

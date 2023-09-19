@@ -21,6 +21,9 @@ path = "examples/api.rs"
 name = "actix"
 path = "examples/actix.rs"
 
+[lib]
+doctest = false
+
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_derive = "^1.0"
@@ -31,6 +34,7 @@ regex = "1.7.3"
 jsonwebtoken = "8.3.0"
 actix-web = "4.3.1"
 futures-util = "0.3.28"
+actix-rt = "2.9.0"
 [dependencies.reqwest]
 version = "^0.11"
 features = ["json", "multipart"]

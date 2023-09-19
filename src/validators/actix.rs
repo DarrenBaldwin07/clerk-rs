@@ -17,7 +17,7 @@ use std::{
 	rc::Rc,
 };
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct ClerkJwt {
 	pub azp: String,
 	pub exp: i32,
@@ -34,7 +34,7 @@ pub fn token_kid(jwt: String) -> Result<Header, jwtError> {
 	header
 }
 
-/// Validate a jwt using a jwks set
+/// Validate a jwt using a jwks
 pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bool> {
 	let parsed_jwt = token.replace("Bearer ", "");
 	// If we were not able to parse the kid field we want to output an invalid case...
@@ -50,7 +50,7 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bo
 	// Check to see if we found a valid jwk key with the token kid
 	if let Some(j) = jwk {
 		match j.alg.as_str() {
-			// Currently, clerk only supports Rs256 by default (could be wrong here -- might need to look into this)
+			// Currently, clerk only supports Rs256 by default
 			"RS256" => {
 				let decoding_key = DecodingKey::from_rsa_components(&j.n, &j.e).unwrap();
 				let mut validation = Validation::new(Algorithm::RS256);
@@ -62,7 +62,7 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bo
 					_ => Err(false),
 				};
 			}
-			_ => unreachable!("this should be a RSA"),
+			_ => unreachable!("This should be a RSA"),
 		}
 	// In the event that a matching jwk was not found we want to output a false result (showing that the jwt was invalid)
 	} else {
@@ -70,6 +70,7 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bo
 	}
 }
 
+// This is public and exported for crate users to consume but doing this is not recommended
 /// Authorize a actix-web route given a `clerk_client` and a valid service request to an actix-web endpoint
 pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk) -> Result<(bool, ClerkJwt), HttpResponse> {
 	// Get our jwks from Clerk.dev
@@ -97,7 +98,31 @@ pub fn parse_cookies(req: &ServiceRequest) -> Option<&HeaderValue> {
 	req.headers().get("cookie")
 }
 
+
+
 /// Actix-web middleware for protecting a http endpoint with Cerk.dev
+/// # Example
+/// ```
+/// async fn index() -> impl Responder {
+/// 	"Hello world!"
+/// }
+/// #[actix_web::main]
+/// async fn main() -> std::io::Result<()> {
+/// 	HttpServer::new(|| {
+/// 		let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+/// 		App::new().service(
+/// 			// prefixes all resources and routes attached to it...
+/// 			web::scope("/app")
+/// 				.wrap(ClerkMiddleware::new(config, None))
+/// 				// ...so this handles requests for `GET /app/index.html`
+/// 				.route("/index", web::get().to(index)),
+/// 		)
+/// 	})
+/// 	.bind(("127.0.0.1", 8080))?
+/// 	.run()
+/// 	.await
+/// }
+/// ```
 pub struct ClerkMiddleware {
 	pub clerk_config: ClerkConfiguration,
 	pub routes: Option<Vec<String>>,
@@ -205,5 +230,69 @@ where
 				}
 			}
 		})
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use crate::apis::jwks_api::JwksKey;
+	use crate::ClerkConfiguration;
+	use actix_web::http::header::HeaderValue;
+	use actix_web::test as actix_test;
+	use tokio::test as tokio_test;
+
+	#[allow(dead_code)]
+	async fn test_clerk_authorize() {
+		let clerk_config = ClerkConfiguration::new(None, None, Some("YOUR_CLERK_SECRET_KEY".to_string()), None);
+		let client = Clerk::new(clerk_config);
+		let req = actix_test::TestRequest::default()
+		.append_header((actix_web::http::header::AUTHORIZATION, HeaderValue::from_static("<your-api-key>")))
+		.to_srv_request();
+
+		let result = clerk_authorize(&req, &client).await;
+
+		assert!(result.is_ok())
+	}
+
+	#[test]
+	fn test_validate_jwt() {
+		// Create a sample invalid JWT and a corresponding JwksModel
+		let invalid_jwt = "Bearer invalid_token";
+		let jwks = JwksModel {
+			keys: vec![JwksKey {
+				use_key: "sig".to_string(),
+				kty: "RSA".to_string(),
+				kid: "valid_kid".to_string(),
+				alg: "RS256".to_string(),
+				n: "valid_n".to_string(),
+				e: "valid_e".to_string(),
+			}],
+		};
+
+		// Call the validate_jwt function with the invalid token and JwksModel
+		let result = validate_jwt(invalid_jwt, jwks);
+
+		assert_eq!(result, Err(false));
+	}
+
+	#[tokio_test]
+	async fn test_parse_cookies() {
+		// Create a request with a "cookie" header
+		let req = actix_test::TestRequest::default()
+			.append_header((actix_web::http::header::COOKIE, HeaderValue::from_static("cookie_value=12345")))
+			.to_srv_request();
+
+		// Call the parse_cookies function to get the Cookie header value
+		let cookie_value = parse_cookies(&req);
+
+		// Assert that the cookie_value is Some(HeaderValue)
+		assert!(cookie_value.is_some());
+
+		// Extract the HeaderValue from the Option
+		let cookie_value = cookie_value.unwrap();
+
+		// Assert that the Cookie value matches the expected value
+		assert_eq!(cookie_value.to_str().unwrap(), "cookie_value=12345");
 	}
 }

@@ -10,7 +10,7 @@
 
 /// OrganizationInvitation : An organization invitation
 
-#[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct OrganizationInvitation {
 	#[serde(rename = "id", skip_serializing_if = "Option::is_none")]
 	pub id: Option<String>,
@@ -25,6 +25,10 @@ pub struct OrganizationInvitation {
 	pub organization_id: Option<String>,
 	#[serde(rename = "status", skip_serializing_if = "Option::is_none")]
 	pub status: Option<String>,
+	#[serde(rename = "public_metadata", skip_serializing_if = "Option::is_none")]
+	pub public_metadata: Option<serde_json::Value>,
+	#[serde(rename = "private_metadata", skip_serializing_if = "Option::is_none")]
+	pub private_metadata: Option<serde_json::Value>,
 	/// Unix timestamp of creation.
 	#[serde(rename = "created_at", skip_serializing_if = "Option::is_none")]
 	pub created_at: Option<i64>,
@@ -43,6 +47,8 @@ impl OrganizationInvitation {
 			role: None,
 			organization_id: None,
 			status: None,
+			public_metadata: None,
+			private_metadata: None,
 			created_at: None,
 			updated_at: None,
 		}
