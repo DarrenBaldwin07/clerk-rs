@@ -70,7 +70,7 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bo
 	}
 }
 
-// This is public and exported for crate users to consume but this is not recommended
+// This is public and exported for crate users to consume but doing this is not recommended
 /// Authorize a actix-web route given a `clerk_client` and a valid service request to an actix-web endpoint
 pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk) -> Result<(bool, ClerkJwt), HttpResponse> {
 	// Get our jwks from Clerk.dev
