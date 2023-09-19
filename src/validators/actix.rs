@@ -70,6 +70,7 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bo
 	}
 }
 
+// This is public and exported for crate users to consume but this is not recommended
 /// Authorize a actix-web route given a `clerk_client` and a valid service request to an actix-web endpoint
 pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk) -> Result<(bool, ClerkJwt), HttpResponse> {
 	// Get our jwks from Clerk.dev
@@ -97,7 +98,31 @@ pub fn parse_cookies(req: &ServiceRequest) -> Option<&HeaderValue> {
 	req.headers().get("cookie")
 }
 
+
+
 /// Actix-web middleware for protecting a http endpoint with Cerk.dev
+/// # Example
+/// ```
+/// async fn index() -> impl Responder {
+/// 	"Hello world!"
+/// }
+/// #[actix_web::main]
+/// async fn main() -> std::io::Result<()> {
+/// 	HttpServer::new(|| {
+/// 		let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+/// 		App::new().service(
+/// 			// prefixes all resources and routes attached to it...
+/// 			web::scope("/app")
+/// 				.wrap(ClerkMiddleware::new(config, None))
+/// 				// ...so this handles requests for `GET /app/index.html`
+/// 				.route("/index", web::get().to(index)),
+/// 		)
+/// 	})
+/// 	.bind(("127.0.0.1", 8080))?
+/// 	.run()
+/// 	.await
+/// }
+/// ```
 pub struct ClerkMiddleware {
 	pub clerk_config: ClerkConfiguration,
 	pub routes: Option<Vec<String>>,
