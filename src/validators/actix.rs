@@ -213,8 +213,22 @@ mod tests {
 	use super::*;
 	use crate::apis::jwks_api::JwksKey;
 	use crate::ClerkConfiguration;
-	use actix_web::http::{header, header::HeaderValue};
-	use actix_web::{test as actix_test, App, HttpRequest, HttpResponse};
+	use actix_web::http::header::HeaderValue;
+	use actix_web::test as actix_test;
+	use tokio::test as tokio_test;
+
+	#[allow(dead_code)]
+	async fn test_clerk_authorize() {
+		let clerk_config = ClerkConfiguration::new(None, None, Some("YOUR_CLERK_SECRET_KEY".to_string()), None);
+		let client = Clerk::new(clerk_config);
+		let req = actix_test::TestRequest::default()
+		.append_header((actix_web::http::header::AUTHORIZATION, HeaderValue::from_static("<your-api-key>")))
+		.to_srv_request();
+
+		let result = clerk_authorize(&req, &client).await;
+
+		assert!(result.is_ok())
+	}
 
 	#[test]
 	fn test_validate_jwt() {
@@ -234,11 +248,10 @@ mod tests {
 		// Call the validate_jwt function with the invalid token and JwksModel
 		let result = validate_jwt(invalid_jwt, jwks);
 
-		// Assert that the result is Err(false) and the JWT is invalid
 		assert_eq!(result, Err(false));
 	}
 
-	#[actix_rt::test]
+	#[tokio_test]
 	async fn test_parse_cookies() {
 		// Create a request with a "cookie" header
 		let req = actix_test::TestRequest::default()
