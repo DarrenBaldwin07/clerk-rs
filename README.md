@@ -5,6 +5,7 @@
     <img src="https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square"
         alt="download count badge" />
 </a>
+
 # An unofficial clerk.dev SDK for rust
 
 A unofficial clerk.dev SDK. For more detailed documentation, please reference the clerk docs: https://clerk.com/docs/reference/backend-api
