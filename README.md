@@ -8,6 +8,8 @@
         alt="download count badge" />
 </a>
 
+<br />
+
 > Note: This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updated or is not inline with the official Clerk api, open an issue!
 
 A unofficial clerk.dev SDK. For more detailed documentation, please reference the clerk docs: https://clerk.com/docs/reference/backend-api
@@ -87,7 +89,7 @@ async fn main() -> std::io::Result<()> {
 
 # Production users
 
-- [Tembo](https://tembo.io) 
+- [Tembo](https://tembo.io)
 - [Rezon](https://rezon.ai)
 
 > Note: This SDK is completely maintained by the Rust community and is by no means affiliated with Clerk.dev.
