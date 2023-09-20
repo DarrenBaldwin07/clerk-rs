@@ -8,8 +8,6 @@
         alt="download count badge" />
 </a>
 
-<hr />
-
 A unofficial clerk.dev SDK. For more detailed documentation, please reference the clerk docs: https://clerk.com/docs/reference/backend-api
 
 > This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updated or is not inline with the official Clerk api, open an issue!
