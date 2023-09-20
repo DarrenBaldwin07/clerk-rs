@@ -1,6 +1,14 @@
 # An unofficial clerk.dev SDK for rust
 
-> Note: This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updated or is not inline with the offical Clerk api, open an issue!
+<a href="https://crates.io/crates/clerk-rs">
+    <img src="https://img.shields.io/crates/v/clerk-rs.svg?style=flat-square" alt="crates.io" />
+</a>
+<a href="https://crates.io/crates/clerk-rs">
+    <img src="https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square"
+        alt="download count badge" />
+</a>
+
+> Note: This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updated or is not inline with the official Clerk api, open an issue!
 
 A unofficial clerk.dev SDK. For more detailed documentation, please reference the clerk docs: https://clerk.com/docs/reference/backend-api
 
@@ -76,6 +84,11 @@ async fn main() -> std::io::Result<()> {
 - [ ] Optional reqwest blocking client
 - [ ] Support authorization via \_\_session cookie on same-origin
 - [ ] Add validator support for axum, rocket, warp
+
+# Production users
+
+- [Tembo](https://tembo.io) 
+- [Rezon](https://rezon.ai)
 
 > Note: This SDK is completely maintained by the Rust community and is by no means affiliated with Clerk.dev.
 
