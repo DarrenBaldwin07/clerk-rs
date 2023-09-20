@@ -1,5 +1,3 @@
-# An unofficial clerk.dev SDK for rust
-
 <a href="https://crates.io/crates/clerk-rs">
     <img src="https://img.shields.io/crates/v/clerk-rs.svg?style=flat-square" alt="crates.io" />
 </a>
@@ -7,10 +5,11 @@
     <img src="https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square"
         alt="download count badge" />
 </a>
+# An unofficial clerk.dev SDK for rust
 
 A unofficial clerk.dev SDK. For more detailed documentation, please reference the clerk docs: https://clerk.com/docs/reference/backend-api
 
-> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updated or is not inline with the official Clerk api, open an issue!
+> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updated or is not inline with the official Clerk api, please open an issue!
 
 ## Example
 
