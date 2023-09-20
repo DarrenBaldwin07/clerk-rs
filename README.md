@@ -8,7 +8,10 @@
 
 # An unofficial clerk.dev SDK for rust
 
-A unofficial clerk.dev SDK. For more detailed documentation, please reference the clerk docs: https://clerk.com/docs/reference/backend-api
+For more detailed documentation, please reference the below links:
+
+- [Offical Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
+- [Clerk-rs SDK API docs](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/docs.md)
 
 > This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updated or is not inline with the official Clerk api, please open an issue!
 
