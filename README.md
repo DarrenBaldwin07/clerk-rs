@@ -87,7 +87,7 @@ async fn main() -> std::io::Result<()> {
 
 # Production users
 
-- [Tembo](https://tembo.io)
+- [Tembo](https://tembo.io) 
 - [Rezon](https://rezon.ai)
 
 > Note: This SDK is completely maintained by the Rust community and is by no means affiliated with Clerk.dev.
