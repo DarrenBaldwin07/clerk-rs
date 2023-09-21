@@ -36,7 +36,7 @@ pub fn token_kid(jwt: String) -> Result<Header, jwtError> {
 
 /// Validate a jwt using a jwks
 pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bool> {
-	let parsed_jwt = token.replace("Bearer ", "");
+	let parsed_jwt = token;
 	// If we were not able to parse the kid field we want to output an invalid case...
 	let kid = match token_kid(parsed_jwt.to_owned()) {
 		Ok(val) => val.kid,
@@ -79,16 +79,21 @@ pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk) -> Resu
 		Err(_) => return Err(HttpResponse::InternalServerError().json("Error: Could not fetch JWKS!")),
 	};
 	// Parse the request headers
-	let access_token: &str = match req.headers().get("Authorization") {
+	let access_token: String = match req.headers().get("Authorization") {
 		Some(val) => match val.to_str() {
-			Ok(val) => val,
+			Ok(val) => val.to_string().replace("Bearer ", ""),
 			Err(_) => return Err(HttpResponse::Unauthorized().json("Error: Unable to parse http header")),
 		},
-		None => return Err(HttpResponse::Unauthorized().json("Error: No Authorization header found on the request payload!")),
+		None => match req.cookie("__session") {
+            Some(cookie) => {
+                cookie.value().to_string()
+            },
+            None => return Err(HttpResponse::Unauthorized().json("Error: No Authorization header or session cookie found on the request payload!")),
+        }
 	};
 
 	// Finally, check if the jwt is valid...
-	match validate_jwt(access_token, jwks) {
+	match validate_jwt(&access_token, jwks) {
 		Ok(val) => Ok(val),
 		Err(_) => return Err(HttpResponse::Unauthorized().json("Error: Invalid JWT!")),
 	}
