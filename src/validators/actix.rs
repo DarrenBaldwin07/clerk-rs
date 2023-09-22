@@ -98,8 +98,6 @@ pub fn parse_cookies(req: &ServiceRequest) -> Option<&HeaderValue> {
 	req.headers().get("cookie")
 }
 
-
-
 /// Actix-web middleware for protecting a http endpoint with Cerk.dev
 /// # Example
 /// ```
@@ -247,8 +245,8 @@ mod tests {
 		let clerk_config = ClerkConfiguration::new(None, None, Some("YOUR_CLERK_SECRET_KEY".to_string()), None);
 		let client = Clerk::new(clerk_config);
 		let req = actix_test::TestRequest::default()
-		.append_header((actix_web::http::header::AUTHORIZATION, HeaderValue::from_static("<your-api-key>")))
-		.to_srv_request();
+			.append_header((actix_web::http::header::AUTHORIZATION, HeaderValue::from_static("<your-api-key>")))
+			.to_srv_request();
 
 		let result = clerk_authorize(&req, &client).await;
 
