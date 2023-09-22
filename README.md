@@ -70,7 +70,7 @@ async fn main() -> std::io::Result<()> {
         let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
         App::new().service(
             web::scope("/app")
-                .wrap(ClerkMiddleware::new(config, None))
+                .wrap(ClerkMiddleware::new(config, None, false))
                 .route("/index", web::get().to(index)),
         )
     })
