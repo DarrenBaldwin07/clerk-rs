@@ -72,23 +72,26 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bo
 
 // This is public and exported for crate users to consume but doing this is not recommended
 /// Authorize a actix-web route given a `clerk_client` and a valid service request to an actix-web endpoint
-pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk) -> Result<(bool, ClerkJwt), HttpResponse> {
+pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk, validate_session_cookie: bool) -> Result<(bool, ClerkJwt), HttpResponse> {
 	// Get our jwks from Clerk.dev
 	let jwks = match Jwks::get_jwks(clerk_client).await {
 		Ok(val) => val,
 		Err(_) => return Err(HttpResponse::InternalServerError().json("Error: Could not fetch JWKS!")),
 	};
-	// Parse the request headers
+	// Parse the request headers and prefer the `Authorization` header over the session cookie if provided
 	let access_token: String = match req.headers().get("Authorization") {
 		Some(val) => match val.to_str() {
 			Ok(val) => val.to_string().replace("Bearer ", ""),
 			Err(_) => return Err(HttpResponse::Unauthorized().json("Error: Unable to parse http header")),
 		},
-		None => match req.cookie("__session") {
-            Some(cookie) => {
-                cookie.value().to_string()
+		None => match validate_session_cookie {
+            true => match req.cookie("__session") {
+                Some(cookie) => {
+					cookie.value().to_string()
+				}
+				None => return Err(HttpResponse::Unauthorized().json("Error: No Authorization header or session cookie found on the request payload!"))
             },
-            None => return Err(HttpResponse::Unauthorized().json("Error: No Authorization header or session cookie found on the request payload!")),
+            false => return Err(HttpResponse::Unauthorized().json("Error: No Authorization header found on the request payload!")),
         }
 	};
 
@@ -129,13 +132,15 @@ pub fn parse_cookies(req: &ServiceRequest) -> Option<&HeaderValue> {
 pub struct ClerkMiddleware {
 	pub clerk_config: ClerkConfiguration,
 	pub routes: Option<Vec<String>>,
+	pub should_validate_session_cookie: bool
 }
 
 impl ClerkMiddleware {
-	pub fn new(config: ClerkConfiguration, routes: Option<Vec<String>>) -> Self {
+	pub fn new(config: ClerkConfiguration, routes: Option<Vec<String>>, should_validate_session_cookie: bool) -> Self {
 		Self {
 			clerk_config: config,
 			routes,
+			should_validate_session_cookie
 		}
 	}
 }
@@ -157,6 +162,7 @@ where
 			service: Rc::new(service),
 			config: self.clerk_config.clone(),
 			routes: self.routes.clone(),
+			should_validate_session_cookie: self.should_validate_session_cookie
 		}))
 	}
 }
@@ -165,6 +171,7 @@ pub struct ClerkMiddlewareService<S> {
 	service: Rc<S>,
 	config: ClerkConfiguration,
 	routes: Option<Vec<String>>,
+	should_validate_session_cookie: bool
 }
 
 impl<S: 'static, B> Service<ServiceRequest> for ClerkMiddlewareService<S>
@@ -184,6 +191,7 @@ where
 		let client = Clerk::new(self.config.clone());
 
 		let svc = self.service.clone();
+		let test = self.should_validate_session_cookie.clone();
 
 		// We want to skip running the validator if we are not able to find a matching path from the listed valid paths provided by the user
 		match &self.routes {
@@ -207,7 +215,7 @@ where
 
 		Box::pin(async move {
 			// Check if the request is authenticated
-			let is_authed = clerk_authorize(&req, &client).await;
+			let is_authed = clerk_authorize(&req, &client, test).await;
 
 			match is_authed {
 				// If we got a boolean response then lets check if it was either true or false
@@ -253,7 +261,7 @@ mod tests {
 			.append_header((actix_web::http::header::AUTHORIZATION, HeaderValue::from_static("<your-api-key>")))
 			.to_srv_request();
 
-		let result = clerk_authorize(&req, &client).await;
+		let result = clerk_authorize(&req, &client, false).await;
 
 		assert!(result.is_ok())
 	}
