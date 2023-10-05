@@ -117,10 +117,10 @@ pub fn parse_cookies(req: &ServiceRequest) -> Option<&HeaderValue> {
 /// 	HttpServer::new(|| {
 /// 		let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
 /// 		App::new().service(
-/// 			// prefixes all resources and routes attached to it...
+/// 			// prefixes all resources and routes attached to it with /app...
 /// 			web::scope("/app")
 /// 				.wrap(ClerkMiddleware::new(config, None))
-/// 				// ...so this handles requests for `GET /app/index.html`
+/// 				// ...this route is then protected by Clerk!
 /// 				.route("/index", web::get().to(index)),
 /// 		)
 /// 	})
