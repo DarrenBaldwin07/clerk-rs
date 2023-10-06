@@ -106,7 +106,7 @@ pub fn parse_cookies(req: &ServiceRequest) -> Option<&HeaderValue> {
 	req.headers().get("cookie")
 }
 
-/// Actix-web middleware for protecting a http endpoint with Cerk.dev
+/// Actix-web middleware for protecting a http endpoint with Clerk.dev
 /// # Example
 /// ```
 /// async fn index() -> impl Responder {
