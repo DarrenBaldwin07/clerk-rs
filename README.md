@@ -6,7 +6,7 @@
         alt="download count badge" />
 </a>
 
-# An unofficial clerk.dev SDK for rust
+# An unofficial Clerk.dev SDK for rust
 
 For more detailed documentation, please reference the below links:
 
@@ -85,7 +85,7 @@ async fn main() -> std::io::Result<()> {
 - [ ] Support other http clients along with the default reqwest client (like hyper)
 - [ ] Tokio and async-std async runtimes for hyper clients
 - [ ] Optional reqwest blocking client
-- [ ] Support authorization via \_\_session cookie on same-origin
+- [x] Support authorization via \_\_session cookie on same-origin
 - [ ] Add validator support for axum, rocket, warp
 
 # Production users

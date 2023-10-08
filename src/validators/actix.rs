@@ -246,7 +246,6 @@ mod tests {
 	use crate::ClerkConfiguration;
 	use actix_web::http::header::HeaderValue;
 	use actix_web::test as actix_test;
-	use tokio::test as tokio_test;
 
 	#[allow(dead_code)]
 	async fn test_clerk_authorize() {
