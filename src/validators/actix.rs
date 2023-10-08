@@ -7,7 +7,6 @@ use actix_web::{
 	body::EitherBody,
 	dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
 	error::Error,
-	http::header::HeaderValue,
 	HttpResponse,
 };
 use futures_util::future::LocalBoxFuture;
@@ -100,10 +99,6 @@ pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk, validat
 		Ok(val) => Ok(val),
 		Err(_) => return Err(HttpResponse::Unauthorized().json("Error: Invalid JWT!")),
 	}
-}
-
-pub fn parse_cookies(req: &ServiceRequest) -> Option<&HeaderValue> {
-	req.headers().get("cookie")
 }
 
 /// Actix-web middleware for protecting a http endpoint with Clerk.dev
@@ -285,25 +280,5 @@ mod tests {
 		let result = validate_jwt(invalid_jwt, jwks);
 
 		assert_eq!(result, Err(false));
-	}
-
-	#[tokio_test]
-	async fn test_parse_cookies() {
-		// Create a request with a "cookie" header
-		let req = actix_test::TestRequest::default()
-			.append_header((actix_web::http::header::COOKIE, HeaderValue::from_static("cookie_value=12345")))
-			.to_srv_request();
-
-		// Call the parse_cookies function to get the Cookie header value
-		let cookie_value = parse_cookies(&req);
-
-		// Assert that the cookie_value is Some(HeaderValue)
-		assert!(cookie_value.is_some());
-
-		// Extract the HeaderValue from the Option
-		let cookie_value = cookie_value.unwrap();
-
-		// Assert that the Cookie value matches the expected value
-		assert_eq!(cookie_value.to_str().unwrap(), "cookie_value=12345");
 	}
 }
