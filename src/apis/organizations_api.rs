@@ -335,7 +335,6 @@ impl Organization {
 		clerk_client: &Clerk,
 		organization_id: &str,
 		uploader_user_id: Option<&str>,
-		file: Option<std::path::PathBuf>,
 	) -> Result<crate::models::OrganizationWithLogo, Error<UploadOrganizationLogoError>> {
 		let local_var_configuration = &clerk_client.config;
 
