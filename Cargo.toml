@@ -1,6 +1,6 @@
 [package]
 name = "clerk-rs"
-version = "0.1.8"
+version = "0.1.9"
 authors = ["DarrenBaldwin07"]
 description = "An unofficial Rust SDK for the Clerk API"
 repository = "https://github.com/Cincinnati-Ventures/clerk-rs"

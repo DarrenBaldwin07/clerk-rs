@@ -6,7 +6,7 @@
         alt="download count badge" />
 </a>
 
-# An unofficial Clerk.dev SDK for rust
+# An unofficial Clerk SDK for rust
 
 For more detailed documentation, please reference the below links:
 
