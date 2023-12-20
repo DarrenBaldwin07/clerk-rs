@@ -48,12 +48,14 @@ impl Default for Status {
 pub enum Strategy {
 	#[serde(rename = "admin")]
 	Admin,
-	#[serde(rename = "from_oauth_google")]
-	FromOAuthGoogle,
 	#[serde(rename = "phone_code")]
 	PhoneCode,
 	#[serde(rename = "email_code")]
 	EmailCode,
+	#[serde(rename = "from_oauth_google")]
+	FromOAuthGoogle,
+	#[serde(rename = "from_oauth_twitter")]
+	FromOAuthTwitter,
 	#[serde(other)]
 	Other,
 }
