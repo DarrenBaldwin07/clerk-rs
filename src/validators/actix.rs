@@ -84,14 +84,14 @@ pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk, validat
 			Err(_) => return Err(HttpResponse::Unauthorized().json("Error: Unable to parse http header")),
 		},
 		None => match validate_session_cookie {
-            true => match req.cookie("__session") {
-                Some(cookie) => {
-					cookie.value().to_string()
+			true => match req.cookie("__session") {
+				Some(cookie) => cookie.value().to_string(),
+				None => {
+					return Err(HttpResponse::Unauthorized().json("Error: No Authorization header or session cookie found on the request payload!"))
 				}
-				None => return Err(HttpResponse::Unauthorized().json("Error: No Authorization header or session cookie found on the request payload!"))
-            },
-            false => return Err(HttpResponse::Unauthorized().json("Error: No Authorization header found on the request payload!")),
-        }
+			},
+			false => return Err(HttpResponse::Unauthorized().json("Error: No Authorization header found on the request payload!")),
+		},
 	};
 
 	// Finally, check if the jwt is valid...
@@ -127,7 +127,7 @@ pub async fn clerk_authorize(req: &ServiceRequest, clerk_client: &Clerk, validat
 pub struct ClerkMiddleware {
 	pub clerk_config: ClerkConfiguration,
 	pub routes: Option<Vec<String>>,
-	pub should_validate_session_cookie: bool
+	pub should_validate_session_cookie: bool,
 }
 
 impl ClerkMiddleware {
@@ -135,7 +135,7 @@ impl ClerkMiddleware {
 		Self {
 			clerk_config: config,
 			routes,
-			should_validate_session_cookie
+			should_validate_session_cookie,
 		}
 	}
 }
@@ -157,7 +157,7 @@ where
 			service: Rc::new(service),
 			config: self.clerk_config.clone(),
 			routes: self.routes.clone(),
-			should_validate_session_cookie: self.should_validate_session_cookie
+			should_validate_session_cookie: self.should_validate_session_cookie,
 		}))
 	}
 }
@@ -166,7 +166,7 @@ pub struct ClerkMiddlewareService<S> {
 	service: Rc<S>,
 	config: ClerkConfiguration,
 	routes: Option<Vec<String>>,
-	should_validate_session_cookie: bool
+	should_validate_session_cookie: bool,
 }
 
 impl<S: 'static, B> Service<ServiceRequest> for ClerkMiddlewareService<S>
