@@ -50,6 +50,8 @@ pub enum Strategy {
 	Admin,
 	#[serde(rename = "from_oauth_google")]
 	FromOAuthGoogle,
+	#[serde(rename = "from_oauth_github")]
+	FromOAuthGithub,
 }
 
 impl Default for Strategy {
