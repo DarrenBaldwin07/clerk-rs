@@ -12,27 +12,34 @@
 
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct RedirectUrl {
+pub struct ProxyCheck {
     #[serde(rename = "object")]
     pub object: Object,
     #[serde(rename = "id")]
     pub id: String,
-    #[serde(rename = "url")]
-    pub url: String,
-    /// Unix timestamp of creation. 
+    #[serde(rename = "domain_id")]
+    pub domain_id: String,
+    #[serde(rename = "last_run_at")]
+    pub last_run_at: i32,
+    #[serde(rename = "proxy_url")]
+    pub proxy_url: String,
+    #[serde(rename = "successful")]
+    pub successful: bool,
     #[serde(rename = "created_at")]
-    pub created_at: i64,
-    /// Unix timestamp of last update. 
+    pub created_at: i32,
     #[serde(rename = "updated_at")]
-    pub updated_at: i64,
+    pub updated_at: i32,
 }
 
-impl RedirectUrl {
-    pub fn new(object: Object, id: String, url: String, created_at: i64, updated_at: i64) -> RedirectUrl {
-        RedirectUrl {
+impl ProxyCheck {
+    pub fn new(object: Object, id: String, domain_id: String, last_run_at: i32, proxy_url: String, successful: bool, created_at: i32, updated_at: i32) -> ProxyCheck {
+        ProxyCheck {
             object,
             id,
-            url,
+            domain_id,
+            last_run_at,
+            proxy_url,
+            successful,
             created_at,
             updated_at,
         }
@@ -42,13 +49,13 @@ impl RedirectUrl {
 /// 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum Object {
-    #[serde(rename = "redirect_url")]
-    RedirectUrl,
+    #[serde(rename = "proxy_check")]
+    ProxyCheck,
 }
 
 impl Default for Object {
     fn default() -> Object {
-        Self::RedirectUrl
+        Self::ProxyCheck
     }
 }
 
