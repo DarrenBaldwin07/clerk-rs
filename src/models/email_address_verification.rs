@@ -44,10 +44,11 @@ impl Default for Status {
 	}
 }
 ///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum Strategy {
 	#[serde(rename = "admin")]
 	Admin,
+	Other(String)
 }
 
 impl Default for Strategy {
