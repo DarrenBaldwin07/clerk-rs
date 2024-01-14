@@ -242,10 +242,8 @@ where
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use crate::apis::jwks_api::JwksKey;
-	use crate::ClerkConfiguration;
-	use actix_web::http::header::HeaderValue;
-	use actix_web::test as actix_test;
+	use crate::{apis::jwks_api::JwksKey, ClerkConfiguration};
+	use actix_web::{http::header::HeaderValue, test as actix_test};
 
 	#[allow(dead_code)]
 	async fn test_clerk_authorize() {
