@@ -6,7 +6,7 @@
         alt="download count badge" />
 </a>
 
-# An unofficial Clerk SDK for rust
+# An unofficial Clerk SDK for Rust
 
 For more detailed documentation, please reference the below links:
 
@@ -92,6 +92,7 @@ async fn main() -> std::io::Result<()> {
 
 - [Tembo](https://tembo.io)
 - [Rezon](https://rezon.ai)
+- Open a PR and add your company here :)
 
 > Note: This SDK is completely maintained by the Rust community and is by no means affiliated with Clerk.dev.
 

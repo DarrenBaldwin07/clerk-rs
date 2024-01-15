@@ -14,10 +14,13 @@ pub struct CNameTarget {
 	pub host: String,
 	#[serde(rename = "value")]
 	pub value: String,
+	/// Denotes whether this CNAME target is required to be set in order for the domain to be considered deployed.
+	#[serde(rename = "required")]
+	pub required: bool,
 }
 
 impl CNameTarget {
-	pub fn new(host: String, value: String) -> CNameTarget {
-		CNameTarget { host, value }
+	pub fn new(host: String, value: String, required: bool) -> CNameTarget {
+		CNameTarget { host, value, required }
 	}
 }

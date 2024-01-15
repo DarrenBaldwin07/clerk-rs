@@ -124,6 +124,25 @@ pub struct User {
 	/// Flag to denote whether user is banned or not.
 	#[serde(rename = "banned", skip_serializing_if = "Option::is_none")]
 	pub banned: Option<bool>,
+	/// Flag to denote whether user is currently locked, i.e. restricted from signing in or not.
+	#[serde(rename = "locked", skip_serializing_if = "Option::is_none")]
+	pub locked: Option<bool>,
+	/// The number of seconds remaining until the lockout period expires for a locked user. A null value for a locked user indicates that lockout never expires.
+	#[serde(
+		rename = "lockout_expires_in_seconds",
+		default,
+		with = "::serde_with::rust::double_option",
+		skip_serializing_if = "Option::is_none"
+	)]
+	pub lockout_expires_in_seconds: Option<Option<i64>>,
+	/// The number of verification attempts remaining until the user is locked. Null if account lockout is not enabled. Note: if a user is locked explicitly via the Backend API, they may still have verification attempts remaining.
+	#[serde(
+		rename = "verification_attempts_remaining",
+		default,
+		with = "::serde_with::rust::double_option",
+		skip_serializing_if = "Option::is_none"
+	)]
+	pub verification_attempts_remaining: Option<Option<i64>>,
 	/// Unix timestamp of last update.
 	#[serde(rename = "updated_at", skip_serializing_if = "Option::is_none")]
 	pub updated_at: Option<i64>,
@@ -136,6 +155,14 @@ pub struct User {
 	/// If enabled, user can create organizations via FAPI.
 	#[serde(rename = "create_organization_enabled", skip_serializing_if = "Option::is_none")]
 	pub create_organization_enabled: Option<bool>,
+	/// Unix timestamp of the latest session activity, with day precision.
+	#[serde(
+		rename = "last_active_at",
+		default,
+		with = "::serde_with::rust::double_option",
+		skip_serializing_if = "Option::is_none"
+	)]
+	pub last_active_at: Option<Option<i64>>,
 }
 
 impl User {
@@ -169,10 +196,14 @@ impl User {
 			saml_accounts: None,
 			last_sign_in_at: None,
 			banned: None,
+			locked: None,
+			lockout_expires_in_seconds: None,
+			verification_attempts_remaining: None,
 			updated_at: None,
 			created_at: None,
 			delete_self_enabled: None,
 			create_organization_enabled: None,
+			last_active_at: None,
 		}
 	}
 }

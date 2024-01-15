@@ -19,6 +19,22 @@ pub struct CreateInvitationRequest {
 	/// Optional URL which specifies where to redirect the user once they click the invitation link. This is only required if you have implemented a [custom flow](https://clerk.com/docs/authentication/invitations#custom-flow) and you're not using Clerk Hosted Pages or Clerk Components.
 	#[serde(rename = "redirect_url", skip_serializing_if = "Option::is_none")]
 	pub redirect_url: Option<String>,
+	/// Optional flag which denotes whether an email invitation should be sent to the given email address. Defaults to true.
+	#[serde(
+		rename = "notify",
+		default,
+		with = "::serde_with::rust::double_option",
+		skip_serializing_if = "Option::is_none"
+	)]
+	pub notify: Option<Option<bool>>,
+	/// Whether an invitation should be created if there is already an existing invitation for this email address, or it's claimed by another user.
+	#[serde(
+		rename = "ignore_existing",
+		default,
+		with = "::serde_with::rust::double_option",
+		skip_serializing_if = "Option::is_none"
+	)]
+	pub ignore_existing: Option<Option<bool>>,
 }
 
 impl CreateInvitationRequest {
@@ -27,6 +43,8 @@ impl CreateInvitationRequest {
 			email_address,
 			public_metadata: None,
 			redirect_url: None,
+			notify: None,
+			ignore_existing: None,
 		}
 	}
 }

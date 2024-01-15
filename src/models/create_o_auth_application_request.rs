@@ -16,6 +16,9 @@ pub struct CreateOAuthApplicationRequest {
 	/// The callback URL of the new OAuth application
 	#[serde(rename = "callback_url")]
 	pub callback_url: String,
+	/// Define the allowed scopes for the new OAuth applications that dictate the user payload of the OAuth user info endpoint. Available scopes are `profile`, `email`, `public_metadata`, `private_metadata`. Provide the requested scopes as a string, separated by spaces.
+	#[serde(rename = "scopes", skip_serializing_if = "Option::is_none")]
+	pub scopes: Option<String>,
 	/// If true, this client is public and cannot securely store a client secret. Only the authorization code flow with proof key for code exchange (PKCE) may be used. Public clients cannot be updated to be confidential clients, and vice versa.
 	#[serde(rename = "public", skip_serializing_if = "Option::is_none")]
 	pub public: Option<bool>,
@@ -26,6 +29,7 @@ impl CreateOAuthApplicationRequest {
 		CreateOAuthApplicationRequest {
 			name,
 			callback_url,
+			scopes: None,
 			public: None,
 		}
 	}

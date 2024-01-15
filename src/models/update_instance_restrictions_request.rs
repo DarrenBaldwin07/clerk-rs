@@ -31,6 +31,13 @@ pub struct UpdateInstanceRestrictionsRequest {
 		skip_serializing_if = "Option::is_none"
 	)]
 	pub block_email_subaddresses: Option<Option<bool>>,
+	#[serde(
+		rename = "block_disposable_email_domains",
+		default,
+		with = "::serde_with::rust::double_option",
+		skip_serializing_if = "Option::is_none"
+	)]
+	pub block_disposable_email_domains: Option<Option<bool>>,
 }
 
 impl UpdateInstanceRestrictionsRequest {
@@ -39,6 +46,7 @@ impl UpdateInstanceRestrictionsRequest {
 			allowlist: None,
 			blocklist: None,
 			block_email_subaddresses: None,
+			block_disposable_email_domains: None,
 		}
 	}
 }

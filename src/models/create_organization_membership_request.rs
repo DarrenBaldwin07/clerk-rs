@@ -15,26 +15,11 @@ pub struct CreateOrganizationMembershipRequest {
 	pub user_id: String,
 	/// The role that the new member will have in the organization.
 	#[serde(rename = "role")]
-	pub role: Role,
+	pub role: String,
 }
 
 impl CreateOrganizationMembershipRequest {
-	pub fn new(user_id: String, role: Role) -> CreateOrganizationMembershipRequest {
+	pub fn new(user_id: String, role: String) -> CreateOrganizationMembershipRequest {
 		CreateOrganizationMembershipRequest { user_id, role }
-	}
-}
-
-/// The role that the new member will have in the organization.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Role {
-	#[serde(rename = "admin")]
-	Admin,
-	#[serde(rename = "basic_member")]
-	BasicMember,
-}
-
-impl Default for Role {
-	fn default() -> Role {
-		Self::Admin
 	}
 }

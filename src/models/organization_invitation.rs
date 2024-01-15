@@ -20,7 +20,7 @@ pub struct OrganizationInvitation {
 	#[serde(rename = "email_address", skip_serializing_if = "Option::is_none")]
 	pub email_address: Option<String>,
 	#[serde(rename = "role", skip_serializing_if = "Option::is_none")]
-	pub role: Option<Role>,
+	pub role: Option<String>,
 	#[serde(rename = "organization_id", skip_serializing_if = "Option::is_none")]
 	pub organization_id: Option<String>,
 	#[serde(rename = "status", skip_serializing_if = "Option::is_none")]
@@ -65,19 +65,5 @@ pub enum Object {
 impl Default for Object {
 	fn default() -> Object {
 		Self::OrganizationInvitation
-	}
-}
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Role {
-	#[serde(rename = "admin")]
-	Admin,
-	#[serde(rename = "basic_member")]
-	BasicMember,
-}
-
-impl Default for Role {
-	fn default() -> Role {
-		Self::Admin
 	}
 }

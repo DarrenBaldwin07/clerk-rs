@@ -87,6 +87,7 @@ pub mod actor_tokens_api;
 pub mod allow_list_block_list_api;
 pub mod beta_features_api;
 pub mod clients_api;
+pub mod configuration;
 pub mod email_addresses_api;
 pub mod email_sms_templates_api;
 pub mod emails_api;
@@ -103,8 +104,5 @@ pub mod redirect_urls_api;
 pub mod sessions_api;
 pub mod sign_in_tokens_api;
 pub mod sign_ups_api;
-pub mod sms_messages_api;
 pub mod users_api;
 pub mod webhooks_api;
-
-pub mod configuration;

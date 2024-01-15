@@ -18,17 +18,25 @@ pub struct OrganizationMembership {
 	#[serde(rename = "object", skip_serializing_if = "Option::is_none")]
 	pub object: Option<Object>,
 	#[serde(rename = "role", skip_serializing_if = "Option::is_none")]
-	pub role: Option<Role>,
+	pub role: Option<String>,
+	#[serde(rename = "permissions", skip_serializing_if = "Option::is_none")]
+	pub permissions: Option<Vec<String>>,
+	/// Metadata saved on the organization membership, accessible from both Frontend and Backend APIs
+	#[serde(rename = "public_metadata", skip_serializing_if = "Option::is_none")]
+	pub public_metadata: Option<serde_json::Value>,
+	/// Metadata saved on the organization membership, accessible only from the Backend API
+	#[serde(rename = "private_metadata", skip_serializing_if = "Option::is_none")]
+	pub private_metadata: Option<serde_json::Value>,
+	#[serde(rename = "organization", skip_serializing_if = "Option::is_none")]
+	pub organization: Option<Box<crate::models::Organization>>,
+	#[serde(rename = "public_user_data", skip_serializing_if = "Option::is_none")]
+	pub public_user_data: Option<Box<crate::models::OrganizationMembershipPublicUserData>>,
 	/// Unix timestamp of creation.
 	#[serde(rename = "created_at", skip_serializing_if = "Option::is_none")]
 	pub created_at: Option<i64>,
 	/// Unix timestamp of last update.
 	#[serde(rename = "updated_at", skip_serializing_if = "Option::is_none")]
 	pub updated_at: Option<i64>,
-	#[serde(rename = "organization", skip_serializing_if = "Option::is_none")]
-	pub organization: Option<Box<crate::models::Organization>>,
-	#[serde(rename = "public_user_data", skip_serializing_if = "Option::is_none")]
-	pub public_user_data: Option<Box<crate::models::OrganizationMembershipPublicUserData>>,
 }
 
 impl OrganizationMembership {
@@ -38,10 +46,13 @@ impl OrganizationMembership {
 			id: None,
 			object: None,
 			role: None,
-			created_at: None,
-			updated_at: None,
+			permissions: None,
+			public_metadata: None,
+			private_metadata: None,
 			organization: None,
 			public_user_data: None,
+			created_at: None,
+			updated_at: None,
 		}
 	}
 }
@@ -56,19 +67,5 @@ pub enum Object {
 impl Default for Object {
 	fn default() -> Object {
 		Self::OrganizationMembership
-	}
-}
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Role {
-	#[serde(rename = "admin")]
-	Admin,
-	#[serde(rename = "basic_member")]
-	BasicMember,
-}
-
-impl Default for Role {
-	fn default() -> Role {
-		Self::Admin
 	}
 }

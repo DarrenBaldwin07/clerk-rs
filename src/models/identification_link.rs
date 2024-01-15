@@ -27,8 +27,6 @@ impl IdentificationLink {
 pub enum Type {
 	#[serde(rename = "oauth_google")]
 	OauthGoogle,
-	#[serde(rename = "oauth_github")]
-	OauthGithub,
 	#[serde(rename = "oauth_mock")]
 	OauthMock,
 	#[serde(rename = "saml")]

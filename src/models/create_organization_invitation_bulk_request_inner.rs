@@ -18,7 +18,7 @@ pub struct CreateOrganizationInvitationBulkRequestInner {
 	pub inviter_user_id: String,
 	/// The role of the new member in the organization.
 	#[serde(rename = "role")]
-	pub role: Role,
+	pub role: String,
 	/// Metadata saved on the organization invitation, read-only from the Frontend API and fully accessible (read/write) from the Backend API.
 	#[serde(rename = "public_metadata", skip_serializing_if = "Option::is_none")]
 	pub public_metadata: Option<serde_json::Value>,
@@ -31,7 +31,7 @@ pub struct CreateOrganizationInvitationBulkRequestInner {
 }
 
 impl CreateOrganizationInvitationBulkRequestInner {
-	pub fn new(email_address: String, inviter_user_id: String, role: Role) -> CreateOrganizationInvitationBulkRequestInner {
+	pub fn new(email_address: String, inviter_user_id: String, role: String) -> CreateOrganizationInvitationBulkRequestInner {
 		CreateOrganizationInvitationBulkRequestInner {
 			email_address,
 			inviter_user_id,
@@ -40,20 +40,5 @@ impl CreateOrganizationInvitationBulkRequestInner {
 			private_metadata: None,
 			redirect_url: None,
 		}
-	}
-}
-
-/// The role of the new member in the organization.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Role {
-	#[serde(rename = "admin")]
-	Admin,
-	#[serde(rename = "basic_member")]
-	BasicMember,
-}
-
-impl Default for Role {
-	fn default() -> Role {
-		Self::Admin
 	}
 }

@@ -11,15 +11,22 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UpdateOAuthApplicationRequest {
 	/// The new name of the OAuth application
-	#[serde(rename = "name")]
-	pub name: String,
+	#[serde(rename = "name", skip_serializing_if = "Option::is_none")]
+	pub name: Option<String>,
 	/// The new callback URL of the OAuth application
-	#[serde(rename = "callback_url")]
-	pub callback_url: String,
+	#[serde(rename = "callback_url", skip_serializing_if = "Option::is_none")]
+	pub callback_url: Option<String>,
+	/// Define the allowed scopes for the new OAuth applications that dictate the user payload of the OAuth user info endpoint. Available scopes are `profile`, `email`, `public_metadata`, `private_metadata`. Provide the requested scopes as a string, separated by spaces.
+	#[serde(rename = "scopes", skip_serializing_if = "Option::is_none")]
+	pub scopes: Option<String>,
 }
 
 impl UpdateOAuthApplicationRequest {
-	pub fn new(name: String, callback_url: String) -> UpdateOAuthApplicationRequest {
-		UpdateOAuthApplicationRequest { name, callback_url }
+	pub fn new() -> UpdateOAuthApplicationRequest {
+		UpdateOAuthApplicationRequest {
+			name: None,
+			callback_url: None,
+			scopes: None,
+		}
 	}
 }

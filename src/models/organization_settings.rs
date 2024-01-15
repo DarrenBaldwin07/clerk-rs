@@ -17,18 +17,47 @@ pub struct OrganizationSettings {
 	pub enabled: bool,
 	#[serde(rename = "max_allowed_memberships")]
 	pub max_allowed_memberships: i32,
+	#[serde(rename = "max_allowed_roles", skip_serializing_if = "Option::is_none")]
+	pub max_allowed_roles: Option<i32>,
+	#[serde(rename = "max_allowed_permissions", skip_serializing_if = "Option::is_none")]
+	pub max_allowed_permissions: Option<i32>,
+	/// The role key that a user will be assigned after creating an organization.
+	#[serde(rename = "creator_role")]
+	pub creator_role: String,
 	/// The default for whether an admin can delete an organization with the Frontend API.
-	#[serde(rename = "admin_delete_enabled", skip_serializing_if = "Option::is_none")]
-	pub admin_delete_enabled: Option<bool>,
+	#[serde(rename = "admin_delete_enabled")]
+	pub admin_delete_enabled: bool,
+	#[serde(rename = "domains_enabled")]
+	pub domains_enabled: bool,
+	#[serde(rename = "domains_enrollment_modes")]
+	pub domains_enrollment_modes: Vec<DomainsEnrollmentModes>,
+	/// The role key that it will be used in order to create an organization invitation or suggestion.
+	#[serde(rename = "domains_default_role")]
+	pub domains_default_role: String,
 }
 
 impl OrganizationSettings {
-	pub fn new(object: Object, enabled: bool, max_allowed_memberships: i32) -> OrganizationSettings {
+	pub fn new(
+		object: Object,
+		enabled: bool,
+		max_allowed_memberships: i32,
+		creator_role: String,
+		admin_delete_enabled: bool,
+		domains_enabled: bool,
+		domains_enrollment_modes: Vec<DomainsEnrollmentModes>,
+		domains_default_role: String,
+	) -> OrganizationSettings {
 		OrganizationSettings {
 			object,
 			enabled,
 			max_allowed_memberships,
-			admin_delete_enabled: None,
+			max_allowed_roles: None,
+			max_allowed_permissions: None,
+			creator_role,
+			admin_delete_enabled,
+			domains_enabled,
+			domains_enrollment_modes,
+			domains_default_role,
 		}
 	}
 }
@@ -43,5 +72,21 @@ pub enum Object {
 impl Default for Object {
 	fn default() -> Object {
 		Self::OrganizationSettings
+	}
+}
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum DomainsEnrollmentModes {
+	#[serde(rename = "manual_invitation")]
+	ManualInvitation,
+	#[serde(rename = "automatic_invitation")]
+	AutomaticInvitation,
+	#[serde(rename = "automatic_suggestion")]
+	AutomaticSuggestion,
+}
+
+impl Default for DomainsEnrollmentModes {
+	fn default() -> DomainsEnrollmentModes {
+		Self::ManualInvitation
 	}
 }

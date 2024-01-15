@@ -12,26 +12,11 @@
 pub struct UpdateOrganizationMembershipRequest {
 	/// The new role of the given membership.
 	#[serde(rename = "role")]
-	pub role: Role,
+	pub role: String,
 }
 
 impl UpdateOrganizationMembershipRequest {
-	pub fn new(role: Role) -> UpdateOrganizationMembershipRequest {
+	pub fn new(role: String) -> UpdateOrganizationMembershipRequest {
 		UpdateOrganizationMembershipRequest { role }
-	}
-}
-
-/// The new role of the given membership.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Role {
-	#[serde(rename = "admin")]
-	Admin,
-	#[serde(rename = "basic_member")]
-	BasicMember,
-}
-
-impl Default for Role {
-	fn default() -> Role {
-		Self::Admin
 	}
 }
