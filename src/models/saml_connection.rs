@@ -33,7 +33,7 @@ pub struct SamlConnection {
 	#[serde(rename = "provider")]
 	pub provider: String,
 	#[serde(rename = "user_count")]
-	pub user_count: i32,
+	pub user_count: i64,
 	#[serde(rename = "sync_user_attributes")]
 	pub sync_user_attributes: bool,
 	/// Unix timestamp of creation.
@@ -57,7 +57,7 @@ impl SamlConnection {
 		sp_entity_id: String,
 		active: bool,
 		provider: String,
-		user_count: i32,
+		user_count: i64,
 		sync_user_attributes: bool,
 		created_at: i64,
 		updated_at: i64,

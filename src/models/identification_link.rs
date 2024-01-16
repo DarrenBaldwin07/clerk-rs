@@ -31,6 +31,8 @@ pub enum Type {
 	OauthMock,
 	#[serde(rename = "saml")]
 	Saml,
+	#[serde(other)]
+	Other,
 }
 
 impl Default for Type {

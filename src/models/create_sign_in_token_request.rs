@@ -15,7 +15,7 @@ pub struct CreateSignInTokenRequest {
 	pub user_id: Option<String>,
 	/// Optional parameter to specify the life duration of the sign in token in seconds. By default, the duration is 30 days.
 	#[serde(rename = "expires_in_seconds", skip_serializing_if = "Option::is_none")]
-	pub expires_in_seconds: Option<i32>,
+	pub expires_in_seconds: Option<i64>,
 }
 
 impl CreateSignInTokenRequest {

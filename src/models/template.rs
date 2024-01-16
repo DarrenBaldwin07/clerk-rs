@@ -37,7 +37,7 @@ pub struct Template {
 	pub slug: Option<String>,
 	/// position with the listing of templates
 	#[serde(rename = "position", skip_serializing_if = "Option::is_none")]
-	pub position: Option<i32>,
+	pub position: Option<i64>,
 	/// whether this template can be reverted to the corresponding system default
 	#[serde(rename = "can_revert", skip_serializing_if = "Option::is_none")]
 	pub can_revert: Option<bool>,

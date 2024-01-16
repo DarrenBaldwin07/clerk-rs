@@ -23,7 +23,7 @@ pub struct UpdateInstanceOrganizationSettingsRequest {
 		with = "::serde_with::rust::double_option",
 		skip_serializing_if = "Option::is_none"
 	)]
-	pub max_allowed_memberships: Option<Option<i32>>,
+	pub max_allowed_memberships: Option<Option<i64>>,
 	#[serde(
 		rename = "admin_delete_enabled",
 		default,

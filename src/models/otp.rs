@@ -15,13 +15,13 @@ pub struct Otp {
 	#[serde(rename = "strategy")]
 	pub strategy: Strategy,
 	#[serde(rename = "attempts")]
-	pub attempts: i32,
+	pub attempts: i64,
 	#[serde(rename = "expire_at")]
-	pub expire_at: i32,
+	pub expire_at: i64,
 }
 
 impl Otp {
-	pub fn new(status: Status, strategy: Strategy, attempts: i32, expire_at: i32) -> Otp {
+	pub fn new(status: Status, strategy: Strategy, attempts: i64, expire_at: i64) -> Otp {
 		Otp {
 			status,
 			strategy,

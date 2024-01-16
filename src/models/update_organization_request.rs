@@ -39,7 +39,7 @@ pub struct UpdateOrganizationRequest {
 		with = "::serde_with::rust::double_option",
 		skip_serializing_if = "Option::is_none"
 	)]
-	pub max_allowed_memberships: Option<Option<i32>>,
+	pub max_allowed_memberships: Option<Option<i64>>,
 	/// If true, an admin can delete this organization with the Frontend API.
 	#[serde(
 		rename = "admin_delete_enabled",

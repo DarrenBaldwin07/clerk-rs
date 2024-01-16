@@ -27,7 +27,7 @@ pub struct CreateOrganizationRequest {
 	pub slug: Option<String>,
 	/// The maximum number of memberships allowed for this organization
 	#[serde(rename = "max_allowed_memberships", skip_serializing_if = "Option::is_none")]
-	pub max_allowed_memberships: Option<i32>,
+	pub max_allowed_memberships: Option<i64>,
 }
 
 impl CreateOrganizationRequest {
