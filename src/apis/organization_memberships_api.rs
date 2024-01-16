@@ -63,9 +63,9 @@ pub enum UpdateOrganizationMembershipMetadataError {
 	UnknownValue(serde_json::Value),
 }
 
-pub struct OrganizationMebership;
+pub struct OrganizationMembership;
 
-impl OrganizationMebership {
+impl OrganizationMembership {
 	/// Adds a user as a member to the given organization. Only users in the same instance as the organization can be added as members.
 	pub async fn create(
 		clerk_client: &Clerk,
