@@ -56,3 +56,62 @@ impl Default for Strategy {
 		Self::Admin
 	}
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn test_deserialize_email_address_verification() {
+		// Define a JSON string that represents an EmailAddressVerification object
+		let json = r#"
+            {
+                "status": "verified",
+                "strategy": "admin",
+                "attempts": 0,
+                "expire_at": 0
+            }
+        "#;
+
+		// Deserialize the JSON string
+		let deserialized: EmailAddressVerification = serde_json::from_str(json).expect("Failed to deserialize");
+
+		// Define the expected EmailAddressVerification object
+		let expected = EmailAddressVerification {
+			status: Status::Verified,
+			strategy: Strategy::Admin,
+			attempts: Some(0),
+			expire_at: Some(0),
+		};
+
+		// Assert that the deserialized object matches the expected object
+		assert_eq!(deserialized, expected);
+	}
+
+	#[test]
+	fn test_deserialize_email_address_verification_other_strategy() {
+		// Define a JSON string that represents an EmailAddressVerification object
+		let json = r#"
+            {
+                "status": "verified",
+                "strategy": "foobar",
+                "attempts": 0,
+                "expire_at": 0
+            }
+        "#;
+
+		// Deserialize the JSON string
+		let deserialized: EmailAddressVerification = serde_json::from_str(json).expect("Failed to deserialize");
+
+		// Define the expected EmailAddressVerification object
+		let expected = EmailAddressVerification {
+			status: Status::Verified,
+			strategy: Strategy::Other("custom".to_string()),
+			attempts: Some(0),
+			expire_at: Some(0),
+		};
+
+		// Assert that the deserialized object matches the expected object
+		assert_eq!(deserialized, expected);
+	}
+}
