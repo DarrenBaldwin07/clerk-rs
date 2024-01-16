@@ -17,15 +17,15 @@ pub struct ProxyCheck {
 	#[serde(rename = "domain_id")]
 	pub domain_id: String,
 	#[serde(rename = "last_run_at")]
-	pub last_run_at: i32,
+	pub last_run_at: i64,
 	#[serde(rename = "proxy_url")]
 	pub proxy_url: String,
 	#[serde(rename = "successful")]
 	pub successful: bool,
 	#[serde(rename = "created_at")]
-	pub created_at: i32,
+	pub created_at: i64,
 	#[serde(rename = "updated_at")]
-	pub updated_at: i32,
+	pub updated_at: i64,
 }
 
 impl ProxyCheck {
@@ -33,11 +33,11 @@ impl ProxyCheck {
 		object: Object,
 		id: String,
 		domain_id: String,
-		last_run_at: i32,
+		last_run_at: i64,
 		proxy_url: String,
 		successful: bool,
-		created_at: i32,
-		updated_at: i32,
+		created_at: i64,
+		updated_at: i64,
 	) -> ProxyCheck {
 		ProxyCheck {
 			object,

@@ -15,13 +15,13 @@ pub struct EmailAddressVerification {
 	#[serde(rename = "strategy")]
 	pub strategy: Strategy,
 	#[serde(rename = "attempts", deserialize_with = "Option::deserialize")]
-	pub attempts: Option<i32>,
+	pub attempts: Option<i64>,
 	#[serde(rename = "expire_at", deserialize_with = "Option::deserialize")]
-	pub expire_at: Option<i32>,
+	pub expire_at: Option<i64>,
 }
 
 impl EmailAddressVerification {
-	pub fn new(status: Status, strategy: Strategy, attempts: Option<i32>, expire_at: Option<i32>) -> EmailAddressVerification {
+	pub fn new(status: Status, strategy: Strategy, attempts: Option<i64>, expire_at: Option<i64>) -> EmailAddressVerification {
 		EmailAddressVerification {
 			status,
 			strategy,

@@ -24,18 +24,18 @@ pub struct SamlAccountVerification {
 	)]
 	pub error: Option<Option<Box<crate::models::SamlError>>>,
 	#[serde(rename = "expire_at")]
-	pub expire_at: i32,
+	pub expire_at: i64,
 	#[serde(
 		rename = "attempts",
 		default,
 		with = "::serde_with::rust::double_option",
 		skip_serializing_if = "Option::is_none"
 	)]
-	pub attempts: Option<Option<i32>>,
+	pub attempts: Option<Option<i64>>,
 }
 
 impl SamlAccountVerification {
-	pub fn new(status: Status, strategy: Strategy, external_verification_redirect_url: Option<String>, expire_at: i32) -> SamlAccountVerification {
+	pub fn new(status: Status, strategy: Strategy, external_verification_redirect_url: Option<String>, expire_at: i64) -> SamlAccountVerification {
 		SamlAccountVerification {
 			status,
 			strategy,

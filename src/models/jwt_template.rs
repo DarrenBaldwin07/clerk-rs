@@ -19,9 +19,9 @@ pub struct JwtTemplate {
 	#[serde(rename = "claims")]
 	pub claims: serde_json::Value,
 	#[serde(rename = "lifetime")]
-	pub lifetime: i32,
+	pub lifetime: i64,
 	#[serde(rename = "allowed_clock_skew")]
-	pub allowed_clock_skew: i32,
+	pub allowed_clock_skew: i64,
 	#[serde(rename = "custom_signing_key", skip_serializing_if = "Option::is_none")]
 	pub custom_signing_key: Option<bool>,
 	#[serde(rename = "signing_algorithm", skip_serializing_if = "Option::is_none")]
@@ -40,8 +40,8 @@ impl JwtTemplate {
 		id: String,
 		name: String,
 		claims: serde_json::Value,
-		lifetime: i32,
-		allowed_clock_skew: i32,
+		lifetime: i64,
+		allowed_clock_skew: i64,
 		created_at: i64,
 		updated_at: i64,
 	) -> JwtTemplate {

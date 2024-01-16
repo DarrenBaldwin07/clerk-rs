@@ -18,10 +18,10 @@ pub struct CreateActorTokenRequest {
 	pub actor: serde_json::Value,
 	/// Optional parameter to specify the life duration of the actor token in seconds. By default, the duration is 1 hour.
 	#[serde(rename = "expires_in_seconds", skip_serializing_if = "Option::is_none")]
-	pub expires_in_seconds: Option<i32>,
+	pub expires_in_seconds: Option<i64>,
 	/// The maximum duration that the session which will be created by the generated actor token should last. By default, the duration of a session created via an actor token, lasts 30 minutes.
 	#[serde(rename = "session_max_duration_in_seconds", skip_serializing_if = "Option::is_none")]
-	pub session_max_duration_in_seconds: Option<i32>,
+	pub session_max_duration_in_seconds: Option<i64>,
 }
 
 impl CreateActorTokenRequest {

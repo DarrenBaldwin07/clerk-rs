@@ -16,11 +16,11 @@ pub struct OrganizationSettings {
 	#[serde(rename = "enabled")]
 	pub enabled: bool,
 	#[serde(rename = "max_allowed_memberships")]
-	pub max_allowed_memberships: i32,
+	pub max_allowed_memberships: i64,
 	#[serde(rename = "max_allowed_roles", skip_serializing_if = "Option::is_none")]
-	pub max_allowed_roles: Option<i32>,
+	pub max_allowed_roles: Option<i64>,
 	#[serde(rename = "max_allowed_permissions", skip_serializing_if = "Option::is_none")]
-	pub max_allowed_permissions: Option<i32>,
+	pub max_allowed_permissions: Option<i64>,
 	/// The role key that a user will be assigned after creating an organization.
 	#[serde(rename = "creator_role")]
 	pub creator_role: String,
@@ -40,7 +40,7 @@ impl OrganizationSettings {
 	pub fn new(
 		object: Object,
 		enabled: bool,
-		max_allowed_memberships: i32,
+		max_allowed_memberships: i64,
 		creator_role: String,
 		admin_delete_enabled: bool,
 		domains_enabled: bool,

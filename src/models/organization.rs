@@ -24,9 +24,9 @@ pub struct Organization {
 		with = "::serde_with::rust::double_option",
 		skip_serializing_if = "Option::is_none"
 	)]
-	pub members_count: Option<Option<i32>>,
+	pub members_count: Option<Option<i64>>,
 	#[serde(rename = "max_allowed_memberships")]
-	pub max_allowed_memberships: i32,
+	pub max_allowed_memberships: i64,
 	#[serde(rename = "admin_delete_enabled", skip_serializing_if = "Option::is_none")]
 	pub admin_delete_enabled: Option<bool>,
 	#[serde(rename = "public_metadata")]
@@ -49,7 +49,7 @@ impl Organization {
 		id: String,
 		name: String,
 		slug: String,
-		max_allowed_memberships: i32,
+		max_allowed_memberships: i64,
 		public_metadata: serde_json::Value,
 		private_metadata: serde_json::Value,
 		created_at: i64,

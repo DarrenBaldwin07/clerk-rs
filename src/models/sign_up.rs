@@ -98,13 +98,13 @@ pub struct SignUp {
 	)]
 	pub created_user_id: Option<Option<String>>,
 	#[serde(rename = "abandon_at")]
-	pub abandon_at: i32,
+	pub abandon_at: i64,
 	#[serde(rename = "external_account", skip_serializing_if = "Option::is_none")]
 	pub external_account: Option<serde_json::Value>,
 }
 
 impl SignUp {
-	pub fn new(object: Object, id: String, status: Status, password_enabled: bool, custom_action: bool, abandon_at: i32) -> SignUp {
+	pub fn new(object: Object, id: String, status: Status, password_enabled: bool, custom_action: bool, abandon_at: i64) -> SignUp {
 		SignUp {
 			object,
 			id,
