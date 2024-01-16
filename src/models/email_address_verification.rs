@@ -48,7 +48,8 @@ impl Default for Status {
 pub enum Strategy {
 	#[serde(rename = "admin")]
 	Admin,
-	Other(String)
+	#[serde(other)]
+	Other
 }
 
 impl Default for Strategy {
@@ -106,7 +107,7 @@ mod tests {
 		// Define the expected EmailAddressVerification object
 		let expected = EmailAddressVerification {
 			status: Status::Verified,
-			strategy: Strategy::Other("custom".to_string()),
+			strategy: Strategy::Other,
 			attempts: Some(0),
 			expire_at: Some(0),
 		};
