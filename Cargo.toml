@@ -21,6 +21,10 @@ path = "examples/api.rs"
 name = "actix"
 path = "examples/actix.rs"
 
+[[example]]
+name = "axum"
+path = "examples/axum.rs"
+
 [lib]
 doctest = false
 
