@@ -8,7 +8,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 	// Initialize our Clerk client with the newly created configuration
 	let client = Clerk::new(config);
 	// Make the api call to the specified clerk endpoint
-	let res = client.get(ClerkGetEndpoint::GetUserList).await?;
+	let _res = client.get(ClerkGetEndpoint::GetUserList).await?;
 
 	// ...
 	Ok(())
