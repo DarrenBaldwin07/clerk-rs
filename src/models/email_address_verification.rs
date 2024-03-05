@@ -49,7 +49,7 @@ pub enum Strategy {
 	#[serde(rename = "admin")]
 	Admin,
 	#[serde(other)]
-	Other
+	Other,
 }
 
 impl Default for Strategy {

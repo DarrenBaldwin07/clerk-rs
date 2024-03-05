@@ -28,6 +28,7 @@ pub const USER_AGENT: &str = concat!("Clerk/v1 RustBindings/", env!("CARGO_PKG_V
  *
  * NOTE: This SDK is based on the official clerk openAPI spec found here: https://clerk.com/docs/reference/backend-api
  */
+#[derive(Clone)]
 pub struct Clerk {
 	pub config: configuration::ClerkConfiguration,
 }

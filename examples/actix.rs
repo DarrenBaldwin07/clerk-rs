@@ -10,7 +10,7 @@ async fn main() -> std::io::Result<()> {
 	HttpServer::new(|| {
 		let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
 		App::new()
-			.wrap(ClerkMiddleware::new(config, None, false))
+			.wrap(ClerkMiddleware::new(config, None, true))
 			.route("/index", web::get().to(index))
 	})
 	.bind(("127.0.0.1", 8080))?
