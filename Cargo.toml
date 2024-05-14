@@ -20,10 +20,12 @@ path = "examples/api.rs"
 [[example]]
 name = "actix"
 path = "examples/actix.rs"
+required-features = ["actix"]
 
 [[example]]
 name = "axum"
 path = "examples/axum.rs"
+required-features = ["axum"]
 
 [lib]
 doctest = false
@@ -38,10 +40,10 @@ regex = "1.7.3"
 jsonwebtoken = "8.3.0"
 actix-web = "4.3.1"
 futures-util = "0.3.28"
-actix-rt = "2.9.0"
-axum = "0.7.5"
-axum-extra = { version = "0.9.3", features = ["cookie"] }
-tower = "0.4.13"
+actix-rt = { version = "2.9.0", optional = true }
+axum = { version = "0.7.5", optional = true }
+axum-extra = { version = "0.9.3", features = ["cookie"], optional = true }
+tower = { version = "0.4.13", optional = true }
 
 [dependencies.reqwest]
 version = "^0.11"
@@ -59,3 +61,5 @@ tokio = { version = "1.27.0", features = ["full"] }
 default = ["rustls-tls"]
 native-tls = ["reqwest/native-tls"]
 rustls-tls = ["reqwest/rustls-tls"]
+actix = ["dep:actix-rt"]
+axum = ["dep:axum", "dep:axum-extra", "dep:tower"]
