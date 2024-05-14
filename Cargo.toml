@@ -1,6 +1,6 @@
 [package]
 name = "clerk-rs"
-version = "0.2.3"
+version = "0.3.0"
 authors = ["DarrenBaldwin07"]
 description = "An unofficial Rust SDK for the Clerk API"
 repository = "https://github.com/Cincinnati-Ventures/clerk-rs"
@@ -21,6 +21,10 @@ path = "examples/api.rs"
 name = "actix"
 path = "examples/actix.rs"
 
+[[example]]
+name = "axum"
+path = "examples/axum.rs"
+
 [lib]
 doctest = false
 
@@ -35,6 +39,9 @@ jsonwebtoken = "8.3.0"
 actix-web = "4.3.1"
 futures-util = "0.3.28"
 actix-rt = "2.9.0"
+axum = "0.7.5"
+axum-extra = { version = "0.9.3", features = ["cookie"] }
+tower = "0.4.13"
 
 [dependencies.reqwest]
 version = "^0.11"
@@ -42,7 +49,9 @@ default-features = false
 features = ["json", "multipart"]
 
 [dev-dependencies]
+base64 = "0.22.1"
 clerk-rs = { path = "../clerk-rs" }
+openssl = "0.10.64"
 tokio = { version = "1.27.0", features = ["full"] }
 
 [features]

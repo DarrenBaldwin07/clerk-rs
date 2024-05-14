@@ -57,7 +57,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```rust
 use actix_web::{web, App, HttpServer, Responder};
-use clerk_rs::{ClerkConfiguration, validators::actix::ClerkMiddleware};
+use clerk_rs::{validators::actix::ClerkMiddleware, ClerkConfiguration};
 
 async fn index() -> impl Responder {
     "Hello world!"
@@ -65,18 +65,37 @@ async fn index() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-
     HttpServer::new(|| {
-        let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
-        App::new().service(
-            web::scope("/app")
-                .wrap(ClerkMiddleware::new(config, None, false))
-                .route("/index", web::get().to(index)),
-        )
+        let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+        App::new()
+            .wrap(ClerkMiddleware::new(config, None, true))
+            .route("/index", web::get().to(index))
     })
     .bind(("127.0.0.1", 8080))?
     .run()
     .await
+}
+```
+
+### Protecting a axum endpoint with Clerk.dev:
+
+```rust
+use axum::{routing::get, Router};
+use clerk_rs::validators::axum::ClerkLayer;
+use clerk_rs::ClerkConfiguration;
+use std::net::SocketAddr;
+
+async fn index() -> &'static str {
+    "Hello world!"
+}
+
+#[tokio::main]
+async fn main() -> std::io::Result<()> {
+    let config: ClerkConfiguration = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+    let app = Router::new().route("/index", get(index)).layer(ClerkLayer::new(config, None, true));
+    let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
+    let listener = tokio::net::TcpListener::bind(addr).await?;
+    axum::serve(listener, app).await
 }
 ```
 
