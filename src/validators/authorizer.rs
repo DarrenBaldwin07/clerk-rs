@@ -109,6 +109,7 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bo
 				let decoding_key = DecodingKey::from_rsa_components(&j.n, &j.e).unwrap();
 				let mut validation = Validation::new(Algorithm::RS256);
 				validation.validate_exp = true;
+				validation.validate_nbf = true;
 
 				return match decode::<ClerkJwt>(&token, &decoding_key, &validation) {
 					Ok(token) => Ok((true, token.claims)),
