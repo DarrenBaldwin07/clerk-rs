@@ -51,7 +51,8 @@ features = ["json", "multipart"]
 [dev-dependencies]
 base64 = "0.22.1"
 clerk-rs = { path = "../clerk-rs" }
-openssl = "0.10.64"
+rand = "0.8.5"
+rsa = "0.9.6"
 tokio = { version = "1.27.0", features = ["full"] }
 
 [features]

@@ -136,7 +136,7 @@ mod tests {
 	use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 	use base64::prelude::*;
 	use jsonwebtoken::{encode, errors::ErrorKind, Algorithm, EncodingKey, Header};
-	use openssl::{pkey::Private, rsa::Rsa};
+	use rsa::{pkcs1::EncodeRsaPrivateKey, traits::PublicKeyParts, RsaPrivateKey};
 	use std::time::{SystemTime, UNIX_EPOCH};
 
 	#[derive(Debug, serde::Serialize)]
@@ -151,21 +151,21 @@ mod tests {
 	}
 
 	struct Helper {
-		private_key: Rsa<Private>,
+		private_key: RsaPrivateKey,
 	}
 
 	impl Helper {
 		pub fn new() -> Self {
+			let mut rng = rand::thread_rng();
+
 			Self {
-				private_key: Rsa::generate(2048).unwrap(),
+				private_key: RsaPrivateKey::new(&mut rng, 2048).unwrap(),
 			}
 		}
 
 		pub fn generate_jwt_token(&self, kid: Option<&str>, current_time: Option<usize>, expired: bool) -> String {
-			let encoding_key =
-				EncodingKey::from_rsa_pem(self.private_key.private_key_to_pem().unwrap().as_slice()).expect("Failed to load encoding key");
-
-			Rsa::generate(2048).unwrap();
+			let pem = self.private_key.to_pkcs1_pem(rsa::pkcs8::LineEnding::LF).unwrap();
+			let encoding_key = EncodingKey::from_rsa_pem(pem.as_bytes()).expect("Failed to load encoding key");
 
 			let current_time = current_time.unwrap_or(SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as usize);
 
@@ -195,8 +195,8 @@ mod tests {
 		}
 
 		pub fn get_modulus_and_public_exponent(&self) -> (String, String) {
-			let encoded_modulus = URL_SAFE_NO_PAD.encode(self.private_key.n().to_vec().as_slice());
-			let encoded_exponent = URL_SAFE_NO_PAD.encode(self.private_key.e().to_vec().as_slice());
+			let encoded_modulus = URL_SAFE_NO_PAD.encode(self.private_key.n().to_bytes_be().as_slice());
+			let encoded_exponent = URL_SAFE_NO_PAD.encode(self.private_key.e().to_bytes_be().as_slice());
 			(encoded_modulus, encoded_exponent)
 		}
 	}
