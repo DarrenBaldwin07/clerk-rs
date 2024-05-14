@@ -15,7 +15,7 @@ For more detailed documentation, please reference the below links:
 
 > This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updated or is not inline with the official Clerk api, please open an issue!
 
-## Example
+## Examples
 
 > Checkout examples in the `/examples` directory
 
@@ -55,6 +55,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ### Protecting a actix-web endpoint with Clerk.dev:
 
+With the `actix` feature enabled:
+
 ```rust
 use actix_web::{web, App, HttpServer, Responder};
 use clerk_rs::{validators::actix::ClerkMiddleware, ClerkConfiguration};
@@ -78,6 +80,8 @@ async fn main() -> std::io::Result<()> {
 ```
 
 ### Protecting a axum endpoint with Clerk.dev:
+
+With the `axum` feature enabled:
 
 ```rust
 use axum::{routing::get, Router};
