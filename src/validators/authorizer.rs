@@ -116,7 +116,7 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bo
 					_ => Err(false),
 				};
 			}
-			_ => unreachable!("This should be a RSA"),
+			_ => return Err(false),
 		}
 	// In the event that a matching jwk was not found we want to output an error
 	} else {
