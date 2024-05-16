@@ -92,14 +92,14 @@ impl ClerkAuthorizer {
 /// Validates a jwt token using a jwks
 pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bool> {
 	// If we were not able to parse the kid field we want to output an invalid case...
-	let kid = match get_token_header(token) {
-		Ok(val) => val.kid,
-		Err(_) => {
+	let kid = match get_token_header(token).map(|h| h.kid) {
+		Ok(Some(kid)) => kid,
+		_ => {
 			return Err(false);
 		}
 	};
 
-	let jwk = jwks.keys.iter().find(|k| &k.kid == kid.as_ref().unwrap());
+	let jwk = jwks.keys.iter().find(|k| k.kid == kid);
 
 	// Check to see if we found a valid jwk key with the token kid
 	if let Some(j) = jwk {
