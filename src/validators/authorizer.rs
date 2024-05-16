@@ -103,7 +103,8 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<ClerkJwt, ClerkError
 		match j.alg.as_str() {
 			// Currently, clerk only supports Rs256 by default
 			"RS256" => {
-				let decoding_key = DecodingKey::from_rsa_components(&j.n, &j.e).unwrap();
+				let decoding_key = DecodingKey::from_rsa_components(&j.n, &j.e)
+					.map_err(|_| ClerkError::InternalServerError(String::from("Error: Invalid decoding key")))?;
 				let mut validation = Validation::new(Algorithm::RS256);
 				validation.validate_exp = true;
 				validation.validate_nbf = true;
