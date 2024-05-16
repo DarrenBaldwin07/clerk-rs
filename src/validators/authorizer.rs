@@ -7,7 +7,7 @@ use std::{error::Error, fmt};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct ClerkJwt {
-	pub azp: String,
+	pub azp: Option<String>,
 	pub exp: i32,
 	pub iat: i32,
 	pub iss: String,
@@ -224,7 +224,7 @@ mod tests {
 		let token = helper.generate_jwt_token(Some(kid), Some(current_time), false);
 
 		let expected = ClerkJwt {
-			azp: "client_id".to_string(),
+			azp: Some("client_id".to_string()),
 			sub: "user".to_string(),
 			iat: current_time as i32,
 			exp: (current_time + 3600) as i32,
@@ -237,7 +237,7 @@ mod tests {
 			Ok((valid, jwt)) => {
 				assert!(valid);
 				assert_eq!(jwt, expected)
-			},
+			}
 			Err(_) => unreachable!("Unexpected invalid jwt token"),
 		}
 	}
