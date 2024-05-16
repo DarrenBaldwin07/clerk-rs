@@ -82,20 +82,17 @@ impl ClerkAuthorizer {
 			},
 		};
 
-		match validate_jwt(&access_token, jwks) {
-			Ok((_, jwt)) => Ok(jwt),
-			Err(_) => return Err(ClerkError::Unauthorized(String::from("Error: Invalid JWT!"))),
-		}
+		validate_jwt(&access_token, jwks)
 	}
 }
 
 /// Validates a jwt token using a jwks
-pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bool> {
+pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<ClerkJwt, ClerkError> {
 	// If we were not able to parse the kid field we want to output an invalid case...
 	let kid = match get_token_header(token).map(|h| h.kid) {
 		Ok(Some(kid)) => kid,
 		_ => {
-			return Err(false);
+			return Err(ClerkError::Unauthorized(String::from("Error: Invalid JWT!")));
 		}
 	};
 
@@ -111,16 +108,16 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bo
 				validation.validate_exp = true;
 				validation.validate_nbf = true;
 
-				return match decode::<ClerkJwt>(&token, &decoding_key, &validation) {
-					Ok(token) => Ok((true, token.claims)),
-					_ => Err(false),
-				};
+				match decode::<ClerkJwt>(token, &decoding_key, &validation) {
+					Ok(token) => Ok(token.claims),
+					_ => Err(ClerkError::Unauthorized(String::from("Error: Invalid JWT!"))),
+				}
 			}
-			_ => return Err(false),
+			_ => Err(ClerkError::InternalServerError(String::from("Error: Unsupported key algorithm"))),
 		}
-	// In the event that a matching jwk was not found we want to output an error
 	} else {
-		return Err(false);
+		// In the event that a matching jwk was not found we want to output an error
+		Err(ClerkError::Unauthorized(String::from("Error: Invalid JWT!")))
 	}
 }
 
@@ -234,8 +231,7 @@ mod tests {
 		};
 
 		match validate_jwt(token.as_str(), jwks) {
-			Ok((valid, jwt)) => {
-				assert!(valid);
+			Ok(jwt) => {
 				assert_eq!(jwt, expected)
 			}
 			Err(_) => unreachable!("Unexpected invalid jwt token"),
