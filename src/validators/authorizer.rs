@@ -264,7 +264,6 @@ mod tests {
 	}
 
 	#[test]
-	#[should_panic]
 	fn test_validate_jwt_missing_token_kid() {
 		let helper = Helper::new();
 
@@ -284,7 +283,7 @@ mod tests {
 
 		let token = helper.generate_jwt_token(None, None, false);
 
-		let _ = validate_jwt(token.as_str(), jwks);
+		assert!(matches!(validate_jwt(&token, jwks), Err(ClerkError::Unauthorized(_))))
 	}
 
 	#[test]
@@ -312,7 +311,6 @@ mod tests {
 	}
 
 	#[test]
-	#[should_panic]
 	fn test_validate_jwt_unexpected_key_algorithm() {
 		let helper = Helper::new();
 
@@ -332,11 +330,10 @@ mod tests {
 
 		let token = helper.generate_jwt_token(Some(kid), None, false);
 
-		let _ = validate_jwt(token.as_str(), jwks);
+		assert!(matches!(validate_jwt(&token, jwks), Err(ClerkError::InternalServerError(_))))
 	}
 
 	#[test]
-	#[should_panic]
 	fn test_validate_jwt_invalid_decoding_key() {
 		let helper = Helper::new();
 
@@ -354,7 +351,7 @@ mod tests {
 
 		let token = helper.generate_jwt_token(Some(kid), None, false);
 
-		let _ = validate_jwt(token.as_str(), jwks);
+		assert!(matches!(validate_jwt(&token, jwks), Err(ClerkError::InternalServerError(_))))
 	}
 
 	#[test]
