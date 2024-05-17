@@ -1,5 +1,7 @@
-use super::authorizer::{ClerkAuthorizer, ClerkError, ClerkRequest};
-use crate::{clerk::Clerk, ClerkConfiguration};
+use crate::validators::{
+	authorizer::{ClerkAuthorizer, ClerkError, ClerkRequest},
+	jwks::JwksProvider,
+};
 use actix_web::{
 	body::EitherBody,
 	dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
@@ -28,7 +30,8 @@ impl ClerkRequest for ServiceRequest {
 	}
 }
 
-/// Actix-web middleware for protecting a http endpoint with Clerk.dev
+/// Actix-web middleware for protecting a http endpoint with Clerk.dev.
+///
 /// # Example
 /// ```
 /// async fn index() -> impl Responder {
@@ -39,8 +42,10 @@ impl ClerkRequest for ServiceRequest {
 /// async fn main() -> std::io::Result<()> {
 ///     HttpServer::new(|| {
 ///         let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+///         let clerk = Clerk::new(config);
+///
 ///         App::new()
-///             .wrap(ClerkMiddleware::new(config, None, true))
+///             .wrap(ClerkMiddleware::new(MemoryCacheJwksProvider::new(clerk), None, true))
 ///             .route("/index", web::get().to(index))
 ///     })
 ///     .bind(("127.0.0.1", 8080))?
@@ -48,54 +53,52 @@ impl ClerkRequest for ServiceRequest {
 ///     .await
 /// }
 /// ```
-pub struct ClerkMiddleware {
-	pub clerk_config: ClerkConfiguration,
+pub struct ClerkMiddleware<J> {
+	pub authorizer: ClerkAuthorizer<J>,
 	pub routes: Option<Vec<String>>,
-	pub should_validate_session_cookie: bool,
 }
 
-impl ClerkMiddleware {
-	pub fn new(config: ClerkConfiguration, routes: Option<Vec<String>>, should_validate_session_cookie: bool) -> Self {
-		Self {
-			clerk_config: config,
-			routes,
-			should_validate_session_cookie,
-		}
+impl<J: JwksProvider> ClerkMiddleware<J> {
+	pub fn new(jwks_provider: J, routes: Option<Vec<String>>, validate_session_cookie: bool) -> Self {
+		let authorizer = ClerkAuthorizer::new(jwks_provider, validate_session_cookie);
+		Self { authorizer, routes }
 	}
 }
 
-impl<S: 'static, B> Transform<S, ServiceRequest> for ClerkMiddleware
+impl<S: 'static, B, J> Transform<S, ServiceRequest> for ClerkMiddleware<J>
 where
 	S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
 	S::Future: 'static,
 	B: 'static,
+	J: JwksProvider + 'static,
 {
 	type Response = ServiceResponse<EitherBody<B>>;
 	type Error = Error;
 	type InitError = ();
-	type Transform = ClerkMiddlewareService<S>;
+	type Transform = ClerkMiddlewareService<S, J>;
 	type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
 	fn new_transform(&self, service: S) -> Self::Future {
 		ready(Ok(ClerkMiddlewareService {
 			service: Rc::new(service),
-			authorizer: ClerkAuthorizer::new(Clerk::new(self.clerk_config.clone()), self.should_validate_session_cookie),
+			authorizer: self.authorizer.clone(),
 			routes: self.routes.clone(),
 		}))
 	}
 }
 
-pub struct ClerkMiddlewareService<S> {
+pub struct ClerkMiddlewareService<S, J> {
 	service: Rc<S>,
-	authorizer: ClerkAuthorizer,
+	authorizer: ClerkAuthorizer<J>,
 	routes: Option<Vec<String>>,
 }
 
-impl<S: 'static, B> Service<ServiceRequest> for ClerkMiddlewareService<S>
+impl<S: 'static, B, J> Service<ServiceRequest> for ClerkMiddlewareService<S, J>
 where
 	S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
 	S::Future: 'static,
 	B: 'static,
+	J: JwksProvider + 'static,
 {
 	type Response = ServiceResponse<EitherBody<B>>;
 	type Error = Error;
