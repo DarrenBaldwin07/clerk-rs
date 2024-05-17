@@ -1,5 +1,7 @@
-use super::authorizer::{ClerkAuthorizer, ClerkError, ClerkRequest};
-use crate::{clerk::Clerk, ClerkConfiguration};
+use crate::validators::{
+	authorizer::{ClerkAuthorizer, ClerkError, ClerkRequest},
+	jwks::JwksProvider,
+};
 use axum::{
 	body::Body,
 	extract::Request,
@@ -42,62 +44,71 @@ impl ClerkRequest for AxumClerkRequest {
 	}
 }
 
-/// Axum layer for protecting a http endpoint with Clerk.dev
+/// Axum layer for protecting a http endpoint with Clerk.dev.
+///
 /// # Example
 /// ```
 /// async fn index() -> &'static str {
-/// 	"Hello world!"
+///     "Hello world!"
 /// }
 ///
 /// #[tokio::main]
 /// async fn main() -> std::io::Result<()> {
-/// 	let config: ClerkConfiguration = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
-/// 	let app = Router::new().route("/index", get(index)).layer(ClerkLayer::new(config, None, true));
-/// 	let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
-/// 	let listener = tokio::net::TcpListener::bind(addr).await?;
-/// 	axum::serve(listener, app).await
+///     let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+///     let clerk = Clerk::new(config);
+///
+///     let app = Router::new()
+///         .route("/index", get(index))
+///         .layer(ClerkLayer::new(MemoryCacheJwksProvider::new(clerk), None, true));
+///
+///     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await?;
+///     axum::serve(listener, app).await
 /// }
 /// ```
-#[derive(Clone)]
-pub struct ClerkLayer {
-	pub clerk_config: ClerkConfiguration,
+pub struct ClerkLayer<J> {
+	authorizer: ClerkAuthorizer<J>,
 	routes: Option<Vec<String>>,
-	pub should_validate_session_cookie: bool,
 }
 
-impl ClerkLayer {
-	pub fn new(clerk_config: ClerkConfiguration, routes: Option<Vec<String>>, should_validate_session_cookie: bool) -> Self {
-		ClerkLayer {
-			clerk_config,
-			routes,
-			should_validate_session_cookie,
-		}
+impl<J: JwksProvider> ClerkLayer<J> {
+	pub fn new(jwks_provider: J, routes: Option<Vec<String>>, validate_session_cookie: bool) -> Self {
+		let authorizer = ClerkAuthorizer::new(jwks_provider, validate_session_cookie);
+		Self { authorizer, routes }
 	}
 }
 
-impl<S> Layer<S> for ClerkLayer {
-	type Service = ClerkMiddleware<S>;
+impl<S, J> Layer<S> for ClerkLayer<J> {
+	type Service = ClerkMiddleware<S, J>;
 
 	fn layer(&self, service: S) -> Self::Service {
 		ClerkMiddleware {
 			service,
-			authorizer: ClerkAuthorizer::new(Clerk::new(self.clerk_config.clone()), self.should_validate_session_cookie),
+			authorizer: self.authorizer.clone(),
 			routes: self.routes.clone(),
 		}
 	}
 }
 
-#[derive(Clone)]
-pub struct ClerkMiddleware<S> {
+impl<J> Clone for ClerkLayer<J> {
+	fn clone(&self) -> Self {
+		Self {
+			authorizer: self.authorizer.clone(),
+			routes: self.routes.clone(),
+		}
+	}
+}
+
+pub struct ClerkMiddleware<S, J> {
 	service: S,
-	authorizer: ClerkAuthorizer,
+	authorizer: ClerkAuthorizer<J>,
 	routes: Option<Vec<String>>,
 }
 
-impl<S> Service<Request> for ClerkMiddleware<S>
+impl<S, J> Service<Request> for ClerkMiddleware<S, J>
 where
 	S: Service<Request, Response = Response> + Send + 'static + Clone,
 	S::Future: Send + 'static,
+	J: JwksProvider + Send + Sync + 'static,
 {
 	type Response = S::Response;
 	type Error = S::Error;
@@ -158,5 +169,15 @@ where
 				}
 			}
 		})
+	}
+}
+
+impl<S: Clone, J> Clone for ClerkMiddleware<S, J> {
+	fn clone(&self) -> Self {
+		Self {
+			service: self.service.clone(),
+			authorizer: self.authorizer.clone(),
+			routes: self.routes.clone(),
+		}
 	}
 }

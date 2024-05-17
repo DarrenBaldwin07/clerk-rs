@@ -77,7 +77,6 @@ impl fmt::Display for ClerkError {
 
 impl Error for ClerkError {}
 
-#[derive(Clone)]
 pub struct ClerkAuthorizer<J> {
 	jwks_provider: Arc<J>,
 	validate_session_cookie: bool,
@@ -118,6 +117,15 @@ impl<J: JwksProvider> ClerkAuthorizer<J> {
 		};
 
 		validate_jwt(&access_token, self.jwks_provider.clone()).await
+	}
+}
+
+impl<J> Clone for ClerkAuthorizer<J> {
+	fn clone(&self) -> Self {
+		Self {
+			jwks_provider: self.jwks_provider.clone(),
+			validate_session_cookie: self.validate_session_cookie,
+		}
 	}
 }
 
