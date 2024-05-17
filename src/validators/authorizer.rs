@@ -82,45 +82,43 @@ impl ClerkAuthorizer {
 			},
 		};
 
-		match validate_jwt(&access_token, jwks) {
-			Ok((_, jwt)) => Ok(jwt),
-			Err(_) => return Err(ClerkError::Unauthorized(String::from("Error: Invalid JWT!"))),
-		}
+		validate_jwt(&access_token, jwks)
 	}
 }
 
 /// Validates a jwt token using a jwks
-pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<(bool, ClerkJwt), bool> {
+pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<ClerkJwt, ClerkError> {
 	// If we were not able to parse the kid field we want to output an invalid case...
-	let kid = match get_token_header(token) {
-		Ok(val) => val.kid,
-		Err(_) => {
-			return Err(false);
+	let kid = match get_token_header(token).map(|h| h.kid) {
+		Ok(Some(kid)) => kid,
+		_ => {
+			return Err(ClerkError::Unauthorized(String::from("Error: Invalid JWT!")));
 		}
 	};
 
-	let jwk = jwks.keys.iter().find(|k| &k.kid == kid.as_ref().unwrap());
+	let jwk = jwks.keys.iter().find(|k| k.kid == kid);
 
 	// Check to see if we found a valid jwk key with the token kid
 	if let Some(j) = jwk {
 		match j.alg.as_str() {
 			// Currently, clerk only supports Rs256 by default
 			"RS256" => {
-				let decoding_key = DecodingKey::from_rsa_components(&j.n, &j.e).unwrap();
+				let decoding_key = DecodingKey::from_rsa_components(&j.n, &j.e)
+					.map_err(|_| ClerkError::InternalServerError(String::from("Error: Invalid decoding key")))?;
 				let mut validation = Validation::new(Algorithm::RS256);
 				validation.validate_exp = true;
 				validation.validate_nbf = true;
 
-				return match decode::<ClerkJwt>(&token, &decoding_key, &validation) {
-					Ok(token) => Ok((true, token.claims)),
-					_ => Err(false),
-				};
+				match decode::<ClerkJwt>(token, &decoding_key, &validation) {
+					Ok(token) => Ok(token.claims),
+					_ => Err(ClerkError::Unauthorized(String::from("Error: Invalid JWT!"))),
+				}
 			}
-			_ => unreachable!("This should be a RSA"),
+			_ => Err(ClerkError::InternalServerError(String::from("Error: Unsupported key algorithm"))),
 		}
-	// In the event that a matching jwk was not found we want to output an error
 	} else {
-		return Err(false);
+		// In the event that a matching jwk was not found we want to output an error
+		Err(ClerkError::Unauthorized(String::from("Error: Invalid JWT!")))
 	}
 }
 
@@ -234,8 +232,7 @@ mod tests {
 		};
 
 		match validate_jwt(token.as_str(), jwks) {
-			Ok((valid, jwt)) => {
-				assert!(valid);
+			Ok(jwt) => {
 				assert_eq!(jwt, expected)
 			}
 			Err(_) => unreachable!("Unexpected invalid jwt token"),
@@ -267,7 +264,6 @@ mod tests {
 	}
 
 	#[test]
-	#[should_panic]
 	fn test_validate_jwt_missing_token_kid() {
 		let helper = Helper::new();
 
@@ -287,7 +283,7 @@ mod tests {
 
 		let token = helper.generate_jwt_token(None, None, false);
 
-		let _ = validate_jwt(token.as_str(), jwks);
+		assert!(matches!(validate_jwt(&token, jwks), Err(ClerkError::Unauthorized(_))))
 	}
 
 	#[test]
@@ -315,7 +311,6 @@ mod tests {
 	}
 
 	#[test]
-	#[should_panic]
 	fn test_validate_jwt_unexpected_key_algorithm() {
 		let helper = Helper::new();
 
@@ -335,11 +330,10 @@ mod tests {
 
 		let token = helper.generate_jwt_token(Some(kid), None, false);
 
-		let _ = validate_jwt(token.as_str(), jwks);
+		assert!(matches!(validate_jwt(&token, jwks), Err(ClerkError::InternalServerError(_))))
 	}
 
 	#[test]
-	#[should_panic]
 	fn test_validate_jwt_invalid_decoding_key() {
 		let helper = Helper::new();
 
@@ -357,7 +351,7 @@ mod tests {
 
 		let token = helper.generate_jwt_token(Some(kid), None, false);
 
-		let _ = validate_jwt(token.as_str(), jwks);
+		assert!(matches!(validate_jwt(&token, jwks), Err(ClerkError::InternalServerError(_))))
 	}
 
 	#[test]
