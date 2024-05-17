@@ -23,7 +23,7 @@ pub trait JwksProvider {
 }
 
 /// Error type used by [`MemoryCacheJwksProvider`] and [`SimpleJwksProvider`].
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum JwksProviderError {
 	UnknownKey,
 	JwksApi,
@@ -225,7 +225,7 @@ impl JwksProvider for MemoryCacheJwksProvider {
 #[cfg(test)]
 pub(crate) mod tests {
 	use super::*;
-	use crate::apis::jwks_api::JwksKey;
+	use crate::{apis::jwks_api::JwksKey, ClerkConfiguration};
 	use std::collections::HashMap;
 
 	pub struct StaticJwksProvider {
@@ -248,5 +248,254 @@ pub(crate) mod tests {
 		async fn get_key(&self, kid: &str) -> Result<JwksKey, Self::Error> {
 			self.keys.get(kid).cloned().ok_or(JwksProviderError::UnknownKey)
 		}
+	}
+
+	const MOCK_JWKS_BODY: &str = r#"{
+		"keys": [{
+			"use": "sig",
+			"kty": "RSA",
+			"kid": "bc63c2e9-5d1c-4e32-9b62-178f60409abd",
+			"alg": "RS256",
+			"n": "tgY-zUiCj6p4gDLZos28PJXyBimvDCnvlCxpG8jktCJdbw1VrsAR1tqmz3XrKnpXgKuWaBnoAh9SpslSN-lQhHT_KVHgVUQShMETybKrNx9DoeRChwen26n35BOLCtZE7yUamUGrQpcL4DsL8ZmWcllOLCWjHRenuXJohoQO7jKN9tao2mUpsRor-2O1xKZ_YesCDkDHw7ood4lfNKvDONB8gYIENlOJgAbAKPxTdmnkEraUgZVGeaS7FeB59A_ibj9VnXyqpHmhabSf5xskuA9EJiQn6c3781uGqcF2CS0E4I576oJGsKeKo5AgF2duuDnPd67bVRNvmLH5kDF_Ow",
+			"e": "AQAB"
+		}]
+	}"#;
+	const MOCK_KID: &str = "bc63c2e9-5d1c-4e32-9b62-178f60409abd";
+
+	#[tokio::test]
+	async fn test_simple_jwks_provider_success() {
+		let mut server = mockito::Server::new_async().await;
+		let mock = server.mock("GET", "/v1/jwks").expect(1).with_body(MOCK_JWKS_BODY).create_async().await;
+
+		let config = ClerkConfiguration {
+			base_path: format!("{}/v1", server.url()),
+			..Default::default()
+		};
+		let clerk = Clerk::new(config);
+
+		let jwks = SimpleJwksProvider::new(clerk);
+
+		let res = jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+		assert_eq!(res.kid, MOCK_KID);
+
+		// api should have been called once
+		mock.assert_async().await;
+	}
+
+	#[tokio::test]
+	async fn test_simple_jwks_provider_repeat() {
+		let mut server = mockito::Server::new_async().await;
+		let mock = server.mock("GET", "/v1/jwks").expect(3).with_body(MOCK_JWKS_BODY).create_async().await;
+
+		let config = ClerkConfiguration {
+			base_path: format!("{}/v1", server.url()),
+			..Default::default()
+		};
+		let clerk = Clerk::new(config);
+
+		let jwks = SimpleJwksProvider::new(clerk);
+
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+
+		// api should have been called exactly 3 times
+		mock.assert_async().await;
+	}
+
+	#[tokio::test]
+	async fn test_simple_jwks_provider_unknown_key() {
+		let mut server = mockito::Server::new_async().await;
+		server.mock("GET", "/v1/jwks").with_body(MOCK_JWKS_BODY).create_async().await;
+
+		let config = ClerkConfiguration {
+			base_path: format!("{}/v1", server.url()),
+			..Default::default()
+		};
+		let clerk = Clerk::new(config);
+
+		let jwks = SimpleJwksProvider::new(clerk);
+
+		// try to get a key that doesn't exist
+		let res = jwks.get_key("unknown key").await.expect_err("should fail");
+		assert_eq!(res, JwksProviderError::UnknownKey)
+	}
+
+	#[tokio::test]
+	async fn test_memory_cache_jwks_provider_success() {
+		let mut server = mockito::Server::new_async().await;
+		let mock = server.mock("GET", "/v1/jwks").expect(1).with_body(MOCK_JWKS_BODY).create_async().await;
+
+		let config = ClerkConfiguration {
+			base_path: format!("{}/v1", server.url()),
+			..Default::default()
+		};
+		let clerk = Clerk::new(config);
+
+		let jwks = MemoryCacheJwksProvider::new(clerk);
+
+		let res = jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+		assert_eq!(res.kid, MOCK_KID);
+
+		// api should have been called once
+		mock.assert_async().await;
+	}
+
+	#[tokio::test]
+	async fn test_memory_cache_jwks_provider_caching() {
+		let mut server = mockito::Server::new_async().await;
+		let mock = server.mock("GET", "/v1/jwks").expect(1).with_body(MOCK_JWKS_BODY).create_async().await;
+
+		let config = ClerkConfiguration {
+			base_path: format!("{}/v1", server.url()),
+			..Default::default()
+		};
+		let clerk = Clerk::new(config);
+
+		let jwks = MemoryCacheJwksProvider::new(clerk);
+
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+
+		// api should have been called only once
+		mock.assert_async().await;
+	}
+
+	#[tokio::test]
+	async fn test_memory_cache_jwks_provider_unknown_never() {
+		let mut server = mockito::Server::new_async().await;
+		let mock = server.mock("GET", "/v1/jwks").expect(1).with_body(MOCK_JWKS_BODY).create_async().await;
+
+		let config = ClerkConfiguration {
+			base_path: format!("{}/v1", server.url()),
+			..Default::default()
+		};
+		let clerk = Clerk::new(config);
+
+		let jwks = MemoryCacheJwksProvider::new_with_options(
+			clerk,
+			MemoryCacheJwksProviderOptions {
+				refresh_on_unknown: RefreshOnUnknown::Never,
+				..Default::default()
+			},
+		);
+
+		// first request to initialize cache
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+
+		// second request with unknown key should NOT refresh
+		jwks.get_key("unknown key").await.expect_err("should fail");
+
+		// since refresh_on_unknown is Never, api should have been called only once
+		mock.assert_async().await;
+	}
+
+	#[tokio::test]
+	async fn test_memory_cache_jwks_provider_unknown_refresh() {
+		let mut server = mockito::Server::new_async().await;
+		let mock = server.mock("GET", "/v1/jwks").expect(3).with_body(MOCK_JWKS_BODY).create_async().await;
+
+		let config = ClerkConfiguration {
+			base_path: format!("{}/v1", server.url()),
+			..Default::default()
+		};
+		let clerk = Clerk::new(config);
+
+		let jwks = MemoryCacheJwksProvider::new_with_options(
+			clerk,
+			MemoryCacheJwksProviderOptions {
+				refresh_on_unknown: RefreshOnUnknown::Always,
+				..Default::default()
+			},
+		);
+
+		// first request to initialize cache
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+
+		// following requests with unknown keys refresh
+		jwks.get_key("unknown key 1").await.expect_err("should fail");
+		jwks.get_key("unknown key 2").await.expect_err("should fail");
+
+		// since refresh_on_unknown is Always, api should have been called three times
+		mock.assert_async().await;
+	}
+
+	#[tokio::test]
+	async fn test_memory_cache_jwks_provider_unknown_ratelimit() {
+		let mut server = mockito::Server::new_async().await;
+		let mock = server.mock("GET", "/v1/jwks").expect(3).with_body(MOCK_JWKS_BODY).create_async().await;
+
+		let config = ClerkConfiguration {
+			base_path: format!("{}/v1", server.url()),
+			..Default::default()
+		};
+		let clerk = Clerk::new(config);
+
+		let jwks = MemoryCacheJwksProvider::new_with_options(
+			clerk,
+			MemoryCacheJwksProviderOptions {
+				refresh_on_unknown: RefreshOnUnknown::Ratelimit(Duration::from_secs(1)),
+				..Default::default()
+			},
+		);
+
+		// first request to initialize cache
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+
+		// wait for cache to be older than the 1s ratelimit
+		tokio::time::sleep(Duration::from_secs(2)).await;
+
+		// the first unknown key should cause a refresh, but following ones should not
+		jwks.get_key("unknown key 1").await.expect_err("should fail");
+		jwks.get_key("unknown key 2").await.expect_err("should fail");
+		jwks.get_key("unknown key 3").await.expect_err("should fail");
+
+		// wait for ratelimit again
+		tokio::time::sleep(Duration::from_secs(2)).await;
+
+		// again only the first should refresh
+		jwks.get_key("unknown key 4").await.expect_err("should fail");
+		jwks.get_key("unknown key 5").await.expect_err("should fail");
+		jwks.get_key("unknown key 6").await.expect_err("should fail");
+
+		// api should have been called exactly 3 times
+		mock.assert_async().await;
+	}
+
+	#[tokio::test]
+	async fn test_memory_cache_jwks_provider_expires() {
+		let mut server = mockito::Server::new_async().await;
+		let mock = server.mock("GET", "/v1/jwks").expect(2).with_body(MOCK_JWKS_BODY).create_async().await;
+
+		let config = ClerkConfiguration {
+			base_path: format!("{}/v1", server.url()),
+			..Default::default()
+		};
+		let clerk = Clerk::new(config);
+
+		let jwks = MemoryCacheJwksProvider::new_with_options(
+			clerk,
+			MemoryCacheJwksProviderOptions {
+				expire_after: Some(Duration::from_secs(1)),
+				..Default::default()
+			},
+		);
+
+		// make some requests
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+
+		// wait for cache to expire
+		tokio::time::sleep(Duration::from_secs(2)).await;
+
+		// make more requests
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
+
+		// api should have been called only 2 times
+		mock.assert_async().await;
 	}
 }
