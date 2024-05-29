@@ -115,6 +115,7 @@ async fn main() -> std::io::Result<()> {
 
 - [Tembo](https://tembo.io)
 - [Rezon](https://rezon.ai)
+- [Gitar](https://gitar.co)
 - Open a PR and add your company here :)
 
 > Note: This SDK is completely maintained by the Rust community and is by no means affiliated with Clerk.dev.
