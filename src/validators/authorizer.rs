@@ -12,7 +12,7 @@ pub struct ClerkJwt {
 	pub iat: i32,
 	pub iss: String,
 	pub nbf: i32,
-	pub sid: String,
+	pub sid: Option<String>,
 	pub sub: String,
 }
 
