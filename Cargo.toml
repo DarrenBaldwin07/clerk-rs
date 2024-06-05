@@ -2,10 +2,10 @@
 name = "clerk-rs"
 version = "0.3.0"
 authors = ["DarrenBaldwin07"]
-description = "An unofficial Rust SDK for the Clerk API"
+description = "The official community Rust SDK for the Clerk API"
 repository = "https://github.com/Cincinnati-Ventures/clerk-rs"
-homepage = "https://cincinnati.ventures"
-keywords = ["clerk", "auth", "sdk"]
+homepage = "https://github.com/Cincinnati-Ventures/clerk-rs"
+keywords = ["clerk", "auth", "actix", "axum", "sdk"]
 license = "MIT"
 edition = "2021"
 
