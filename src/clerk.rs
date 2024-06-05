@@ -123,7 +123,7 @@ impl Clerk {
 
 	/// Make a GET request with params to the specified Clerk API endpoint
 	pub async fn get_with_params(&self, endpoint: ClerkDynamicGetEndpoint, params: Vec<&str>) -> Result<serde_json::value::Value, reqwest::Error> {
-		let parsed_endpoint = endpoint.to_string();
+		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
 
