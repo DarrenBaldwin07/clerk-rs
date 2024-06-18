@@ -1,6 +1,8 @@
-// Validators for Rocket, etc coming very soon
 pub mod authorizer;
+pub mod jwks;
 
+// Framework-specific modules
+// Validators for Rocket, etc coming very soon
 #[cfg(feature = "actix")]
 pub mod actix;
 #[cfg(feature = "axum")]
