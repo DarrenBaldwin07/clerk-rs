@@ -12,7 +12,7 @@ pub struct ClerkJwt {
 	pub iat: i32,
 	pub iss: String,
 	pub nbf: i32,
-	pub sid: String,
+	pub sid: Option<String>,
 	pub sub: String,
 }
 
@@ -111,7 +111,7 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<ClerkJwt, ClerkError
 
 				match decode::<ClerkJwt>(token, &decoding_key, &validation) {
 					Ok(token) => Ok(token.claims),
-					_ => Err(ClerkError::Unauthorized(String::from("Error: Invalid JWT!"))),
+					Err(err) => Err(ClerkError::Unauthorized(format!("Error: Invalid JWT! cause: {}", err))),
 				}
 			}
 			_ => Err(ClerkError::InternalServerError(String::from("Error: Unsupported key algorithm"))),
