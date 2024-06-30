@@ -111,7 +111,7 @@ pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<ClerkJwt, ClerkError
 
 				match decode::<ClerkJwt>(token, &decoding_key, &validation) {
 					Ok(token) => Ok(token.claims),
-					_ => Err(ClerkError::Unauthorized(String::from("Error: Invalid JWT!"))),
+					Err(err) => Err(ClerkError::Unauthorized(format!("Error: Invalid JWT! cause: {}", err))),
 				}
 			}
 			_ => Err(ClerkError::InternalServerError(String::from("Error: Unsupported key algorithm"))),
@@ -228,7 +228,7 @@ mod tests {
 			exp: (current_time + 3600) as i32,
 			iss: "issuer".to_string(),
 			nbf: current_time as i32,
-			sid: "session_id".to_string(),
+			sid: Some("session_id".to_string()),
 		};
 
 		match validate_jwt(token.as_str(), jwks) {
