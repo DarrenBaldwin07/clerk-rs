@@ -1,10 +1,6 @@
-<a href="https://crates.io/crates/clerk-rs">
-    <img src="https://img.shields.io/crates/v/clerk-rs.svg?style=flat-square" alt="crates.io" />
-</a>
-<a href="https://crates.io/crates/clerk-rs">
-    <img src="https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square"
-        alt="download count badge" />
-</a>
+[![crates.io](https://img.shields.io/crates/v/clerk-rs?style=flat-square)](https://crates.io/crates/clerk-rs)
+[![Downloads](https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square)](https://crates.io/crates/clerk-rs)
+[![docs.rs](https://img.shields.io/docsrs/clerk-rs?style=flat-square)](https://docs.rs/clerk-rs)
 
 # A official community-maintained Clerk SDK for Rust
 
