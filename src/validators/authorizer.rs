@@ -6,6 +6,33 @@ use jsonwebtoken::{decode, decode_header, errors::Error as jwtError, Algorithm, 
 use std::{error::Error, fmt};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
+pub struct ActiveOrganization {
+	#[serde(rename = "org_id")]
+	id: String,
+	#[serde(rename = "org_slug")]
+	slug: String,
+	#[serde(rename = "org_role")]
+	role: String,
+	#[serde(rename = "org_permissions")]
+	permissions: Vec<String>,
+}
+
+impl ActiveOrganization {
+	/// Checks if the user has the specific permission in their session claims.
+	pub fn has_permission(&self, permission: &str) -> bool {
+		self.permissions.contains(&permission.to_string())
+	}
+
+	/// Checks if the user has the specific role in their session claims.
+	/// Performing role checks is not considered a best-practice and developers
+	/// should avoid it as much as possible. Usually, complex role checks can be
+	/// refactored with a single permission check.
+	pub fn has_role(&self, role: &str) -> bool {
+		self.role == role
+	}
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct ClerkJwt {
 	pub azp: Option<String>,
 	pub exp: i32,
@@ -14,6 +41,9 @@ pub struct ClerkJwt {
 	pub nbf: i32,
 	pub sid: Option<String>,
 	pub sub: String,
+	pub act: Option<String>,
+	#[serde(flatten)]
+	pub org: Option<ActiveOrganization>,
 }
 
 pub trait ClerkRequest {
@@ -147,6 +177,11 @@ mod tests {
 		azp: String,
 		iss: String,
 		sid: String,
+		act: String,
+		org_id: String,
+		org_slug: String,
+		org_role: String,
+		org_permissions: Vec<String>,
 	}
 
 	struct Helper {
@@ -181,6 +216,11 @@ mod tests {
 				iss: "issuer".to_string(),
 				nbf: current_time,
 				sid: "session_id".to_string(),
+				act: "actor".to_string(),
+				org_id: "org_id".to_string(),
+				org_slug: "org_slug".to_string(),
+				org_role: "org_role".to_string(),
+				org_permissions: vec!["org_permission".to_string()],
 			};
 
 			let mut header = Header::new(Algorithm::RS256);
@@ -229,6 +269,13 @@ mod tests {
 			iss: "issuer".to_string(),
 			nbf: current_time as i32,
 			sid: Some("session_id".to_string()),
+			act: Some("actor".to_string()),
+			org: Some(ActiveOrganization {
+				id: "org_id".to_string(),
+				slug: "org_slug".to_string(),
+				role: "org_role".to_string(),
+				permissions: vec!["org_permission".to_string()],
+			}),
 		};
 
 		match validate_jwt(token.as_str(), jwks) {
