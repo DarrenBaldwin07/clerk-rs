@@ -8,13 +8,13 @@ use std::{error::Error, fmt};
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct ActiveOrganization {
 	#[serde(rename = "org_id")]
-	id: String,
+	pub id: String,
 	#[serde(rename = "org_slug")]
-	slug: String,
+	pub slug: String,
 	#[serde(rename = "org_role")]
-	role: String,
+	pub role: String,
 	#[serde(rename = "org_permissions")]
-	permissions: Vec<String>,
+	pub permissions: Vec<String>,
 }
 
 impl ActiveOrganization {
