@@ -153,8 +153,8 @@ impl OrganizationMembership {
 	pub async fn list_organization_memberships(
 		clerk_client: &Clerk,
 		organization_id: &str,
-		limit: Option<f32>,
-		offset: Option<f32>,
+		limit: Option<u64>,
+		offset: Option<u64>,
 	) -> Result<crate::models::OrganizationMemberships, Error<ListOrganizationMembershipsError>> {
 		let local_var_configuration = &clerk_client.config;
 
