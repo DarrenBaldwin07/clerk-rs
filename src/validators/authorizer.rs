@@ -5,7 +5,7 @@ use crate::{
 use jsonwebtoken::{decode, decode_header, errors::Error as jwtError, Algorithm, DecodingKey, Header, Validation};
 use std::{error::Error, fmt};
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ActiveOrganization {
 	#[serde(rename = "org_id")]
 	pub id: String,
@@ -32,7 +32,7 @@ impl ActiveOrganization {
 	}
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ClerkJwt {
 	pub azp: Option<String>,
 	pub exp: i32,
@@ -51,7 +51,7 @@ pub trait ClerkRequest {
 	fn get_cookie(&self, key: &str) -> Option<String>;
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum ClerkError {
 	Unauthorized(String),
 	InternalServerError(String),

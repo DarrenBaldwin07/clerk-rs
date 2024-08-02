@@ -9,32 +9,31 @@ use serde_json::Value;
 // Default user agent used for clerk-rs sdk (this is sent with every clerk api request)
 pub const USER_AGENT: &str = concat!("Clerk/v1 RustBindings/", env!("CARGO_PKG_VERSION"));
 
-/*
- * Unofficial Clerk SDK
- *
- * Please refer to the clerk.dev official documentation for more information: https://docs.clerk.dev
- *
- * # Examples
- * ```
- * use clerk_rs::Clerk;
- * use clerk_rs::apis::configuration::ClerkConfiguration;
- *
- * let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_owned()), None);
- * let client = Clerk::new(config);
- *
- * let res = client.get(ClerkGetEndpoint::GetUserList).await?;
- *
- * ```
- *
- * NOTE: This SDK is based on the official clerk openAPI spec found here: https://clerk.com/docs/reference/backend-api
- */
+/// Unofficial Clerk SDK
+///
+/// Please refer to the clerk.dev official documentation for more information: https://docs.clerk.dev
+///
+/// # Examples
+///
+/// ```rust
+/// use clerk_rs::Clerk;
+/// use clerk_rs::apis::configuration::ClerkConfiguration;
+///
+/// let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_owned()), None);
+/// let client = Clerk::new(config);
+///
+/// let res = client.get(ClerkGetEndpoint::GetUserList).await?;
+/// ```
+///
+/// **NOTE:** This SDK is based on the official clerk openAPI spec found here:
+/// https://clerk.com/docs/reference/backend-api
 #[derive(Clone)]
 pub struct Clerk {
 	pub config: configuration::ClerkConfiguration,
 }
 
 impl Clerk {
-	// Creates a new Clerk SDK client for making requests out to the public Clerk api:
+	/// Creates a new Clerk SDK client for making requests out to the public Clerk api.
 	pub fn new(clerk_configuration: configuration::ClerkConfiguration) -> Self {
 		Self { config: clerk_configuration }
 	}
