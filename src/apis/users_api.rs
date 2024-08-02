@@ -382,8 +382,8 @@ impl User {
 		user_id: Option<Vec<String>>,
 		organization_id: Option<Vec<String>>,
 		query: Option<&str>,
-		limit: Option<f32>,
-		offset: Option<f32>,
+		limit: Option<u64>,
+		offset: Option<u64>,
 		order_by: Option<&str>,
 	) -> Result<Vec<crate::models::User>, Error<GetUserListError>> {
 		let local_var_configuration = &clerk_client.config;
@@ -690,8 +690,8 @@ impl User {
 	pub async fn users_get_organization_memberships(
 		clerk_client: &Clerk,
 		user_id: &str,
-		limit: Option<f32>,
-		offset: Option<f32>,
+		limit: Option<u64>,
+		offset: Option<u64>,
 	) -> Result<crate::models::OrganizationMemberships, Error<UsersGetOrganizationMembershipsError>> {
 		let local_var_configuration = &clerk_client.config;
 

@@ -92,8 +92,8 @@ impl OrganizationInvitation {
 	pub async fn list_pending_organization_invitations(
 		clerk_client: &Clerk,
 		organization_id: &str,
-		limit: Option<f32>,
-		offset: Option<f32>,
+		limit: Option<u64>,
+		offset: Option<u64>,
 	) -> Result<crate::models::OrganizationInvitations, Error<ListPendingOrganizationInvitationsError>> {
 		let local_var_configuration = &clerk_client.config;
 

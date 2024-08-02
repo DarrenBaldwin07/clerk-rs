@@ -148,8 +148,8 @@ impl Session {
 		client_id: Option<&str>,
 		user_id: Option<&str>,
 		status: Option<&str>,
-		limit: Option<f32>,
-		offset: Option<f32>,
+		limit: Option<u64>,
+		offset: Option<u64>,
 	) -> Result<Vec<crate::models::Session>, Error<GetSessionListError>> {
 		let local_var_configuration = &clerk_client.config;
 

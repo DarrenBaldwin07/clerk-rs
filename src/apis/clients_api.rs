@@ -134,8 +134,8 @@ impl ClientApis {
 	/// Returns a list of all clients. The clients are returned sorted by creation date, with the newest clients appearing first.
 	pub async fn get_client_list(
 		clerk_client: &Clerk,
-		limit: Option<f32>,
-		offset: Option<f32>,
+		limit: Option<u64>,
+		offset: Option<u64>,
 	) -> Result<Vec<crate::models::Client>, Error<GetClientListError>> {
 		let local_var_configuration = &clerk_client.config;
 

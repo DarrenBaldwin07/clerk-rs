@@ -199,8 +199,8 @@ impl Organization {
 	/// This request returns the list of organizations for an instance. Results can be paginated using the optional `limit` and `offset` query parameters. The organizations are ordered by descending creation date. Most recent organizations will be returned first.
 	pub async fn list_organizations(
 		clerk_client: &Clerk,
-		limit: Option<f32>,
-		offset: Option<f32>,
+		limit: Option<u64>,
+		offset: Option<u64>,
 		include_members_count: Option<bool>,
 		query: Option<&str>,
 	) -> Result<crate::models::Organizations, Error<ListOrganizationsError>> {
