@@ -393,109 +393,39 @@ impl User {
 		let local_var_uri_str = format!("{}/users", local_var_configuration.base_path);
 		let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
-		if let Some(ref local_var_str) = email_address {
+		if let Some(local_var_str) = email_address {
 			local_var_req_builder = match "multi" {
-				"multi" => local_var_req_builder.query(
-					&local_var_str
-						.into_iter()
-						.map(|p| ("email_address".to_owned(), p.to_string()))
-						.collect::<Vec<(std::string::String, std::string::String)>>(),
-				),
-				_ => local_var_req_builder.query(&[(
-					"email_address",
-					&local_var_str
-						.into_iter()
-						.map(|p| p.to_string())
-						.collect::<Vec<String>>()
-						.join(",")
-						.to_string(),
-				)]),
+				"multi" => local_var_req_builder.query(&local_var_str.into_iter().map(|p| ("email_address", p)).collect::<Vec<(&str, String)>>()),
+				_ => local_var_req_builder.query(&[("email_address", &local_var_str.join(",").to_string())]),
 			};
 		}
-		if let Some(ref local_var_str) = phone_number {
+		if let Some(local_var_str) = phone_number {
 			local_var_req_builder = match "multi" {
-				"multi" => local_var_req_builder.query(
-					&local_var_str
-						.into_iter()
-						.map(|p| ("phone_number".to_owned(), p.to_string()))
-						.collect::<Vec<(std::string::String, std::string::String)>>(),
-				),
-				_ => local_var_req_builder.query(&[(
-					"phone_number",
-					&local_var_str
-						.into_iter()
-						.map(|p| p.to_string())
-						.collect::<Vec<String>>()
-						.join(",")
-						.to_string(),
-				)]),
+				"multi" => local_var_req_builder.query(&local_var_str.into_iter().map(|p| ("phone_number", p)).collect::<Vec<(&str, String)>>()),
+				_ => local_var_req_builder.query(&[("phone_number", &local_var_str.join(",").to_string())]),
 			};
 		}
-		if let Some(ref local_var_str) = external_id {
+		if let Some(local_var_str) = external_id {
 			local_var_req_builder = match "multi" {
-				"multi" => local_var_req_builder.query(
-					&local_var_str
-						.into_iter()
-						.map(|p| ("external_id".to_owned(), p.to_string()))
-						.collect::<Vec<(std::string::String, std::string::String)>>(),
-				),
-				_ => local_var_req_builder.query(&[(
-					"external_id",
-					&local_var_str
-						.into_iter()
-						.map(|p| p.to_string())
-						.collect::<Vec<String>>()
-						.join(",")
-						.to_string(),
-				)]),
+				"multi" => local_var_req_builder.query(&local_var_str.into_iter().map(|p| ("external_id", p)).collect::<Vec<(&str, String)>>()),
+				_ => local_var_req_builder.query(&[("external_id", &local_var_str.join(",").to_string())]),
 			};
 		}
-		if let Some(ref local_var_str) = username {
+		if let Some(local_var_str) = username {
 			local_var_req_builder = match "multi" {
-				"multi" => local_var_req_builder.query(
-					&local_var_str
-						.into_iter()
-						.map(|p| ("username".to_owned(), p.to_string()))
-						.collect::<Vec<(std::string::String, std::string::String)>>(),
-				),
-				_ => local_var_req_builder.query(&[(
-					"username",
-					&local_var_str
-						.into_iter()
-						.map(|p| p.to_string())
-						.collect::<Vec<String>>()
-						.join(",")
-						.to_string(),
-				)]),
+				"multi" => local_var_req_builder.query(&local_var_str.into_iter().map(|p| ("username", p)).collect::<Vec<(&str, String)>>()),
+				_ => local_var_req_builder.query(&[("username", &local_var_str.join(",").to_string())]),
 			};
 		}
-		if let Some(ref local_var_str) = web3_wallet {
+		if let Some(local_var_str) = web3_wallet {
 			local_var_req_builder = match "multi" {
-				"multi" => local_var_req_builder.query(
-					&local_var_str
-						.into_iter()
-						.map(|p| ("web3_wallet".to_owned(), p.to_string()))
-						.collect::<Vec<(std::string::String, std::string::String)>>(),
-				),
-				_ => local_var_req_builder.query(&[(
-					"web3_wallet",
-					&local_var_str
-						.into_iter()
-						.map(|p| p.to_string())
-						.collect::<Vec<String>>()
-						.join(",")
-						.to_string(),
-				)]),
+				"multi" => local_var_req_builder.query(&local_var_str.into_iter().map(|p| ("web3_wallet", p)).collect::<Vec<(&str, String)>>()),
+				_ => local_var_req_builder.query(&[("web3_wallet", &local_var_str.join(",").to_string())]),
 			};
 		}
-		if let Some(ref local_var_str) = user_id {
+		if let Some(local_var_str) = user_id {
 			local_var_req_builder = match "multi" {
-				"multi" => local_var_req_builder.query(
-					&local_var_str
-						.into_iter()
-						.map(|p| ("user_id".to_owned(), p.to_string()))
-						.collect::<Vec<(std::string::String, std::string::String)>>(),
-				),
+				"multi" => local_var_req_builder.query(&local_var_str.into_iter().map(|p| ("user_id", p)).collect::<Vec<(&str, String)>>()),
 				_ => local_var_req_builder.query(&[(
 					"user_id",
 					&local_var_str
@@ -507,38 +437,25 @@ impl User {
 				)]),
 			};
 		}
-		if let Some(ref local_var_str) = organization_id {
+		if let Some(local_var_str) = organization_id {
 			local_var_req_builder = match "multi" {
-				"multi" => local_var_req_builder.query(
-					&local_var_str
-						.into_iter()
-						.map(|p| ("organization_id".to_owned(), p.to_string()))
-						.collect::<Vec<(std::string::String, std::string::String)>>(),
-				),
-				_ => local_var_req_builder.query(&[(
-					"organization_id",
-					&local_var_str
-						.into_iter()
-						.map(|p| p.to_string())
-						.collect::<Vec<String>>()
-						.join(",")
-						.to_string(),
-				)]),
+				"multi" => local_var_req_builder.query(&local_var_str.into_iter().map(|p| ("organization_id", p)).collect::<Vec<(&str, String)>>()),
+				_ => local_var_req_builder.query(&[("organization_id", &local_var_str.join(",").to_string())]),
 			};
 		}
-		if let Some(ref local_var_str) = query {
-			local_var_req_builder = local_var_req_builder.query(&[("query", &local_var_str.to_string())]);
+		if let Some(local_var_str) = query {
+			local_var_req_builder = local_var_req_builder.query(&[("query", local_var_str)]);
 		}
-		if let Some(ref local_var_str) = limit {
+		if let Some(local_var_str) = limit {
 			local_var_req_builder = local_var_req_builder.query(&[("limit", &local_var_str.to_string())]);
 		}
-		if let Some(ref local_var_str) = offset {
+		if let Some(local_var_str) = offset {
 			local_var_req_builder = local_var_req_builder.query(&[("offset", &local_var_str.to_string())]);
 		}
-		if let Some(ref local_var_str) = order_by {
-			local_var_req_builder = local_var_req_builder.query(&[("order_by", &local_var_str.to_string())]);
+		if let Some(local_var_str) = order_by {
+			local_var_req_builder = local_var_req_builder.query(&[("order_by", local_var_str)]);
 		}
-		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
+		if let Some(local_var_user_agent) = local_var_configuration.user_agent.as_ref() {
 			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
 		}
 
@@ -579,33 +496,15 @@ impl User {
 		let local_var_uri_str = format!("{}/users/count", local_var_configuration.base_path);
 		let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
-		if let Some(ref local_var_str) = email_address {
+		if let Some(local_var_str) = email_address {
 			local_var_req_builder = match "multi" {
-				"multi" => local_var_req_builder.query(
-					&local_var_str
-						.into_iter()
-						.map(|p| ("email_address".to_owned(), p.to_string()))
-						.collect::<Vec<(std::string::String, std::string::String)>>(),
-				),
-				_ => local_var_req_builder.query(&[(
-					"email_address",
-					&local_var_str
-						.into_iter()
-						.map(|p| p.to_string())
-						.collect::<Vec<String>>()
-						.join(",")
-						.to_string(),
-				)]),
+				"multi" => local_var_req_builder.query(&local_var_str.into_iter().map(|p| ("email_address", p)).collect::<Vec<(&str, String)>>()),
+				_ => local_var_req_builder.query(&[("email_address", &local_var_str.join(",").to_string())]),
 			};
 		}
-		if let Some(ref local_var_str) = phone_number {
+		if let Some(local_var_str) = phone_number {
 			local_var_req_builder = match "multi" {
-				"multi" => local_var_req_builder.query(
-					&local_var_str
-						.into_iter()
-						.map(|p| ("phone_number".to_owned(), p.to_string()))
-						.collect::<Vec<(std::string::String, std::string::String)>>(),
-				),
+				"multi" => local_var_req_builder.query(&local_var_str.into_iter().map(|p| ("phone_number", p)).collect::<Vec<(&str, String)>>()),
 				_ => local_var_req_builder.query(&[(
 					"phone_number",
 					&local_var_str
@@ -617,87 +516,35 @@ impl User {
 				)]),
 			};
 		}
-		if let Some(ref local_var_str) = external_id {
+		if let Some(local_var_str) = external_id {
 			local_var_req_builder = match "multi" {
-				"multi" => local_var_req_builder.query(
-					&local_var_str
-						.into_iter()
-						.map(|p| ("external_id".to_owned(), p.to_string()))
-						.collect::<Vec<(std::string::String, std::string::String)>>(),
-				),
-				_ => local_var_req_builder.query(&[(
-					"external_id",
-					&local_var_str
-						.into_iter()
-						.map(|p| p.to_string())
-						.collect::<Vec<String>>()
-						.join(",")
-						.to_string(),
-				)]),
+				"multi" => local_var_req_builder.query(&local_var_str.into_iter().map(|p| ("external_id", p)).collect::<Vec<(&str, String)>>()),
+				_ => local_var_req_builder.query(&[("external_id", &local_var_str.join(",").to_string())]),
 			};
 		}
-		if let Some(ref local_var_str) = username {
+		if let Some(local_var_str) = username {
 			local_var_req_builder = match "multi" {
-				"multi" => local_var_req_builder.query(
-					&local_var_str
-						.into_iter()
-						.map(|p| ("username".to_owned(), p.to_string()))
-						.collect::<Vec<(std::string::String, std::string::String)>>(),
-				),
-				_ => local_var_req_builder.query(&[(
-					"username",
-					&local_var_str
-						.into_iter()
-						.map(|p| p.to_string())
-						.collect::<Vec<String>>()
-						.join(",")
-						.to_string(),
-				)]),
+				"multi" => local_var_req_builder.query(&local_var_str.into_iter().map(|p| ("username", p)).collect::<Vec<(&str, String)>>()),
+				_ => local_var_req_builder.query(&[("username", &local_var_str.join(",").to_string())]),
 			};
 		}
-		if let Some(ref local_var_str) = web3_wallet {
+		if let Some(local_var_str) = web3_wallet {
 			local_var_req_builder = match "multi" {
-				"multi" => local_var_req_builder.query(
-					&local_var_str
-						.into_iter()
-						.map(|p| ("web3_wallet".to_owned(), p.to_string()))
-						.collect::<Vec<(std::string::String, std::string::String)>>(),
-				),
-				_ => local_var_req_builder.query(&[(
-					"web3_wallet",
-					&local_var_str
-						.into_iter()
-						.map(|p| p.to_string())
-						.collect::<Vec<String>>()
-						.join(",")
-						.to_string(),
-				)]),
+				"multi" => local_var_req_builder.query(&local_var_str.into_iter().map(|p| ("web3_wallet", p)).collect::<Vec<(&str, String)>>()),
+				_ => local_var_req_builder.query(&[("web3_wallet", &local_var_str.join(",").to_string())]),
 			};
 		}
-		if let Some(ref local_var_str) = user_id {
+		if let Some(local_var_str) = user_id {
 			local_var_req_builder = match "multi" {
-				"multi" => local_var_req_builder.query(
-					&local_var_str
-						.into_iter()
-						.map(|p| ("user_id".to_owned(), p.to_string()))
-						.collect::<Vec<(std::string::String, std::string::String)>>(),
-				),
-				_ => local_var_req_builder.query(&[(
-					"user_id",
-					&local_var_str
-						.into_iter()
-						.map(|p| p.to_string())
-						.collect::<Vec<String>>()
-						.join(",")
-						.to_string(),
-				)]),
+				"multi" => local_var_req_builder.query(&local_var_str.into_iter().map(|p| ("user_id", p)).collect::<Vec<(&str, String)>>()),
+				_ => local_var_req_builder.query(&[("user_id", &local_var_str.join(",").to_string())]),
 			};
 		}
-		if let Some(ref local_var_str) = query {
-			local_var_req_builder = local_var_req_builder.query(&[("query", &local_var_str.to_string())]);
+		if let Some(local_var_str) = query {
+			local_var_req_builder = local_var_req_builder.query(&[("query", local_var_str)]);
 		}
-		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
-			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+		if let Some(local_var_user_agent) = &local_var_configuration.user_agent {
+			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent);
 		}
 
 		let local_var_req = local_var_req_builder.build()?;
