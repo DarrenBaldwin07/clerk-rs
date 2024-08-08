@@ -107,7 +107,7 @@ where
 		self.service.poll_ready(cx)
 	}
 
-	fn call(&mut self, request: Request) -> Self::Future {
+	fn call(&mut self, mut request: Request) -> Self::Future {
 		let mut svc = self.service.clone();
 
 		// We want to skip running the validator if we are not able to find a matching path from the listed valid paths provided by the user
@@ -137,7 +137,8 @@ where
 			// Check if the request is authenticated
 			match authorizer.authorize(&req).await {
 				// We have authed request and can pass the user onto the next body
-				Ok(_) => {
+				Ok(jwt) => {
+					request.extensions_mut().insert(jwt);
 					let res = svc.call(request).await?;
 					return Ok(res);
 				}
