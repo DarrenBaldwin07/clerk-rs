@@ -49,6 +49,7 @@ pub struct ClerkJwt {
 	pub sid: Option<String>,
 	pub sub: String,
 	pub act: Option<Actor>,
+	#[serde(flatten)]
 	pub org: Option<ActiveOrganization>,
 }
 
@@ -184,7 +185,10 @@ mod tests {
 		iss: String,
 		sid: String,
 		act: Actor,
-		org: ActiveOrganization,
+		org_id: String,
+		org_slug: String,
+		org_role: String,
+		org_permissions: Vec<String>,
 	}
 
 	struct Helper {
@@ -219,16 +223,14 @@ mod tests {
 				iss: "issuer".to_string(),
 				nbf: current_time,
 				sid: "session_id".to_string(),
+				org_id: "org_id".to_string(),
+				org_slug: "org_slug".to_string(),
+				org_role: "org_role".to_string(),
+				org_permissions: vec!["org_permission".to_string()],
 				act: Actor {
 					iss: "actor_iss".to_string(),
 					sid: Some("actor_sid".to_string()),
 					sub: "actor_sub".to_string(),
-				},
-				org: ActiveOrganization {
-					id: "org_id".to_string(),
-					slug: "org_slug".to_string(),
-					role: "org_role".to_string(),
-					permissions: vec!["org_permission".to_string()],
 				},
 			};
 
