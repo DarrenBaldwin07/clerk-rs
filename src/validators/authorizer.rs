@@ -33,6 +33,13 @@ impl ActiveOrganization {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct Actor {
+	pub iss: String,
+	pub sid: Option<String>,
+	pub sub: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ClerkJwt {
 	pub azp: Option<String>,
 	pub exp: i32,
@@ -41,7 +48,7 @@ pub struct ClerkJwt {
 	pub nbf: i32,
 	pub sid: Option<String>,
 	pub sub: String,
-	pub act: Option<String>,
+	pub act: Option<Actor>,
 	#[serde(flatten)]
 	pub org: Option<ActiveOrganization>,
 }
@@ -177,7 +184,7 @@ mod tests {
 		azp: String,
 		iss: String,
 		sid: String,
-		act: String,
+		act: Actor,
 		org_id: String,
 		org_slug: String,
 		org_role: String,
@@ -216,11 +223,15 @@ mod tests {
 				iss: "issuer".to_string(),
 				nbf: current_time,
 				sid: "session_id".to_string(),
-				act: "actor".to_string(),
 				org_id: "org_id".to_string(),
 				org_slug: "org_slug".to_string(),
 				org_role: "org_role".to_string(),
 				org_permissions: vec!["org_permission".to_string()],
+				act: Actor {
+					iss: "actor_iss".to_string(),
+					sid: Some("actor_sid".to_string()),
+					sub: "actor_sub".to_string(),
+				},
 			};
 
 			let mut header = Header::new(Algorithm::RS256);
@@ -269,7 +280,11 @@ mod tests {
 			iss: "issuer".to_string(),
 			nbf: current_time as i32,
 			sid: Some("session_id".to_string()),
-			act: Some("actor".to_string()),
+			act: Some(Actor {
+				iss: "actor_iss".to_string(),
+				sid: Some("actor_sid".to_string()),
+				sub: "actor_sub".to_string(),
+			}),
 			org: Some(ActiveOrganization {
 				id: "org_id".to_string(),
 				slug: "org_slug".to_string(),
