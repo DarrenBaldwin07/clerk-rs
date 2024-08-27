@@ -3,6 +3,7 @@ use crate::{
 	clerk::Clerk,
 };
 use jsonwebtoken::{decode, decode_header, errors::Error as jwtError, Algorithm, DecodingKey, Header, Validation};
+use serde_json::{Map, Value};
 use std::{error::Error, fmt};
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
@@ -51,6 +52,10 @@ pub struct ClerkJwt {
 	pub act: Option<Actor>,
 	#[serde(flatten)]
 	pub org: Option<ActiveOrganization>,
+	/// Catch-all for any other attributes that may be present in the JWT. This
+	/// is useful for custom templates that may have additional fields
+	#[serde(flatten)]
+	other: Map<String, Value>,
 }
 
 pub trait ClerkRequest {
@@ -176,6 +181,11 @@ mod tests {
 	use std::time::{SystemTime, UNIX_EPOCH};
 
 	#[derive(Debug, serde::Serialize)]
+	struct CustomFields {
+		custom_attribute: String,
+	}
+
+	#[derive(Debug, serde::Serialize)]
 	struct Claims {
 		sub: String,
 		iat: usize,
@@ -189,6 +199,8 @@ mod tests {
 		org_slug: String,
 		org_role: String,
 		org_permissions: Vec<String>,
+		custom_key: String,
+		custom_map: CustomFields,
 	}
 
 	struct Helper {
@@ -231,6 +243,10 @@ mod tests {
 					iss: "actor_iss".to_string(),
 					sid: Some("actor_sid".to_string()),
 					sub: "actor_sub".to_string(),
+				},
+				custom_key: "custom_value".to_string(),
+				custom_map: CustomFields {
+					custom_attribute: "custom_attribute".to_string(),
 				},
 			};
 
@@ -291,6 +307,19 @@ mod tests {
 				role: "org_role".to_string(),
 				permissions: vec!["org_permission".to_string()],
 			}),
+			other: {
+				let mut map = Map::new();
+				map.insert("custom_key".to_string(), Value::String("custom_value".to_string()));
+				map.insert(
+					"custom_map".to_string(),
+					Value::Object({
+						let mut map = Map::new();
+						map.insert("custom_attribute".to_string(), Value::String("custom_attribute".to_string()));
+						map
+					}),
+				);
+				map
+			},
 		};
 
 		match validate_jwt(token.as_str(), jwks) {
