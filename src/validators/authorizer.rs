@@ -55,7 +55,7 @@ pub struct ClerkJwt {
 	/// Catch-all for any other attributes that may be present in the JWT. This
 	/// is useful for custom templates that may have additional fields
 	#[serde(flatten)]
-	other: Map<String, Value>,
+	pub other: Map<String, Value>,
 }
 
 pub trait ClerkRequest {
