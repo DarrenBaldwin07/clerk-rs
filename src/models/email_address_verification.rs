@@ -38,6 +38,8 @@ pub enum Status {
 	Verified,
 	#[serde(rename = "expired")]
 	Expired,
+	#[serde(rename = "failed")]
+	Failed,
 }
 
 impl Default for Status {
