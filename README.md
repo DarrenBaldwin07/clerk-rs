@@ -55,7 +55,11 @@ With the `actix` feature enabled:
 
 ```rust
 use actix_web::{web, App, HttpServer, Responder};
-use clerk_rs::{validators::actix::ClerkMiddleware, ClerkConfiguration};
+use clerk_rs::{
+    clerk::Clerk,
+    validators::{actix::ClerkMiddleware, jwks::MemoryCacheJwksProvider},
+    ClerkConfiguration,
+};
 
 async fn index() -> impl Responder {
     "Hello world!"
@@ -65,8 +69,10 @@ async fn index() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+        let clerk = Clerk::new(config);
+
         App::new()
-            .wrap(ClerkMiddleware::new(config, None, true))
+            .wrap(ClerkMiddleware::new(MemoryCacheJwksProvider::new(clerk), None, true))
             .route("/index", web::get().to(index))
     })
     .bind(("127.0.0.1", 8080))?
@@ -81,9 +87,11 @@ With the `axum` feature enabled:
 
 ```rust
 use axum::{routing::get, Router};
-use clerk_rs::validators::axum::ClerkLayer;
-use clerk_rs::ClerkConfiguration;
-use std::net::SocketAddr;
+use clerk_rs::{
+    clerk::Clerk,
+    validators::{axum::ClerkLayer, jwks::MemoryCacheJwksProvider},
+    ClerkConfiguration,
+};
 
 async fn index() -> &'static str {
     "Hello world!"
@@ -91,10 +99,14 @@ async fn index() -> &'static str {
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    let config: ClerkConfiguration = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
-    let app = Router::new().route("/index", get(index)).layer(ClerkLayer::new(config, None, true));
-    let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
-    let listener = tokio::net::TcpListener::bind(addr).await?;
+    let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+    let clerk = Clerk::new(config);
+
+    let app = Router::new()
+        .route("/index", get(index))
+        .layer(ClerkLayer::new(MemoryCacheJwksProvider::new(clerk), None, true));
+
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await?;
     axum::serve(listener, app).await
 }
 ```
