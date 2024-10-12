@@ -1,10 +1,7 @@
-use crate::{
-	apis::jwks_api::{Jwks, JwksModel},
-	clerk::Clerk,
-};
+use crate::{apis::jwks_api::JwksKey, validators::jwks::JwksProvider};
 use jsonwebtoken::{decode, decode_header, errors::Error as jwtError, Algorithm, DecodingKey, Header, Validation};
 use serde_json::{Map, Value};
-use std::{error::Error, fmt};
+use std::{error::Error, fmt, sync::Arc};
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ActiveOrganization {
@@ -80,17 +77,16 @@ impl fmt::Display for ClerkError {
 
 impl Error for ClerkError {}
 
-#[derive(Clone)]
-pub struct ClerkAuthorizer {
-	clerk_client: Clerk,
+pub struct ClerkAuthorizer<J> {
+	jwks_provider: Arc<J>,
 	validate_session_cookie: bool,
 }
 
-impl ClerkAuthorizer {
+impl<J: JwksProvider> ClerkAuthorizer<J> {
 	/// Creates a Clerk authorizer
-	pub fn new(clerk_client: Clerk, validate_session_cookie: bool) -> Self {
+	pub fn new(jwks_provider: J, validate_session_cookie: bool) -> Self {
 		Self {
-			clerk_client,
+			jwks_provider: Arc::new(jwks_provider),
 			validate_session_cookie,
 		}
 	}
@@ -100,11 +96,7 @@ impl ClerkAuthorizer {
 	where
 		T: ClerkRequest,
 	{
-		let jwks = match Jwks::get_jwks(&self.clerk_client).await {
-			Ok(val) => val,
-			Err(_) => return Err(ClerkError::InternalServerError(String::from("Error: Could not fetch JWKS!"))),
-		};
-
+		// get the jwt from header or cookies
 		let access_token: String = match request.get_header("Authorization") {
 			Some(val) => val.to_string().replace("Bearer ", ""),
 			None => match self.validate_session_cookie {
@@ -124,43 +116,61 @@ impl ClerkAuthorizer {
 			},
 		};
 
-		validate_jwt(&access_token, jwks)
+		validate_jwt(&access_token, self.jwks_provider.clone()).await
 	}
 }
 
-/// Validates a jwt token using a jwks
-pub fn validate_jwt(token: &str, jwks: JwksModel) -> Result<ClerkJwt, ClerkError> {
-	// If we were not able to parse the kid field we want to output an invalid case...
+impl<J> Clone for ClerkAuthorizer<J> {
+	fn clone(&self) -> Self {
+		Self {
+			jwks_provider: self.jwks_provider.clone(),
+			validate_session_cookie: self.validate_session_cookie,
+		}
+	}
+}
+
+/// Validates a jwt using the given [`JwksProvider`].
+///
+/// The jwt is required to have a `kid` which is used to request the matching key from the provider.
+pub async fn validate_jwt<J: JwksProvider>(token: &str, jwks: Arc<J>) -> Result<ClerkJwt, ClerkError> {
+	// parse the header to get the kid
 	let kid = match get_token_header(token).map(|h| h.kid) {
 		Ok(Some(kid)) => kid,
 		_ => {
+			// if the kid header was invalid or the kid field was unset, error
 			return Err(ClerkError::Unauthorized(String::from("Error: Invalid JWT!")));
 		}
 	};
 
-	let jwk = jwks.keys.iter().find(|k| k.kid == kid);
-
-	// Check to see if we found a valid jwk key with the token kid
-	if let Some(j) = jwk {
-		match j.alg.as_str() {
-			// Currently, clerk only supports Rs256 by default
-			"RS256" => {
-				let decoding_key = DecodingKey::from_rsa_components(&j.n, &j.e)
-					.map_err(|_| ClerkError::InternalServerError(String::from("Error: Invalid decoding key")))?;
-				let mut validation = Validation::new(Algorithm::RS256);
-				validation.validate_exp = true;
-				validation.validate_nbf = true;
-
-				match decode::<ClerkJwt>(token, &decoding_key, &validation) {
-					Ok(token) => Ok(token.claims),
-					Err(err) => Err(ClerkError::Unauthorized(format!("Error: Invalid JWT! cause: {}", err))),
-				}
-			}
-			_ => Err(ClerkError::InternalServerError(String::from("Error: Unsupported key algorithm"))),
-		}
-	} else {
+	// get the key from the provider
+	let Ok(key) = jwks.get_key(&kid).await else {
 		// In the event that a matching jwk was not found we want to output an error
-		Err(ClerkError::Unauthorized(String::from("Error: Invalid JWT!")))
+		return Err(ClerkError::Unauthorized(String::from("Error: Invalid JWT!")));
+	};
+
+	validate_jwt_with_key(token, &key)
+}
+
+/// Validates a jwt using the given jwk.
+///
+/// This function does not check that the token's kid matches the key's.
+pub fn validate_jwt_with_key(token: &str, key: &JwksKey) -> Result<ClerkJwt, ClerkError> {
+	match key.alg.as_str() {
+		// Currently, clerk only supports Rs256 by default
+		"RS256" => {
+			let decoding_key = DecodingKey::from_rsa_components(&key.n, &key.e)
+				.map_err(|_| ClerkError::InternalServerError(String::from("Error: Invalid decoding key")))?;
+
+			let mut validation = Validation::new(Algorithm::RS256);
+			validation.validate_exp = true;
+			validation.validate_nbf = true;
+
+			match decode::<ClerkJwt>(token, &decoding_key, &validation) {
+				Ok(token) => Ok(token.claims),
+				Err(err) => Err(ClerkError::Unauthorized(format!("Error: Invalid JWT! cause: {}", err))),
+			}
+		}
+		_ => Err(ClerkError::InternalServerError(String::from("Error: Unsupported key algorithm"))),
 	}
 }
 
@@ -173,7 +183,7 @@ fn get_token_header(token: &str) -> Result<Header, jwtError> {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use crate::apis::jwks_api::JwksKey;
+	use crate::{apis::jwks_api::JwksKey, validators::jwks::tests::StaticJwksProvider};
 	use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 	use base64::prelude::*;
 	use jsonwebtoken::{encode, errors::ErrorKind, Algorithm, EncodingKey, Header};
@@ -220,12 +230,15 @@ mod tests {
 			let pem = self.private_key.to_pkcs1_pem(rsa::pkcs8::LineEnding::LF).unwrap();
 			let encoding_key = EncodingKey::from_rsa_pem(pem.as_bytes()).expect("Failed to load encoding key");
 
-			let current_time = current_time.unwrap_or(SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as usize);
+			let mut current_time = current_time.unwrap_or(SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as usize);
 
-			let mut expiration = current_time;
-			if !expired {
-				expiration += 3600;
+			if expired {
+				// issue the token some time in the past so that it's expired now
+				current_time -= 5000;
 			}
+
+			// expire after 1000 secs
+			let expiration = current_time + 1000;
 
 			let claims = Claims {
 				azp: "client_id".to_string(),
@@ -268,7 +281,7 @@ mod tests {
 	}
 
 	#[test]
-	fn test_validate_jwt_success() {
+	fn test_validate_jwt_with_key_success() {
 		let helper = Helper::new();
 
 		let kid = "bc63c2e9-5d1c-4e32-9b62-178f60409abd";
@@ -283,7 +296,6 @@ mod tests {
 			n: modulus,
 			e: exponent,
 		};
-		let jwks = JwksModel { keys: vec![jwks_key] };
 
 		let current_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as usize;
 		let token = helper.generate_jwt_token(Some(kid), Some(current_time), false);
@@ -292,7 +304,7 @@ mod tests {
 			azp: Some("client_id".to_string()),
 			sub: "user".to_string(),
 			iat: current_time as i32,
-			exp: (current_time + 3600) as i32,
+			exp: (current_time + 1000) as i32,
 			iss: "issuer".to_string(),
 			nbf: current_time as i32,
 			sid: Some("session_id".to_string()),
@@ -322,16 +334,11 @@ mod tests {
 			},
 		};
 
-		match validate_jwt(token.as_str(), jwks) {
-			Ok(jwt) => {
-				assert_eq!(jwt, expected)
-			}
-			Err(_) => unreachable!("Unexpected invalid jwt token"),
-		}
+		assert_eq!(validate_jwt_with_key(token.as_str(), &jwks_key).expect("should be valid"), expected);
 	}
 
 	#[test]
-	fn test_validate_jwt_error_getting_token_header() {
+	fn test_validate_jwt_with_key_unexpected_key_algorithm() {
 		let helper = Helper::new();
 
 		let kid = "bc63c2e9-5d1c-4e32-9b62-178f60409abd";
@@ -342,90 +349,21 @@ mod tests {
 			use_key: String::new(),
 			kty: String::new(),
 			kid: kid.to_string(),
-			alg: String::from("RS256"),
+			alg: String::from("INVALIDALGORITHM"),
 			n: modulus,
 			e: exponent,
 		};
-		let jwks = JwksModel { keys: vec![jwks_key] };
-
-		match validate_jwt("invalid_token", jwks) {
-			Ok(_) => unreachable!("Unexpected valid jwt token"),
-			Err(_) => assert!(true),
-		}
-	}
-
-	#[test]
-	fn test_validate_jwt_missing_token_kid() {
-		let helper = Helper::new();
-
-		let kid = "bc63c2e9-5d1c-4e32-9b62-178f60409abd";
-
-		let (modulus, exponent) = helper.get_modulus_and_public_exponent();
-
-		let jwks_key = JwksKey {
-			use_key: String::new(),
-			kty: String::new(),
-			kid: kid.to_string(),
-			alg: String::from("RS256"),
-			n: modulus,
-			e: exponent,
-		};
-		let jwks = JwksModel { keys: vec![jwks_key] };
-
-		let token = helper.generate_jwt_token(None, None, false);
-
-		assert!(matches!(validate_jwt(&token, jwks), Err(ClerkError::Unauthorized(_))))
-	}
-
-	#[test]
-	fn test_validate_jwt_unmatched_jwks_key() {
-		let helper = Helper::new();
-
-		let (modulus, exponent) = helper.get_modulus_and_public_exponent();
-
-		let jwks_key = JwksKey {
-			use_key: String::new(),
-			kty: String::new(),
-			kid: String::from("a288cbf5-fec1-41e3-ae83-5b0d122bf925"),
-			alg: String::from("RS256"),
-			n: modulus,
-			e: exponent,
-		};
-		let jwks = JwksModel { keys: vec![jwks_key] };
-
-		let token = helper.generate_jwt_token(Some("bc63c2e9-5d1c-4e32-9b62-178f60409abd"), None, false);
-
-		match validate_jwt(token.as_str(), jwks) {
-			Ok(_) => unreachable!("Unexpected valid jwt token"),
-			Err(_) => assert!(true),
-		}
-	}
-
-	#[test]
-	fn test_validate_jwt_unexpected_key_algorithm() {
-		let helper = Helper::new();
-
-		let kid = "bc63c2e9-5d1c-4e32-9b62-178f60409abd";
-
-		let (modulus, exponent) = helper.get_modulus_and_public_exponent();
-
-		let jwks_key = JwksKey {
-			use_key: String::new(),
-			kty: String::new(),
-			kid: kid.to_string(),
-			alg: String::from("ES256"),
-			n: modulus,
-			e: exponent,
-		};
-		let jwks = JwksModel { keys: vec![jwks_key] };
 
 		let token = helper.generate_jwt_token(Some(kid), None, false);
 
-		assert!(matches!(validate_jwt(&token, jwks), Err(ClerkError::InternalServerError(_))))
+		assert!(matches!(
+			validate_jwt_with_key(&token, &jwks_key),
+			Err(ClerkError::InternalServerError(_))
+		))
 	}
 
 	#[test]
-	fn test_validate_jwt_invalid_decoding_key() {
+	fn test_validate_jwt_with_key_invalid_decoding_key() {
 		let helper = Helper::new();
 
 		let kid = "bc63c2e9-5d1c-4e32-9b62-178f60409abd";
@@ -438,57 +376,213 @@ mod tests {
 			n: String::from("INVALIDMODULUS"),
 			e: String::from("INVALIDEXPONENT"),
 		};
-		let jwks = JwksModel { keys: vec![jwks_key] };
 
 		let token = helper.generate_jwt_token(Some(kid), None, false);
 
-		assert!(matches!(validate_jwt(&token, jwks), Err(ClerkError::InternalServerError(_))))
+		assert!(matches!(
+			validate_jwt_with_key(&token, &jwks_key),
+			Err(ClerkError::InternalServerError(_))
+		))
 	}
 
 	#[test]
-	fn test_validate_jwt_invalid_jwt_token() {
-		let helper = Helper::new();
+	fn test_validate_jwt_with_key_invalid_sig() {
+		let helper1 = Helper::new();
+		let helper2 = Helper::new();
 
 		let kid = "bc63c2e9-5d1c-4e32-9b62-178f60409abd";
+
+		let (modulus, exponent) = helper1.get_modulus_and_public_exponent();
 
 		let jwks_key = JwksKey {
 			use_key: String::new(),
 			kty: String::new(),
 			kid: kid.to_string(),
 			alg: String::from("RS256"),
-			n: String::new(),
-			e: String::new(),
+			n: modulus,
+			e: exponent,
 		};
-		let jwks = JwksModel { keys: vec![jwks_key] };
 
-		let token = helper.generate_jwt_token(Some(kid), None, false);
+		let token = helper2.generate_jwt_token(None, None, false);
 
-		match validate_jwt(token.as_str(), jwks) {
-			Ok(_) => unreachable!("Unexpected valid jwt token"),
-			Err(_) => assert!(true),
-		}
+		let res = validate_jwt_with_key(&token, &jwks_key);
+		assert!(matches!(res, Err(ClerkError::Unauthorized(_))));
 	}
 
 	#[test]
-	fn test_token_kid_success() {
+	fn test_validate_jwt_with_key_expired() {
+		let helper = Helper::new();
+
+		let kid = "bc63c2e9-5d1c-4e32-9b62-178f60409abd";
+
+		let (modulus, exponent) = helper.get_modulus_and_public_exponent();
+
+		let jwks_key = JwksKey {
+			use_key: String::new(),
+			kty: String::new(),
+			kid: kid.to_string(),
+			alg: String::from("RS256"),
+			n: modulus,
+			e: exponent,
+		};
+
+		let token = helper.generate_jwt_token(Some(kid), None, true);
+
+		let res = validate_jwt_with_key(&token, &jwks_key);
+		assert!(matches!(res, Err(ClerkError::Unauthorized(_))))
+	}
+
+	#[tokio::test]
+	async fn test_validate_jwt_success() {
+		let helper = Helper::new();
+
+		let kid = "bc63c2e9-5d1c-4e32-9b62-178f60409abd";
+
+		let (modulus, exponent) = helper.get_modulus_and_public_exponent();
+
+		let jwks_key = JwksKey {
+			use_key: String::new(),
+			kty: String::new(),
+			kid: kid.to_string(),
+			alg: String::from("RS256"),
+			n: modulus,
+			e: exponent,
+		};
+		let jwks = Arc::new(StaticJwksProvider::from_key(jwks_key));
+
+		let current_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as usize;
+		let token = helper.generate_jwt_token(Some(kid), Some(current_time), false);
+
+		let expected = ClerkJwt {
+			azp: Some("client_id".to_string()),
+			sub: "user".to_string(),
+			iat: current_time as i32,
+			exp: (current_time + 1000) as i32,
+			iss: "issuer".to_string(),
+			nbf: current_time as i32,
+			sid: Some("session_id".to_string()),
+			act: Some(Actor {
+				iss: "actor_iss".to_string(),
+				sid: Some("actor_sid".to_string()),
+				sub: "actor_sub".to_string(),
+			}),
+			org: Some(ActiveOrganization {
+				id: "org_id".to_string(),
+				slug: "org_slug".to_string(),
+				role: "org_role".to_string(),
+				permissions: vec!["org_permission".to_string()],
+			}),
+			other: {
+				let mut map = Map::new();
+				map.insert("custom_key".to_string(), Value::String("custom_value".to_string()));
+				map.insert(
+					"custom_map".to_string(),
+					Value::Object({
+						let mut map = Map::new();
+						map.insert("custom_attribute".to_string(), Value::String("custom_attribute".to_string()));
+						map
+					}),
+				);
+				map
+			},
+		};
+
+		assert_eq!(validate_jwt(token.as_str(), jwks).await.expect("should be valid"), expected);
+	}
+
+	#[tokio::test]
+	async fn test_validate_jwt_invalid_token() {
+		let helper = Helper::new();
+
+		let kid = "bc63c2e9-5d1c-4e32-9b62-178f60409abd";
+
+		let (modulus, exponent) = helper.get_modulus_and_public_exponent();
+
+		let jwks_key = JwksKey {
+			use_key: String::new(),
+			kty: String::new(),
+			kid: kid.to_string(),
+			alg: String::from("RS256"),
+			n: modulus,
+			e: exponent,
+		};
+		let jwks = Arc::new(StaticJwksProvider::from_key(jwks_key));
+
+		assert!(matches!(validate_jwt("invalid_token", jwks).await, Err(ClerkError::Unauthorized(_))))
+	}
+
+	#[tokio::test]
+	async fn test_validate_jwt_missing_kid() {
+		let helper = Helper::new();
+
+		let kid = "bc63c2e9-5d1c-4e32-9b62-178f60409abd";
+
+		let (modulus, exponent) = helper.get_modulus_and_public_exponent();
+
+		let jwks_key = JwksKey {
+			use_key: String::new(),
+			kty: String::new(),
+			kid: kid.to_string(),
+			alg: String::from("RS256"),
+			n: modulus,
+			e: exponent,
+		};
+		let jwks = Arc::new(StaticJwksProvider::from_key(jwks_key));
+
+		let token = helper.generate_jwt_token(None, None, false);
+
+		assert!(matches!(validate_jwt(&token, jwks).await, Err(ClerkError::Unauthorized(_))))
+	}
+
+	#[tokio::test]
+	async fn test_validate_jwt_unknown_key() {
+		let helper = Helper::new();
+
+		let (modulus, exponent) = helper.get_modulus_and_public_exponent();
+
+		let jwks_key = JwksKey {
+			use_key: String::new(),
+			kty: String::new(),
+			kid: String::from("a288cbf5-fec1-41e3-ae83-5b0d122bf925"),
+			alg: String::from("RS256"),
+			n: modulus,
+			e: exponent,
+		};
+		let jwks = Arc::new(StaticJwksProvider::from_key(jwks_key));
+
+		let token = helper.generate_jwt_token(Some("bc63c2e9-5d1c-4e32-9b62-178f60409abd"), None, false);
+
+		assert!(matches!(validate_jwt(&token, jwks).await, Err(ClerkError::Unauthorized(_))))
+	}
+
+	#[test]
+	fn test_helper_generate_token_header() {
 		let helper = Helper::new();
 
 		let token = helper.generate_jwt_token(None, None, false);
 		let expected = Header::new(Algorithm::RS256);
 
-		match get_token_header(token.as_str()) {
-			Ok(header) => assert_eq!(header, expected),
-			Err(err) => unreachable!("Unexpected error: {:?}", err),
-		}
+		assert_eq!(get_token_header(&token).expect("should be valid"), expected);
 	}
 
 	#[test]
-	fn test_token_kid_error() {
+	fn test_helper_generate_token_header_with_kid() {
+		let helper = Helper::new();
+
+		let kid = "bc63c2e9-5d1c-4e32-9b62-178f60409abd".to_string();
+
+		let token = helper.generate_jwt_token(Some(&kid), None, false);
+		let mut expected = Header::new(Algorithm::RS256);
+		expected.kid = Some(kid);
+
+		assert_eq!(get_token_header(&token).expect("should be valid"), expected);
+	}
+
+	#[test]
+	fn test_helper_generate_token_header_error() {
 		let token = "invalid_jwt_token";
 
-		match get_token_header(token) {
-			Ok(_) => unreachable!("Expected an error, but it succeeded."),
-			Err(err) => assert_eq!(err.kind().to_owned(), ErrorKind::InvalidToken, "Unexpected error: {:?}", err),
-		}
+		let err = get_token_header(token).expect_err("should be invalid");
+		assert_eq!(err.kind().to_owned(), ErrorKind::InvalidToken);
 	}
 }
