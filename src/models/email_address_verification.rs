@@ -36,6 +36,10 @@ impl EmailAddressVerification {
 pub enum Status {
 	#[serde(rename = "verified")]
 	Verified,
+	#[serde(rename = "expired")]
+	Expired,
+	#[serde(rename = "failed")]
+	Failed,
 }
 
 impl Default for Status {
@@ -48,6 +52,14 @@ impl Default for Status {
 pub enum Strategy {
 	#[serde(rename = "admin")]
 	Admin,
+	#[serde(rename = "phone_code")]
+	PhoneCode,
+	#[serde(rename = "email_code")]
+	EmailCode,
+	#[serde(rename = "from_oauth_google")]
+	FromOAuthGoogle,
+	#[serde(rename = "from_oauth_twitter")]
+	FromOAuthTwitter,
 	#[serde(other)]
 	Other,
 }
