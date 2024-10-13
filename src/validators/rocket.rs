@@ -45,7 +45,7 @@ impl<'r, J: JwksProvider + Send + Sync + 'static> FromRequest<'r> for ClerkGuard
 		let config = request
 			.rocket()
 			.state::<ClerkGuardConfig<J>>()
-			.expect("ClerkAuthorizer not found in managed state");
+			.expect("ClerkGuardConfig not found in managed state");
 
 		match &config.routes {
 			Some(route_matches) => {
