@@ -42,12 +42,30 @@ impl<'r, J: JwksProvider + Send + Sync + 'static> FromRequest<'r> for ClerkGuard
 
 	async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
 		// Retrieve the ClerkAuthorizer from managed state
-		let authorizer = request
+		let config = request
 			.rocket()
 			.state::<ClerkGuardConfig<J>>()
 			.expect("ClerkAuthorizer not found in managed state");
 
-		match authorizer.authorizer.authorize(&request).await {
+		match &config.routes {
+			Some(route_matches) => {
+				// If the user only wants to apply authentication to a select amount of routes, we handle that logic here
+				let path = request.uri().path();
+				// Check if the path was NOT contained inside of the routes specified by the user...
+				let path_not_in_specified_routes = route_matches.iter().find(|&route| route == &path.to_string()).is_none();
+
+				if path_not_in_specified_routes {
+					// Since the path was not inside of the listed routes we want to trigger an early exit
+					return Outcome::Success(ClerkGuard {
+						_unused: std::marker::PhantomData,
+					});
+				}
+			}
+			// Since we did find a matching route we can simply do nothing here and start the actual auth logic...
+			None => {}
+		}
+
+		match config.authorizer.authorize(&request).await {
 			Ok(_) => Outcome::Success(ClerkGuard {
 				_unused: std::marker::PhantomData,
 			}),
