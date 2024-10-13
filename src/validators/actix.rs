@@ -6,7 +6,7 @@ use actix_web::{
 	body::EitherBody,
 	dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
 	error::Error,
-	HttpResponse,
+	HttpMessage, HttpResponse,
 };
 use futures_util::future::LocalBoxFuture;
 use std::{
@@ -106,7 +106,7 @@ where
 
 	forward_ready!(service);
 
-	fn call(&self, req: ServiceRequest) -> Self::Future {
+	fn call(&self, request: ServiceRequest) -> Self::Future {
 		let svc = self.service.clone();
 		let authorizer = self.authorizer.clone();
 
@@ -114,14 +114,14 @@ where
 		match &self.routes {
 			Some(route_matches) => {
 				// If the user only wants to apply authentication to a select amount of routes, we handle that logic here
-				let path = req.path();
+				let path = request.path();
 				// Check if the path was NOT contained inside of the routes specified by the user...
 				let path_not_in_specified_routes = route_matches.iter().find(|&route| route == path).is_none();
 
 				if path_not_in_specified_routes {
 					// Since the path was not inside of the listed routes we want to trigger an early exit
 					return Box::pin(async move {
-						let res = svc.call(req).await?;
+						let res = svc.call(request).await?;
 						return Ok(res.map_into_left_body());
 					});
 				}
@@ -132,10 +132,11 @@ where
 
 		Box::pin(async move {
 			// Check if the request is authenticated
-			match authorizer.authorize(&req).await {
+			match authorizer.authorize(&request).await {
 				// We have authed request and can pass the user onto the next body
-				Ok(_) => {
-					let res = svc.call(req).await?;
+				Ok(jwt) => {
+					request.extensions_mut().insert(jwt);
+					let res = svc.call(request).await?;
 					return Ok(res.map_into_left_body());
 				}
 				// Output any other errors thrown from the Clerk authorizer
@@ -143,13 +144,13 @@ where
 					match error {
 						ClerkError::Unauthorized(msg) => {
 							return Ok(ServiceResponse::new(
-								req.into_parts().0,
+								request.into_parts().0,
 								HttpResponse::Unauthorized().body(msg).map_into_right_body(),
 							))
 						}
 						ClerkError::InternalServerError(msg) => {
 							return Ok(ServiceResponse::new(
-								req.into_parts().0,
+								request.into_parts().0,
 								HttpResponse::InternalServerError().body(msg).map_into_right_body(),
 							))
 						}
