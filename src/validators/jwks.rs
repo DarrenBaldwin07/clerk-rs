@@ -41,18 +41,18 @@ impl From<JwksProviderError> for ClerkError {
 /// A [`JwksProvider`] implementation that doesn't do any caching.
 ///
 /// The JWKS is fetched from the Clerk API on every request.
-pub struct SimpleJwksProvider {
+pub struct JwksProviderNoCache {
 	clerk_client: Clerk,
 }
 
-impl SimpleJwksProvider {
+impl JwksProviderNoCache {
 	pub fn new(clerk_client: Clerk) -> Self {
 		Self { clerk_client }
 	}
 }
 
 #[async_trait]
-impl JwksProvider for SimpleJwksProvider {
+impl JwksProvider for JwksProviderNoCache {
 	type Error = JwksProviderError;
 
 	async fn get_key(&self, kid: &str) -> Result<JwksKey, JwksProviderError> {
@@ -273,7 +273,7 @@ pub(crate) mod tests {
 		};
 		let clerk = Clerk::new(config);
 
-		let jwks = SimpleJwksProvider::new(clerk);
+		let jwks = JwksProviderNoCache::new(clerk);
 
 		let res = jwks.get_key(MOCK_KID).await.expect("should retrieve key");
 		assert_eq!(res.kid, MOCK_KID);
@@ -293,7 +293,7 @@ pub(crate) mod tests {
 		};
 		let clerk = Clerk::new(config);
 
-		let jwks = SimpleJwksProvider::new(clerk);
+		let jwks = JwksProviderNoCache::new(clerk);
 
 		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
 		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
@@ -314,7 +314,7 @@ pub(crate) mod tests {
 		};
 		let clerk = Clerk::new(config);
 
-		let jwks = SimpleJwksProvider::new(clerk);
+		let jwks = JwksProviderNoCache::new(clerk);
 
 		// try to get a key that doesn't exist
 		let res = jwks.get_key("unknown key").await.expect_err("should fail");
