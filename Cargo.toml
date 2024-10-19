@@ -28,6 +28,11 @@ name = "axum"
 path = "examples/axum.rs"
 required-features = ["axum"]
 
+[[example]]
+name = "rocket"
+path = "examples/rocket.rs"
+required-features = ["rocket"]
+
 [lib]
 doctest = false
 

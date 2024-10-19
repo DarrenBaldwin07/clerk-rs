@@ -8,6 +8,8 @@ use rocket::{
 	Request,
 };
 
+use super::authorizer::ClerkJwt;
+
 // Implement ClerkRequest for Rocket's Request
 impl<'r> ClerkRequest for &'r Request<'_> {
 	fn get_header(&self, key: &str) -> Option<String> {
@@ -32,7 +34,8 @@ impl<J: JwksProvider> ClerkGuardConfig<J> {
 }
 
 pub struct ClerkGuard<J: JwksProvider + Send + Sync> {
-	_unused: std::marker::PhantomData<J>,
+	pub jwt: Option<ClerkJwt>,
+	_marker: std::marker::PhantomData<J>,
 }
 
 // Implement request guard for ClerkGuard
@@ -57,7 +60,8 @@ impl<'r, J: JwksProvider + Send + Sync + 'static> FromRequest<'r> for ClerkGuard
 				if path_not_in_specified_routes {
 					// Since the path was not inside of the listed routes we want to trigger an early exit
 					return Outcome::Success(ClerkGuard {
-						_unused: std::marker::PhantomData,
+						jwt: None,
+						_marker: std::marker::PhantomData,
 					});
 				}
 			}
@@ -66,9 +70,13 @@ impl<'r, J: JwksProvider + Send + Sync + 'static> FromRequest<'r> for ClerkGuard
 		}
 
 		match config.authorizer.authorize(&request).await {
-			Ok(_) => Outcome::Success(ClerkGuard {
-				_unused: std::marker::PhantomData,
-			}),
+			Ok(jwt) => {
+				request.local_cache(|| jwt.clone());
+				return Outcome::Success(ClerkGuard {
+					jwt: Some(jwt),
+					_marker: std::marker::PhantomData,
+				});
+			}
 			Err(error) => match error {
 				ClerkError::Unauthorized(msg) => Outcome::Error((Status::Unauthorized, ClerkError::Unauthorized(msg))),
 				ClerkError::InternalServerError(msg) => Outcome::Error((Status::InternalServerError, ClerkError::InternalServerError(msg))),
