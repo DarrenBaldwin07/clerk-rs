@@ -2,18 +2,18 @@
 [![Downloads](https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![docs.rs](https://img.shields.io/docsrs/clerk-rs?style=flat-square)](https://docs.rs/clerk-rs)
 
-# A official community-maintained Clerk SDK for Rust
+# An official community-maintained Clerk SDK for Rust
 
 For more detailed documentation, please reference the below links:
 
-- [Offical Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
+- [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
 - [Clerk-rs SDK API docs](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/docs.md)
 
-> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updated or is not inline with the official Clerk api, please open an issue!
+> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk api, please open an issue!
 
 ## Examples
 
-> Checkout examples in the `/examples` directory
+> Check out examples in the `/examples` directory
 
 ### Using a traditional http request to a valid clerk endpoint:
 
