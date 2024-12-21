@@ -9,3 +9,5 @@ pub mod actix;
 pub mod axum;
 #[cfg(feature = "rocket")]
 pub mod rocket;
+#[cfg(feature = "poem")]
+pub mod poem;
