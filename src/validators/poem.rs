@@ -19,6 +19,8 @@ impl ClerkRequest for Request {
 	}
 }
 
+// The below implementation is derived from: https://docs.rs/poem/latest/poem/middleware/trait.Middleware.html#create-your-own-middleware
+
 pub struct ClerkPoemMiddleware<J> {
 	authorizer: ClerkAuthorizer<J>,
 }
@@ -58,10 +60,14 @@ where
 	async fn call(&self, mut req: Request) -> Result<Self::Output> {
 		match self.authorizer.authorize(&req).await {
 			Ok(jwt) => {
-                req.set_data(jwt);
+				// This can be accessed using Data<&ClerkJwt>
+				req.set_data(jwt);
+
+				// call next
 				self.ep.call(req).await
 			}
 			Err(error) => match error {
+				// The error strings are passed through with the correct status code
 				ClerkError::Unauthorized(_) => Err(Unauthorized(error)),
 				ClerkError::InternalServerError(_) => Err(InternalServerError(error)),
 			},
