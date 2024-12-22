@@ -23,12 +23,13 @@ impl ClerkRequest for Request {
 
 pub struct ClerkPoemMiddleware<J> {
 	authorizer: ClerkAuthorizer<J>,
+	exclude_routes: Option<Vec<String>>,
 }
 
 impl<J: JwksProvider> ClerkPoemMiddleware<J> {
-	pub fn new(jwks_provider: J, validate_session_cookie: bool) -> Self {
+	pub fn new(jwks_provider: J, validate_session_cookie: bool, exclude_routes: Option<Vec<String>>) -> Self {
 		let authorizer = ClerkAuthorizer::new(jwks_provider, validate_session_cookie);
-		Self { authorizer }
+		Self { authorizer, exclude_routes }
 	}
 }
 
@@ -41,6 +42,7 @@ where
 	fn transform(&self, ep: E) -> Self::Output {
 		Self::Output {
 			authorizer: self.authorizer.clone(),
+			exclude_routes: self.exclude_routes.clone(),
 			ep,
 		}
 	}
@@ -48,6 +50,7 @@ where
 
 pub struct ClerkPoemMiddlewareImpl<J, E> {
 	authorizer: ClerkAuthorizer<J>,
+	exclude_routes: Option<Vec<String>>,
 	ep: E,
 }
 
@@ -58,6 +61,13 @@ where
 	type Output = Response;
 
 	async fn call(&self, mut req: Request) -> Result<Self::Output> {
+		if let Some(exclude_routes) = &self.exclude_routes {
+			if exclude_routes.iter().any(|r| r == req.uri().path()) {
+				// call next and early return
+				return self.ep.call(req).await;
+			}
+		}
+
 		match self.authorizer.authorize(&req).await {
 			Ok(jwt) => {
 				// This can be accessed using Data<&ClerkJwt>
