@@ -48,6 +48,10 @@ where
 	}
 }
 
+/// A middleware to authenticate Poem routes using Clerk.com.
+///
+/// If auth succeeds, the JWT data is available using `Data<&ClerkJwt>` (or
+/// `req.data::<ClerkJwt>()`).
 pub struct ClerkPoemMiddlewareImpl<J, E> {
 	authorizer: ClerkAuthorizer<J>,
 	exclude_routes: Option<Vec<String>>,

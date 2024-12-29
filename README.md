@@ -154,6 +154,51 @@ fn rocket() -> _ {
 
 ```
 
+### Protecting a Poem endpoint with Clerk
+
+With the `poem` feature enabled and poem v3 installed:
+```rust
+use clerk_rs::{
+    clerk::Clerk,
+    validators::{jwks::MemoryCacheJwksProvider, poem::ClerkPoemMiddleware},
+    ClerkConfiguration,
+};
+use poem::{get, handler, listener::TcpListener, web::Path, EndpointExt, Route, Server};
+
+#[handler]
+fn hello(Path(name): Path<String>) -> String {
+    format!("hello: {}", name)
+}
+
+#[tokio::main]
+async fn main() -> Result<(), std::io::Error> {
+    let clerk = Clerk::new(ClerkConfiguration::new(
+        None,
+        None,
+        Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_owned()),
+        None,
+    ));
+    // Initialize middleware.
+    let clerk_poem_middleware = ClerkPoemMiddleware::new(
+        MemoryCacheJwksProvider::new(clerk.clone()),
+        true,
+        // If you're using poem-openapi, you may need this to exclude some routes from auth
+        // verification.
+        Some(vec!["/some/route/to/exclude".to_owned()]),
+    );
+
+    let app = Route::new()
+        .at("/hello/:name", get(hello))
+        .with(clerk_poem_middleware); // Add middleware here (EndpointExt needs to be in scope).
+
+    Server::new(TcpListener::bind("0.0.0.0:3000"))
+        .run(app)
+        .await
+}
+```
+
+The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
+
 ## Roadmap
 
 - [ ] Support other http clients along with the default reqwest client (like hyper)
