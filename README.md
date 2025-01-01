@@ -2,7 +2,7 @@
 [![Downloads](https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![docs.rs](https://img.shields.io/docsrs/clerk-rs?style=flat-square)](https://docs.rs/clerk-rs)
 
-# An official community-maintained Clerk SDK for Rust
+# The official community-maintained Clerk SDK for Rust
 
 For more detailed documentation, please reference the below links:
 
