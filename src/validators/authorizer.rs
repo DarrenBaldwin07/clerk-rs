@@ -91,6 +91,11 @@ impl<J: JwksProvider> ClerkAuthorizer<J> {
 		}
 	}
 
+	/// Returns a reference to the underlying [`JwksProvider`].
+	pub fn jwks_provider(&self) -> &Arc<J> {
+		&self.jwks_provider
+	}
+
 	/// Authorizes a service request against the Clerk auth provider
 	pub async fn authorize<T>(&self, request: &T) -> Result<ClerkJwt, ClerkError>
 	where
