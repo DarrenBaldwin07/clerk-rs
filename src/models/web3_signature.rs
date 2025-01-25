@@ -61,6 +61,12 @@ impl Default for Status {
 pub enum Strategy {
 	#[serde(rename = "web3_metamask_signature")]
 	Web3MetamaskSignature,
+
+	#[serde(rename = "web3_coinbase_wallet_signature")]
+	Web3CoinbaseWalletSignature,
+
+	#[serde(rename = "web3_okx_wallet_signature")]
+	Web3OkxWalletSignature,
 }
 
 impl Default for Strategy {
