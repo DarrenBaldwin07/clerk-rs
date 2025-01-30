@@ -14,8 +14,8 @@ pub struct Web3WalletVerification {
 	pub status: Status,
 	#[serde(rename = "strategy")]
 	pub strategy: Strategy,
-	#[serde(rename = "nonce")]
-	pub nonce: Nonce,
+	#[serde(rename = "nonce", default, skip_serializing_if = "Option::is_none")]
+	pub nonce: Option<Nonce>,
 	#[serde(
 		rename = "attempts",
 		default,
@@ -33,11 +33,11 @@ pub struct Web3WalletVerification {
 }
 
 impl Web3WalletVerification {
-	pub fn new(status: Status, strategy: Strategy, nonce: Nonce) -> Web3WalletVerification {
+	pub fn new(status: Status, strategy: Strategy) -> Web3WalletVerification {
 		Web3WalletVerification {
 			status,
 			strategy,
-			nonce,
+			nonce: None,
 			attempts: None,
 			expire_at: None,
 		}
@@ -61,6 +61,15 @@ impl Default for Status {
 pub enum Strategy {
 	#[serde(rename = "admin")]
 	Admin,
+
+	#[serde(rename = "web3_metamask_signature")]
+	Web3MetamaskSignature,
+
+	#[serde(rename = "web3_coinbase_wallet_signature")]
+	Web3CoinbaseWalletSignature,
+
+	#[serde(rename = "web3_okx_wallet_signature")]
+	Web3OkxWalletSignature,
 }
 
 impl Default for Strategy {
