@@ -212,6 +212,7 @@ The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 - [Tembo](https://tembo.io)
 - [Rezon](https://rezon.ai)
 - [Gitar](https://gitar.co)
+- [Have I Been Squatted](https://haveibeensquatted.com)
 - Open a PR and add your company here :)
 
 </br>
