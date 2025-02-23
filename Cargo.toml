@@ -6,7 +6,7 @@ description = "The official community Rust SDK for the Clerk API"
 repository = "https://github.com/DarrenBaldwin07/clerk-rs"
 homepage = "https://github.com/DarrenBaldwin07/clerk-rs"
 readme = "README.md"
-keywords = ["clerk", "auth", "actix", "axum", "rocket", "sdk"]
+keywords = ["clerk", "auth", "actix", "axum", "rocket"]
 license = "MIT"
 edition = "2021"
 
