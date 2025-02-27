@@ -29,8 +29,8 @@ pub struct CreateOrganizationRequest {
 	#[serde(rename = "max_allowed_memberships", skip_serializing_if = "Option::is_none")]
 	pub max_allowed_memberships: Option<i64>,
 	/// A custom date/time denoting _when_ the organization was created, specified in RFC3339 format (e.g. `2012-10-20T07:15:20.902Z`).
-    #[serde(rename = "created_at", skip_serializing_if = "Option::is_none")]
-    pub created_at: Option<String>,
+	#[serde(rename = "created_at", skip_serializing_if = "Option::is_none")]
+	pub created_at: Option<String>,
 }
 
 impl CreateOrganizationRequest {
