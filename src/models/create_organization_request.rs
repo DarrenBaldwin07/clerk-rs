@@ -14,8 +14,8 @@ pub struct CreateOrganizationRequest {
 	#[serde(rename = "name")]
 	pub name: String,
 	/// The ID of the User who will become the administrator for the new organization
-	#[serde(rename = "created_by")]
-	pub created_by: String,
+	#[serde(rename = "created_by", skip_serializing_if = "Option::is_none")]
+	pub created_by: Option<String>,
 	/// Metadata saved on the organization, accessible only from the Backend API
 	#[serde(rename = "private_metadata", skip_serializing_if = "Option::is_none")]
 	pub private_metadata: Option<serde_json::Value>,
@@ -28,17 +28,21 @@ pub struct CreateOrganizationRequest {
 	/// The maximum number of memberships allowed for this organization
 	#[serde(rename = "max_allowed_memberships", skip_serializing_if = "Option::is_none")]
 	pub max_allowed_memberships: Option<i64>,
+	/// A custom date/time denoting when the organization was created, specified in RFC3339 format (e.g. 2012-10-20T07:15:20.902Z).
+	#[serde(rename = "created_at", skip_serializing_if = "Option::is_none")]
+	pub created_at: Option<String>,
 }
 
 impl CreateOrganizationRequest {
-	pub fn new(name: String, created_by: String) -> CreateOrganizationRequest {
+	pub fn new(name: String) -> CreateOrganizationRequest {
 		CreateOrganizationRequest {
 			name,
-			created_by,
+			created_by: None,
 			private_metadata: None,
 			public_metadata: None,
 			slug: None,
 			max_allowed_memberships: None,
+			created_at: None,
 		}
 	}
 }
