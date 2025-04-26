@@ -64,16 +64,15 @@ where
 {
 	type Output = Response;
 
-	#[cfg(feature="tracing")]
-	#[tracing::instrument(
+	#[cfg_attr(feature = "tracing", tracing::instrument(
 		skip_all, 
-		name="clerk_poem_middleware", 
+		name = "clerk_poem_middleware", 
 		fields(
 			req.remote_addr = req.remote_addr().to_string(), 
 			req.uri = req.uri().to_string(),
 			req.method = req.method().to_string()
 		)
-	)]
+	))]
 	async fn call(&self, mut req: Request) -> Result<Self::Output> {
 		
 		#[cfg(feature="tracing")]
@@ -110,20 +109,20 @@ where
 			}
 			Err(error) => match &error {
 				// The error strings are passed through with the correct status code
-				ClerkError::Unauthorized(msg) => {
-					
+				ClerkError::Unauthorized(_msg) => {
+
 					#[cfg(feature="tracing")]
-					tracing::info!("Middleware blocked unauthorized: {}", &msg);
+					tracing::info!("Middleware blocked unauthorized: {}", &_msg);
 					
 					#[cfg(feature="tracing")]
 					tracing::trace!("Auth middleware exited");
 
 					Err(Unauthorized(error))
 				},
-				ClerkError::InternalServerError(msg) => {
+				ClerkError::InternalServerError(_msg) => {
 					
 					#[cfg(feature="tracing")]
-					tracing::error!("Internal Server Error with auth middleware: {}", &msg);
+					tracing::error!("Internal Server Error with auth middleware: {}", &_msg);
 
 					#[cfg(feature="tracing")]
 					tracing::trace!("Auth middleware exited");

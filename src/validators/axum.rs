@@ -118,16 +118,15 @@ where
 		self.service.poll_ready(cx)
 	}
 
-	#[cfg(feature="tracing")]
-	#[tracing::instrument(
+	#[cfg_attr(feature = "tracing", tracing::instrument(
 		skip_all, 
-		name="clerk_axum_middleware", 
+		name = "clerk_axum_middleware", 
 		fields(
 			request.uri = request.uri().to_string(),
 			request.method = request.method().as_str()
 			// Unlike other libraries, axum only includes connection info via an extension.
 		)
-	)]
+	))]
 	fn call(&mut self, mut request: Request) -> Self::Future {
 		
 		#[cfg(feature="tracing")]

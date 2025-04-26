@@ -106,16 +106,15 @@ where
 
 	forward_ready!(service);
 
-	#[cfg(feature="tracing")]
-	#[tracing::instrument(
+	#[cfg_attr(feature = "tracing", tracing::instrument(
 		skip_all, 
-		name="clerk_actix_middleware", 
+		name = "clerk_actix_middleware", 
 		fields(
 			request.uri = request.uri().to_string(),
 			request.method = request.method().as_str(),
-			// Unlike other libraries, axum only includes connection info via an extension.
+			// Unlike other libraries, actix only includes connection info via an extension.
 		)
-	)]
+	))]
 	fn call(&self, request: ServiceRequest) -> Self::Future {
 
 		#[cfg(feature="tracing")]

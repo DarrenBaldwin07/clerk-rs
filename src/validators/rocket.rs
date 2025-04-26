@@ -43,10 +43,10 @@ pub struct ClerkGuard<J: JwksProvider + Send + Sync> {
 impl<'r, J: JwksProvider + Send + Sync + 'static> FromRequest<'r> for ClerkGuard<J> {
 	type Error = ClerkError;
 
-	#[cfg(feature="tracing")]
-	#[tracing::instrument(
+	
+	#[cfg_attr(feature = "tracing", tracing::instrument(
 		skip_all, 
-		name="clerk_rocket_middleware", 
+		name = "clerk_rocket_middleware", 
 		fields(
 			request.remote = match request.remote() {
 				Some(val) => val.to_string(),
@@ -55,7 +55,7 @@ impl<'r, J: JwksProvider + Send + Sync + 'static> FromRequest<'r> for ClerkGuard
 			request.uri = request.uri().to_string(),
 			request.method = request.method().as_str()
 		)
-	)]
+	))]
 	async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
 		
 		#[cfg(feature="tracing")]
