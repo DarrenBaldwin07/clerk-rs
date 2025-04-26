@@ -43,23 +43,16 @@ pub struct ClerkGuard<J: JwksProvider + Send + Sync> {
 impl<'r, J: JwksProvider + Send + Sync + 'static> FromRequest<'r> for ClerkGuard<J> {
 	type Error = ClerkError;
 
-	
-	#[cfg_attr(feature = "tracing", tracing::instrument(
-		skip_all, 
-		name = "clerk_rocket_middleware", 
-		fields(
-			request.remote = match request.remote() {
-				Some(val) => val.to_string(),
-				None => String::from("<None>")
-			},
-			request.uri = request.uri().to_string(),
-			request.method = request.method().as_str()
-		)
-	))]
 	async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
 		
-		#[cfg(feature="tracing")]
-		tracing::trace!("Auth middleware entered");
+		#[cfg(feature="log")]
+		let route_string = {
+			log::trace!("Auth middleware entered");
+			match request.route() {
+				Some(route) => route.to_string(),
+				None => String::from("<No Route>")
+			}
+		};
 		
 		// Retrieve the ClerkAuthorizer from managed state
 		let config = request
@@ -76,11 +69,11 @@ impl<'r, J: JwksProvider + Send + Sync + 'static> FromRequest<'r> for ClerkGuard
 
 				if path_not_in_specified_routes {
 					
-					#[cfg(feature="tracing")]
-					tracing::info!("Route excluded from auth, skipping auth.");
-
-					#[cfg(feature="tracing")]
-					tracing::trace!("Auth middleware exited");
+					#[cfg(feature="log")]
+					{
+						log::info!("Route {} {} excluded from auth, skipping auth.", route_string, request.method().as_str());
+						log::trace!("Auth middleware exited");
+					}
 					
 					// Since the path was not inside of the listed routes we want to trigger an early exit
 					return Outcome::Success(ClerkGuard {
@@ -97,11 +90,11 @@ impl<'r, J: JwksProvider + Send + Sync + 'static> FromRequest<'r> for ClerkGuard
 			Ok(jwt) => {
 				request.local_cache(|| jwt.clone());
 				
-				#[cfg(feature="tracing")]
-				tracing::info!("Authed request; user is: {}", &jwt.sub);
-
-				#[cfg(feature="tracing")]
-				tracing::trace!("Auth middleware exited");
+				#[cfg(feature="log")]
+				{
+					log::info!("Authed request on {} {}; user is: {}", request.method().as_str(), route_string, &jwt.sub);
+					log::trace!("Auth middleware exited");
+				}
 				
 				return Outcome::Success(ClerkGuard {
 					jwt: Some(jwt),
@@ -111,21 +104,21 @@ impl<'r, J: JwksProvider + Send + Sync + 'static> FromRequest<'r> for ClerkGuard
 			Err(error) => match error {
 				ClerkError::Unauthorized(msg) => {
 					
-					#[cfg(feature="tracing")]
-					tracing::info!("Middleware blocked unauthorized: {}", &msg);
-
-					#[cfg(feature="tracing")]
-					tracing::trace!("Auth middleware exited");
+					#[cfg(feature="log")]
+					{
+						log::info!("Middleware blocked unauthorized request on {} {}: {}", request.method().as_str(), route_string, &msg);
+						log::trace!("Auth middleware exited");
+					}
 
 					return Outcome::Error((Status::Unauthorized, ClerkError::Unauthorized(msg)))
 				},
 				ClerkError::InternalServerError(msg) => {
 					
-					#[cfg(feature="tracing")]
-					tracing::error!("Internal Server Error with auth middleware: {}", &msg);
-
-					#[cfg(feature="tracing")]
-					tracing::trace!("Auth middleware exited");
+					#[cfg(feature="log")]
+					{
+						log::error!("Internal Server Error with auth middleware on {} {}: {}", request.method().as_str(), route_string, &msg);
+						log::trace!("Auth middleware exited");
+					}
 
 					return Outcome::Error((Status::InternalServerError, ClerkError::InternalServerError(msg)))
 				},

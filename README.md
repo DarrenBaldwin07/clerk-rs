@@ -199,6 +199,12 @@ async fn main() -> Result<(), std::io::Error> {
 
 The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 
+### Logging Successful Authentications, Rejected Credentials, and Errors with Tracing 
+
+The `log` feature enables middleware logging using the `log` create
+
+Simply enable the `log` feature and all middlewares will be instrumented.
+
 ## Roadmap
 
 - [ ] Support other http clients along with the default reqwest client (like hyper)

@@ -106,19 +106,10 @@ where
 
 	forward_ready!(service);
 
-	#[cfg_attr(feature = "tracing", tracing::instrument(
-		skip_all, 
-		name = "clerk_actix_middleware", 
-		fields(
-			request.uri = request.uri().to_string(),
-			request.method = request.method().as_str(),
-			// Unlike other libraries, actix only includes connection info via an extension.
-		)
-	))]
 	fn call(&self, request: ServiceRequest) -> Self::Future {
 
-		#[cfg(feature="tracing")]
-		tracing::trace!("Auth middleware entered");
+		#[cfg(feature="log")]
+		log::trace!("Auth middleware entered");
 		
 		let svc = self.service.clone();
 		let authorizer = self.authorizer.clone();
@@ -134,13 +125,14 @@ where
 				if path_not_in_specified_routes {
 					// Since the path was not inside of the listed routes we want to trigger an early exit
 					return Box::pin(async move {
-						let res = svc.call(request).await?;
 						
-						#[cfg(feature="tracing")]
-						tracing::info!("Route excluded from auth, skipping auth.");
-
-						#[cfg(feature="tracing")]
-						tracing::trace!("Auth middleware exited");
+						#[cfg(feature="log")]
+						{
+							log::info!("Route {} {} excluded from auth, skipping auth.", request.method().as_str(), request.uri().path());
+							log::trace!("Auth middleware exited");
+						}
+						
+						let res = svc.call(request).await?;
 						
 						return Ok(res.map_into_left_body());
 					});
@@ -156,14 +148,14 @@ where
 				// We have authed request and can pass the user onto the next body
 				Ok(jwt) => {
 
-					#[cfg(feature="tracing")]
-					tracing::info!("Authed request; user is: {}", &jwt.sub);
+					#[cfg(feature="log")]
+					{
+						log::info!("Authed request on {} {}; user is: {}", request.method().as_str(), request.uri().path(), &jwt.sub);
+						log::trace!("Auth middleware exited");
+					}
 
 					request.extensions_mut().insert(jwt);
 					let res = svc.call(request).await?;
-
-					#[cfg(feature="tracing")]
-					tracing::trace!("Auth middleware exited");
 
 					return Ok(res.map_into_left_body());
 				}
@@ -172,11 +164,11 @@ where
 					match error {
 						ClerkError::Unauthorized(msg) => {
 							
-							#[cfg(feature="tracing")]
-							tracing::info!("Middleware blocked unauthorized: {}", &msg);
-
-							#[cfg(feature="tracing")]
-							tracing::trace!("Auth middleware exited");
+							#[cfg(feature="log")]
+							{
+								log::info!("Middleware blocked unauthorized request on {} {}: {}", request.method().as_str(), request.uri().path(), &msg);
+								log::trace!("Auth middleware exited");
+							}
 							
 							return Ok(ServiceResponse::new(
 								request.into_parts().0,
@@ -185,11 +177,11 @@ where
 						}
 						ClerkError::InternalServerError(msg) => {
 							
-							#[cfg(feature="tracing")]
-							tracing::error!("Internal Server Error with auth middleware: {}", &msg);
-
-							#[cfg(feature="tracing")]
-							tracing::trace!("Auth middleware exited");
+							#[cfg(feature="log")]
+							{
+								log::error!("Internal Server Error with auth middleware on {} {}: {}", request.method().as_str(), request.uri().path(), &msg);
+								log::trace!("Auth middleware exited");
+							}
 							
 							return Ok(ServiceResponse::new(
 								request.into_parts().0,
