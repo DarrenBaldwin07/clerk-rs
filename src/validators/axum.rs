@@ -118,7 +118,21 @@ where
 		self.service.poll_ready(cx)
 	}
 
+	#[cfg(feature="tracing")]
+	#[tracing::instrument(
+		skip_all, 
+		name="clerk_axum_middleware", 
+		fields(
+			request.uri = request.uri().to_string(),
+			request.method = request.method().as_str()
+			// Unlike other libraries, axum only includes connection info via an extension.
+		)
+	)]
 	fn call(&mut self, mut request: Request) -> Self::Future {
+		
+		#[cfg(feature="tracing")]
+		tracing::trace!("Auth middleware entered");
+		
 		let mut svc = self.service.clone();
 
 		// We want to skip running the validator if we are not able to find a matching path from the listed valid paths provided by the user
@@ -133,6 +147,13 @@ where
 					// Since the path was not inside of the listed routes we want to trigger an early exit
 					return Box::pin(async move {
 						let res = svc.call(request).await?;
+						
+						#[cfg(feature="tracing")]
+						tracing::info!("Route excluded from auth, skipping auth.");
+
+						#[cfg(feature="tracing")]
+						tracing::trace!("Auth middleware exited");
+						
 						return Ok(res);
 					});
 				}
@@ -149,17 +170,39 @@ where
 			match authorizer.authorize(&req).await {
 				// We have authed request and can pass the user onto the next body
 				Ok(jwt) => {
+
+					#[cfg(feature="tracing")]
+					tracing::info!("Authed request; user is: {}", &jwt.sub);
+
 					request.extensions_mut().insert(jwt);
 					let res = svc.call(request).await?;
+
+					#[cfg(feature="tracing")]
+					tracing::trace!("Auth middleware exited");
+					
 					return Ok(res);
 				}
 				// Output any other errors thrown from the Clerk authorizer
 				Err(error) => {
 					match error {
 						ClerkError::Unauthorized(msg) => {
+							
+							#[cfg(feature="tracing")]
+							tracing::info!("Middleware blocked unauthorized: {}", &msg);
+
+							#[cfg(feature="tracing")]
+							tracing::trace!("Auth middleware exited");
+							
 							return Ok(Response::builder().status(StatusCode::UNAUTHORIZED).body(Body::from(msg)).unwrap())
 						}
 						ClerkError::InternalServerError(msg) => {
+							
+							#[cfg(feature="tracing")]
+							tracing::error!("Internal Server Error with auth middleware: {}", &msg);
+
+							#[cfg(feature="tracing")]
+							tracing::trace!("Auth middleware exited");
+							
 							return Ok(Response::builder()
 								.status(StatusCode::INTERNAL_SERVER_ERROR)
 								.body(Body::from(msg))

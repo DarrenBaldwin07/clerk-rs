@@ -43,7 +43,24 @@ pub struct ClerkGuard<J: JwksProvider + Send + Sync> {
 impl<'r, J: JwksProvider + Send + Sync + 'static> FromRequest<'r> for ClerkGuard<J> {
 	type Error = ClerkError;
 
+	#[cfg(feature="tracing")]
+	#[tracing::instrument(
+		skip_all, 
+		name="clerk_rocket_middleware", 
+		fields(
+			request.remote = match request.remote() {
+				Some(val) => val.to_string(),
+				None => String::from("<None>")
+			},
+			request.uri = request.uri().to_string(),
+			request.method = request.method().as_str()
+		)
+	)]
 	async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+		
+		#[cfg(feature="tracing")]
+		tracing::trace!("Auth middleware entered");
+		
 		// Retrieve the ClerkAuthorizer from managed state
 		let config = request
 			.rocket()
@@ -58,6 +75,13 @@ impl<'r, J: JwksProvider + Send + Sync + 'static> FromRequest<'r> for ClerkGuard
 				let path_not_in_specified_routes = route_matches.iter().find(|&route| route == &path.to_string()).is_none();
 
 				if path_not_in_specified_routes {
+					
+					#[cfg(feature="tracing")]
+					tracing::info!("Route excluded from auth, skipping auth.");
+
+					#[cfg(feature="tracing")]
+					tracing::trace!("Auth middleware exited");
+					
 					// Since the path was not inside of the listed routes we want to trigger an early exit
 					return Outcome::Success(ClerkGuard {
 						jwt: None,
@@ -72,14 +96,39 @@ impl<'r, J: JwksProvider + Send + Sync + 'static> FromRequest<'r> for ClerkGuard
 		match config.authorizer.authorize(&request).await {
 			Ok(jwt) => {
 				request.local_cache(|| jwt.clone());
+				
+				#[cfg(feature="tracing")]
+				tracing::info!("Authed request; user is: {}", &jwt.sub);
+
+				#[cfg(feature="tracing")]
+				tracing::trace!("Auth middleware exited");
+				
 				return Outcome::Success(ClerkGuard {
 					jwt: Some(jwt),
 					_marker: std::marker::PhantomData,
 				});
 			}
 			Err(error) => match error {
-				ClerkError::Unauthorized(msg) => Outcome::Error((Status::Unauthorized, ClerkError::Unauthorized(msg))),
-				ClerkError::InternalServerError(msg) => Outcome::Error((Status::InternalServerError, ClerkError::InternalServerError(msg))),
+				ClerkError::Unauthorized(msg) => {
+					
+					#[cfg(feature="tracing")]
+					tracing::info!("Middleware blocked unauthorized: {}", &msg);
+
+					#[cfg(feature="tracing")]
+					tracing::trace!("Auth middleware exited");
+
+					return Outcome::Error((Status::Unauthorized, ClerkError::Unauthorized(msg)))
+				},
+				ClerkError::InternalServerError(msg) => {
+					
+					#[cfg(feature="tracing")]
+					tracing::error!("Internal Server Error with auth middleware: {}", &msg);
+
+					#[cfg(feature="tracing")]
+					tracing::trace!("Auth middleware exited");
+
+					return Outcome::Error((Status::InternalServerError, ClerkError::InternalServerError(msg)))
+				},
 			},
 		}
 	}
