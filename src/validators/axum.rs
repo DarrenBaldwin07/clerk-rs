@@ -37,10 +37,7 @@ impl ClerkRequest for AxumClerkRequest {
 	}
 
 	fn get_cookie(&self, key: &str) -> Option<String> {
-		match CookieJar::from_headers(&self.headers).get(key) {
-			Some(val) => Some(val.value().to_string()),
-			None => None,
-		}
+		CookieJar::from_headers(&self.headers).get(key).map(|val| val.value().to_string())
 	}
 }
 
@@ -126,17 +123,17 @@ where
 			Some(route_matches) => {
 				// If the user only wants to apply authentication to a select amount of routes, we handle that logic here
 				let path = request.uri().path();
-				// Check if the path was NOT contained inside of the routes specified by the user...
-				let path_not_in_specified_routes = route_matches.iter().find(|&route| route == path).is_none();
 
-				if path_not_in_specified_routes {
+				// Check if the path was NOT contained inside of the routes specified by the user...
+				if !route_matches.iter().any(|route| route == path) {
 					// Since the path was not inside of the listed routes we want to trigger an early exit
 					return Box::pin(async move {
 						let res = svc.call(request).await?;
-						return Ok(res);
+						Ok(res)
 					});
 				}
 			}
+
 			// Since we did find a matching route we can simply do nothing here and start the actual auth logic...
 			None => {}
 		}
@@ -151,22 +148,16 @@ where
 				Ok(jwt) => {
 					request.extensions_mut().insert(jwt);
 					let res = svc.call(request).await?;
-					return Ok(res);
+					Ok(res)
 				}
 				// Output any other errors thrown from the Clerk authorizer
-				Err(error) => {
-					match error {
-						ClerkError::Unauthorized(msg) => {
-							return Ok(Response::builder().status(StatusCode::UNAUTHORIZED).body(Body::from(msg)).unwrap())
-						}
-						ClerkError::InternalServerError(msg) => {
-							return Ok(Response::builder()
-								.status(StatusCode::INTERNAL_SERVER_ERROR)
-								.body(Body::from(msg))
-								.unwrap())
-						}
-					};
-				}
+				Err(error) => match error {
+					ClerkError::Unauthorized(msg) => Ok(Response::builder().status(StatusCode::UNAUTHORIZED).body(Body::from(msg)).unwrap()),
+					ClerkError::InternalServerError(msg) => Ok(Response::builder()
+						.status(StatusCode::INTERNAL_SERVER_ERROR)
+						.body(Body::from(msg))
+						.unwrap()),
+				},
 			}
 		})
 	}
