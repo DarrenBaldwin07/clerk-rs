@@ -119,6 +119,10 @@ where
 	}
 
 	fn call(&mut self, mut request: Request) -> Self::Future {
+		
+		#[cfg(feature="log")]
+		log::trace!("Auth middleware entered");
+
 		let mut svc = self.service.clone();
 
 		// We want to skip running the validator if we are not able to find a matching path from the listed valid paths provided by the user
@@ -132,7 +136,15 @@ where
 				if path_not_in_specified_routes {
 					// Since the path was not inside of the listed routes we want to trigger an early exit
 					return Box::pin(async move {
+						
+						#[cfg(feature="log")]
+						{
+							log::info!("Route {} {} excluded from auth, skipping auth.", request.method().as_str(), request.uri().path());
+							log::trace!("Auth middleware exited");
+						}
+						
 						let res = svc.call(request).await?;
+												
 						return Ok(res);
 					});
 				}
@@ -149,17 +161,39 @@ where
 			match authorizer.authorize(&req).await {
 				// We have authed request and can pass the user onto the next body
 				Ok(jwt) => {
+
+					#[cfg(feature="log")]
+					{
+						log::info!("Authed request on {} {}; user is: {}", request.method().as_str(), request.uri().path(), &jwt.sub);
+						log::trace!("Auth middleware exited");
+					}
+
 					request.extensions_mut().insert(jwt);
 					let res = svc.call(request).await?;
+
 					return Ok(res);
 				}
 				// Output any other errors thrown from the Clerk authorizer
 				Err(error) => {
 					match error {
 						ClerkError::Unauthorized(msg) => {
+							
+							#[cfg(feature="log")]
+							{
+								log::info!("Middleware blocked unauthorized request on {} {}: {}", request.method().as_str(), request.uri().path(), &msg);
+								log::trace!("Auth middleware exited");
+							}
+							
 							return Ok(Response::builder().status(StatusCode::UNAUTHORIZED).body(Body::from(msg)).unwrap())
 						}
 						ClerkError::InternalServerError(msg) => {
+							
+							#[cfg(feature="log")]
+							{
+								log::error!("Internal Server Error with auth middleware on {} {}: {}", request.method().as_str(), request.uri().path(), &msg);
+								log::trace!("Auth middleware exited");
+							}
+							
 							return Ok(Response::builder()
 								.status(StatusCode::INTERNAL_SERVER_ERROR)
 								.body(Body::from(msg))

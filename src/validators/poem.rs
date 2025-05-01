@@ -65,8 +65,19 @@ where
 	type Output = Response;
 
 	async fn call(&self, mut req: Request) -> Result<Self::Output> {
+		
+		#[cfg(feature="log")]
+		log::trace!("Auth middleware entered");
+		
 		if let Some(exclude_routes) = &self.exclude_routes {
 			if exclude_routes.iter().any(|r| r == req.uri().path()) {
+				
+				#[cfg(feature="log")]
+				{
+					log::info!("Route {} {} excluded from auth, skipping auth.", req.method().as_str(), req.uri().path());
+					log::trace!("Auth middleware exited");
+				}
+
 				// call next and early return
 				return self.ep.call(req).await;
 			}
@@ -74,16 +85,41 @@ where
 
 		match self.authorizer.authorize(&req).await {
 			Ok(jwt) => {
+				
+				#[cfg(feature="log")]
+				{
+					log::info!("Authed request on {} {}; user is: {}", req.method().as_str(), req.uri().path(), &jwt.sub);
+					log::trace!("Auth middleware exited");
+				}
+
 				// This can be accessed using Data<&ClerkJwt>
 				req.set_data(jwt);
 
 				// call next
 				self.ep.call(req).await
 			}
-			Err(error) => match error {
+			Err(error) => match &error {
 				// The error strings are passed through with the correct status code
-				ClerkError::Unauthorized(_) => Err(Unauthorized(error)),
-				ClerkError::InternalServerError(_) => Err(InternalServerError(error)),
+				ClerkError::Unauthorized(_msg) => {
+
+					#[cfg(feature="log")]
+					{
+						log::info!("Middleware blocked unauthorized request on {} {}: {}", req.method().as_str(), req.uri().path(), _msg);
+						log::trace!("Auth middleware exited");
+					}
+
+					Err(Unauthorized(error))
+				},
+				ClerkError::InternalServerError(_msg) => {
+					
+					#[cfg(feature="log")]
+					{
+						log::error!("Internal Server Error with auth middleware on {} {}: {}", req.method().as_str(), req.uri().path(), _msg);
+						log::trace!("Auth middleware exited");
+					}
+					
+					Err(InternalServerError(error))
+				},
 			},
 		}
 	}
