@@ -41,22 +41,22 @@ impl From<JwksProviderError> for ClerkError {
 /// A [`JwksProvider`] implementation that doesn't do any caching.
 ///
 /// The JWKS is fetched from the Clerk API on every request.
-pub struct JwksProviderNoCache {
-	clerk_client: Clerk,
+pub struct JwksProviderNoCache<'a> {
+	clerk_client: &'a Clerk,
 }
 
-impl JwksProviderNoCache {
-	pub fn new(clerk_client: Clerk) -> Self {
+impl<'a> JwksProviderNoCache<'a> {
+	pub fn new(clerk_client: &'a Clerk) -> Self {
 		Self { clerk_client }
 	}
 }
 
 #[async_trait]
-impl JwksProvider for JwksProviderNoCache {
+impl JwksProvider for JwksProviderNoCache<'_> {
 	type Error = JwksProviderError;
 
 	async fn get_key(&self, kid: &str) -> Result<JwksKey, JwksProviderError> {
-		let jwks = Jwks::get_jwks(&self.clerk_client).await.map_err(|_| JwksProviderError::JwksApi)?;
+		let jwks = Jwks::get_jwks(self.clerk_client).await.map_err(|_| JwksProviderError::JwksApi)?;
 
 		jwks.keys.into_iter().find(|k| k.kid == kid).ok_or(JwksProviderError::UnknownKey)
 	}
@@ -126,20 +126,20 @@ impl MemoryCacheJwksProviderState {
 ///
 /// The JWKS is fetched from the Clerk API on the first request or when the cache expires.
 /// Cache behavior can be configured with [`MemoryCacheJwksProviderOptions`].
-pub struct MemoryCacheJwksProvider {
-	clerk_client: Clerk,
+pub struct MemoryCacheJwksProvider<'a> {
+	clerk_client: &'a Clerk,
 	options: MemoryCacheJwksProviderOptions,
 	state: ArcSwap<MemoryCacheJwksProviderState>,
 }
 
-impl MemoryCacheJwksProvider {
+impl<'a> MemoryCacheJwksProvider<'a> {
 	/// Creates a new [`MemoryCacheJwksProvider`] with the given client and the default options.
-	pub fn new(clerk_client: Clerk) -> Self {
+	pub fn new(clerk_client: &'a Clerk) -> Self {
 		Self::new_with_options(clerk_client, MemoryCacheJwksProviderOptions::default())
 	}
 
 	/// Creates a new [`MemoryCacheJwksProvider`] with the given client and options.
-	pub fn new_with_options(clerk_client: Clerk, options: MemoryCacheJwksProviderOptions) -> Self {
+	pub fn new_with_options(clerk_client: &'a Clerk, options: MemoryCacheJwksProviderOptions) -> Self {
 		let initial_state = MemoryCacheJwksProviderState {
 			keys: HashMap::new(),
 			last_updated: SystemTime::UNIX_EPOCH, // mark uninitialized
@@ -154,7 +154,7 @@ impl MemoryCacheJwksProvider {
 
 	async fn refresh(&self) -> Result<Arc<MemoryCacheJwksProviderState>, JwksProviderError> {
 		// fetch jwks from clerk api
-		let jwks_model = Jwks::get_jwks(&self.clerk_client).await.map_err(|_| JwksProviderError::JwksApi)?;
+		let jwks_model = Jwks::get_jwks(self.clerk_client).await.map_err(|_| JwksProviderError::JwksApi)?;
 
 		// construct new state
 		let keys = jwks_model.keys.into_iter().map(|k| (k.kid.clone(), k)).collect();
@@ -168,7 +168,7 @@ impl MemoryCacheJwksProvider {
 }
 
 #[async_trait]
-impl JwksProvider for MemoryCacheJwksProvider {
+impl JwksProvider for MemoryCacheJwksProvider<'_> {
 	type Error = JwksProviderError;
 
 	async fn get_key(&self, kid: &str) -> Result<JwksKey, Self::Error> {
@@ -273,7 +273,7 @@ pub(crate) mod tests {
 		};
 		let clerk = Clerk::new(config);
 
-		let jwks = JwksProviderNoCache::new(clerk);
+		let jwks = JwksProviderNoCache::new(&clerk);
 
 		let res = jwks.get_key(MOCK_KID).await.expect("should retrieve key");
 		assert_eq!(res.kid, MOCK_KID);
@@ -293,7 +293,7 @@ pub(crate) mod tests {
 		};
 		let clerk = Clerk::new(config);
 
-		let jwks = JwksProviderNoCache::new(clerk);
+		let jwks = JwksProviderNoCache::new(&clerk);
 
 		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
 		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
@@ -314,7 +314,7 @@ pub(crate) mod tests {
 		};
 		let clerk = Clerk::new(config);
 
-		let jwks = JwksProviderNoCache::new(clerk);
+		let jwks = JwksProviderNoCache::new(&clerk);
 
 		// try to get a key that doesn't exist
 		let res = jwks.get_key("unknown key").await.expect_err("should fail");
@@ -332,7 +332,7 @@ pub(crate) mod tests {
 		};
 		let clerk = Clerk::new(config);
 
-		let jwks = MemoryCacheJwksProvider::new(clerk);
+		let jwks = MemoryCacheJwksProvider::new(&clerk);
 
 		let res = jwks.get_key(MOCK_KID).await.expect("should retrieve key");
 		assert_eq!(res.kid, MOCK_KID);
@@ -352,7 +352,7 @@ pub(crate) mod tests {
 		};
 		let clerk = Clerk::new(config);
 
-		let jwks = MemoryCacheJwksProvider::new(clerk);
+		let jwks = MemoryCacheJwksProvider::new(&clerk);
 
 		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
 		jwks.get_key(MOCK_KID).await.expect("should retrieve key");
@@ -374,7 +374,7 @@ pub(crate) mod tests {
 		let clerk = Clerk::new(config);
 
 		let jwks = MemoryCacheJwksProvider::new_with_options(
-			clerk,
+			&clerk,
 			MemoryCacheJwksProviderOptions {
 				refresh_on_unknown: RefreshOnUnknown::Never,
 				..Default::default()
@@ -403,7 +403,7 @@ pub(crate) mod tests {
 		let clerk = Clerk::new(config);
 
 		let jwks = MemoryCacheJwksProvider::new_with_options(
-			clerk,
+			&clerk,
 			MemoryCacheJwksProviderOptions {
 				refresh_on_unknown: RefreshOnUnknown::Always,
 				..Default::default()
@@ -433,7 +433,7 @@ pub(crate) mod tests {
 		let clerk = Clerk::new(config);
 
 		let jwks = MemoryCacheJwksProvider::new_with_options(
-			clerk,
+			&clerk,
 			MemoryCacheJwksProviderOptions {
 				refresh_on_unknown: RefreshOnUnknown::Ratelimit(Duration::from_secs(1)),
 				..Default::default()
@@ -475,7 +475,7 @@ pub(crate) mod tests {
 		let clerk = Clerk::new(config);
 
 		let jwks = MemoryCacheJwksProvider::new_with_options(
-			clerk,
+			&clerk,
 			MemoryCacheJwksProviderOptions {
 				expire_after: Some(Duration::from_secs(1)),
 				..Default::default()
