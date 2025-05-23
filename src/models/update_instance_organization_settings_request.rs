@@ -47,6 +47,12 @@ pub struct UpdateInstanceOrganizationSettingsRequest {
 	/// Specify what the default organization role is for the organization domains.
 	#[serde(rename = "domains_default_role_id", skip_serializing_if = "Option::is_none")]
 	pub domains_default_role_id: Option<String>,
+	/// Specify the model to use for the organization.
+	#[serde(rename = "selected_model", skip_serializing_if = "Option::is_none")]
+	pub selected_model: Option<String>,
+	/// Specify the available models that can be selected for the organization.
+	#[serde(rename = "available_models", skip_serializing_if = "Option::is_none")]
+	pub available_models: Option<Vec<String>>,
 }
 
 impl UpdateInstanceOrganizationSettingsRequest {
@@ -59,6 +65,27 @@ impl UpdateInstanceOrganizationSettingsRequest {
 			domains_enrollment_modes: None,
 			creator_role_id: None,
 			domains_default_role_id: None,
+			selected_model: None,
+			available_models: None,
 		}
+	}
+	
+	/// Set the selected model for the organization
+	pub fn with_selected_model(mut self, model: &str) -> Self {
+		self.selected_model = Some(model.to_string());
+		self
+	}
+	
+	/// Set the available models for the organization
+	pub fn with_available_models(mut self, models: Vec<String>) -> Self {
+		self.available_models = Some(models);
+		self
+	}
+	
+	/// Set the default available models from the ModelType enum
+	pub fn with_default_available_models(mut self) -> Self {
+		use crate::models::organization_settings::ModelType;
+		self.available_models = Some(ModelType::all_models());
+		self
 	}
 }

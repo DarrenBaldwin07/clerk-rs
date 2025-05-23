@@ -99,7 +99,7 @@ pub use self::organization_membership_public_user_data::OrganizationMembershipPu
 pub mod organization_memberships;
 pub use self::organization_memberships::OrganizationMemberships;
 pub mod organization_settings;
-pub use self::organization_settings::OrganizationSettings;
+pub use self::organization_settings::{OrganizationSettings, ModelType, DomainsEnrollmentModes, Object};
 pub mod organization_with_logo;
 pub use self::organization_with_logo::OrganizationWithLogo;
 pub mod organizations;

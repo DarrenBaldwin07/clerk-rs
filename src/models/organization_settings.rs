@@ -34,6 +34,12 @@ pub struct OrganizationSettings {
 	/// The role key that it will be used in order to create an organization invitation or suggestion.
 	#[serde(rename = "domains_default_role")]
 	pub domains_default_role: String,
+	/// The model currently selected for the organization.
+	#[serde(rename = "selected_model", skip_serializing_if = "Option::is_none")]
+	pub selected_model: Option<String>,
+	/// Available models that can be selected for the organization.
+	#[serde(rename = "available_models", skip_serializing_if = "Option::is_none")]
+	pub available_models: Option<Vec<String>>,
 }
 
 impl OrganizationSettings {
@@ -58,7 +64,25 @@ impl OrganizationSettings {
 			domains_enabled,
 			domains_enrollment_modes,
 			domains_default_role,
+			selected_model: Some(ModelType::default_model()),
+			available_models: Some(ModelType::all_models()),
 		}
+	}
+	
+	/// Sets the selected model for the organization
+	pub fn with_selected_model(mut self, model: &str) -> Self {
+		self.selected_model = Some(model.to_string());
+		self
+	}
+	
+	/// Gets the currently selected model, or returns the default if none is set
+	pub fn get_selected_model(&self) -> String {
+		self.selected_model.clone().unwrap_or_else(ModelType::default_model)
+	}
+	
+	/// Gets the list of available models, or returns all models if none are set
+	pub fn get_available_models(&self) -> Vec<String> {
+		self.available_models.clone().unwrap_or_else(ModelType::all_models)
 	}
 }
 
@@ -88,5 +112,59 @@ pub enum DomainsEnrollmentModes {
 impl Default for DomainsEnrollmentModes {
 	fn default() -> DomainsEnrollmentModes {
 		Self::ManualInvitation
+	}
+}
+
+/// Available AI models that can be selected for an organization
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum ModelType {
+	#[serde(rename = "gpt-3.5-turbo")]
+	Gpt35Turbo,
+	#[serde(rename = "gpt-4")]
+	Gpt4,
+	#[serde(rename = "gpt-4-turbo")]
+	Gpt4Turbo,
+	#[serde(rename = "claude-3-opus")]
+	Claude3Opus,
+	#[serde(rename = "claude-3-sonnet")]
+	Claude3Sonnet,
+	#[serde(rename = "claude-3-haiku")]
+	Claude3Haiku,
+}
+
+impl Default for ModelType {
+	fn default() -> Self {
+		Self::Gpt35Turbo
+	}
+}
+
+impl ModelType {
+	/// Get a string representation of the model type
+	pub fn as_str(&self) -> &'static str {
+		match self {
+			ModelType::Gpt35Turbo => "gpt-3.5-turbo",
+			ModelType::Gpt4 => "gpt-4",
+			ModelType::Gpt4Turbo => "gpt-4-turbo",
+			ModelType::Claude3Opus => "claude-3-opus",
+			ModelType::Claude3Sonnet => "claude-3-sonnet",
+			ModelType::Claude3Haiku => "claude-3-haiku",
+		}
+	}
+	
+	/// Get all available models as string values
+	pub fn all_models() -> Vec<String> {
+		vec![
+			ModelType::Gpt35Turbo.as_str().to_string(),
+			ModelType::Gpt4.as_str().to_string(),
+			ModelType::Gpt4Turbo.as_str().to_string(),
+			ModelType::Claude3Opus.as_str().to_string(),
+			ModelType::Claude3Sonnet.as_str().to_string(),
+			ModelType::Claude3Haiku.as_str().to_string(),
+		]
+	}
+	
+	/// Get the default model
+	pub fn default_model() -> String {
+		ModelType::Gpt35Turbo.as_str().to_string()
 	}
 }
