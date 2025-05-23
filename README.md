@@ -11,6 +11,33 @@ For more detailed documentation, please reference the below links:
 
 > This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk api, please open an issue!
 
+## Environment Variables
+
+This SDK uses environment variables to securely manage your Clerk API secret key. 
+
+### Setting up your secret key
+
+1. Create a `.env` file in your project root (make sure to add it to your `.gitignore` to prevent committing secrets)
+2. Add your Clerk secret key to the `.env` file:
+   ```
+   CLERK_SECRET_KEY=your_secret_key_here
+   ```
+3. Load the environment variables in your code using the `dotenv` crate as shown in the examples below
+
+### Never hardcode your secret key
+
+❌ **Avoid hardcoding your secret key directly in your code:**
+```rust
+// DON'T DO THIS!
+let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+```
+
+✅ **Instead, load it from environment variables:**
+```rust
+let secret_key = std::env::var("CLERK_SECRET_KEY").expect("CLERK_SECRET_KEY must be set");
+let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
+```
+
 ## Examples
 
 > Check out examples in the `/examples` directory
@@ -20,10 +47,19 @@ For more detailed documentation, please reference the below links:
 ```rust
 use tokio;
 use clerk_rs::{clerk::Clerk, ClerkConfiguration, endpoints::ClerkGetEndpoint};
+use std::env;
+use dotenv::dotenv;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+    // Load environment variables from .env file if present
+    dotenv().ok();
+    
+    // Get the secret key from environment variables
+    let secret_key = env::var("CLERK_SECRET_KEY")
+        .expect("CLERK_SECRET_KEY environment variable must be set");
+        
+    let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
     let client = Clerk::new(config);
 
     let res = client.get(ClerkGetEndpoint::GetUserList).await?;
@@ -37,10 +73,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ```rust
 use tokio;
 use clerk_rs::{clerk::Clerk, ClerkConfiguration, apis::emails_api::Email};
+use std::env;
+use dotenv::dotenv;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+    // Load environment variables from .env file if present
+    dotenv().ok();
+    
+    // Get the secret key from environment variables
+    let secret_key = env::var("CLERK_SECRET_KEY")
+        .expect("CLERK_SECRET_KEY environment variable must be set");
+        
+    let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
     let client = Clerk::new(config);
 
     Email::create(&client, Some(your_clerk_email));
@@ -60,6 +105,8 @@ use clerk_rs::{
     validators::{actix::ClerkMiddleware, jwks::MemoryCacheJwksProvider},
     ClerkConfiguration,
 };
+use std::env;
+use dotenv::dotenv;
 
 async fn index() -> impl Responder {
     "Hello world!"
@@ -67,8 +114,15 @@ async fn index() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // Load environment variables from .env file if present
+    dotenv().ok();
+    
     HttpServer::new(|| {
-        let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+        // Get the secret key from environment variables
+        let secret_key = env::var("CLERK_SECRET_KEY")
+            .expect("CLERK_SECRET_KEY environment variable must be set");
+            
+        let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
         let clerk = Clerk::new(config);
 
         App::new()
@@ -92,6 +146,8 @@ use clerk_rs::{
     validators::{axum::ClerkLayer, jwks::MemoryCacheJwksProvider},
     ClerkConfiguration,
 };
+use std::env;
+use dotenv::dotenv;
 
 async fn index() -> &'static str {
     "Hello world!"
@@ -99,7 +155,14 @@ async fn index() -> &'static str {
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+    // Load environment variables from .env file if present
+    dotenv().ok();
+    
+    // Get the secret key from environment variables
+    let secret_key = env::var("CLERK_SECRET_KEY")
+        .expect("CLERK_SECRET_KEY environment variable must be set");
+        
+    let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
     let clerk = Clerk::new(config);
 
     let app = Router::new()
@@ -128,6 +191,8 @@ use rocket::{
 	get, launch, routes,
 	serde::{Deserialize, Serialize},
 };
+use std::env;
+use dotenv::dotenv;
 
 #[derive(Serialize, Deserialize)]
 struct Message {
@@ -141,7 +206,14 @@ fn index(jwt: ClerkGuard<MemoryCacheJwksProvider>) -> &'static str {
 
 #[launch]
 fn rocket() -> _ {
-	let config = ClerkConfiguration::new(None, None, Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_string()), None);
+	// Load environment variables from .env file if present
+	dotenv().ok();
+	
+	// Get the secret key from environment variables
+	let secret_key = env::var("CLERK_SECRET_KEY")
+		.expect("CLERK_SECRET_KEY environment variable must be set");
+		
+	let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
 	let clerk = Clerk::new(config);
 	let clerk_config = ClerkGuardConfig::new(
 		MemoryCacheJwksProvider::new(clerk),
@@ -164,6 +236,8 @@ use clerk_rs::{
     ClerkConfiguration,
 };
 use poem::{get, handler, listener::TcpListener, web::Path, EndpointExt, Route, Server};
+use std::env;
+use dotenv::dotenv;
 
 #[handler]
 fn hello(Path(name): Path<String>) -> String {
@@ -172,10 +246,17 @@ fn hello(Path(name): Path<String>) -> String {
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
+    // Load environment variables from .env file if present
+    dotenv().ok();
+    
+    // Get the secret key from environment variables
+    let secret_key = env::var("CLERK_SECRET_KEY")
+        .expect("CLERK_SECRET_KEY environment variable must be set");
+        
     let clerk = Clerk::new(ClerkConfiguration::new(
         None,
         None,
-        Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_owned()),
+        Some(secret_key),
         None,
     ));
     // Initialize middleware.
