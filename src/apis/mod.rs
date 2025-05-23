@@ -105,4 +105,5 @@ pub mod sessions_api;
 pub mod sign_in_tokens_api;
 pub mod sign_ups_api;
 pub mod users_api;
+pub mod users_middleware;
 pub mod webhooks_api;

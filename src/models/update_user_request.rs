@@ -71,6 +71,14 @@ pub struct UpdateUserRequest {
 	)]
 	pub password: Option<Option<String>>,
 	/// Set it to `true` if you're updating the user's password and want to skip any password policy settings check. This parameter can only be used when providing a `password`.
+	/// 
+	/// SECURITY WARNING: This is a high-risk operation that bypasses password security checks and should 
+	/// ONLY be used for controlled migration scenarios. Using this flag can lead to security vulnerabilities.
+	/// It is strongly recommended to:
+	///  1. Only use this method when migrating plaintext passwords to Clerk
+	///  2. Prompt users to pick stronger passwords after migration
+	///  3. Log and audit all instances where this flag is used
+	///  4. Never use in production for regular user updates
 	#[serde(
 		rename = "skip_password_checks",
 		default,

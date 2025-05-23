@@ -11,7 +11,7 @@
 use reqwest;
 
 use super::Error;
-use crate::{apis::ResponseContent, clerk::Clerk};
+use crate::{apis::{ResponseContent, users_middleware::UsersMiddleware}, clerk::Clerk};
 
 /// struct for typed errors of method [`ban_user`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -191,6 +191,9 @@ impl User {
 		create_user_request: crate::models::CreateUserRequest,
 	) -> Result<crate::models::User, Error<CreateUserError>> {
 		let local_var_configuration = &clerk_client.config;
+
+		// Validate the user creation request for potential security risks
+		UsersMiddleware::validate_create_user_request(&create_user_request);
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -609,6 +612,9 @@ impl User {
 		update_user_request: crate::models::UpdateUserRequest,
 	) -> Result<crate::models::User, Error<UpdateUserError>> {
 		let local_var_configuration = &clerk_client.config;
+
+		// Validate the user update request for potential security risks
+		UsersMiddleware::validate_update_user_request(&update_user_request);
 
 		let local_var_client = &local_var_configuration.client;
 
