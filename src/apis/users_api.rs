@@ -192,6 +192,7 @@ impl User {
 	) -> Result<crate::models::User, Error<CreateUserError>> {
 		let local_var_configuration = &clerk_client.config;
 
+
 		let local_var_client = &local_var_configuration.client;
 
 		let local_var_uri_str = format!("{}/users", local_var_configuration.base_path);
@@ -609,6 +610,7 @@ impl User {
 		update_user_request: crate::models::UpdateUserRequest,
 	) -> Result<crate::models::User, Error<UpdateUserError>> {
 		let local_var_configuration = &clerk_client.config;
+
 
 		let local_var_client = &local_var_configuration.client;
 
