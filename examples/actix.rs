@@ -4,6 +4,7 @@ use clerk_rs::{
 	validators::{actix::ClerkMiddleware, jwks::MemoryCacheJwksProvider},
 	ClerkConfiguration,
 };
+use std::env;
 
 async fn index() -> impl Responder {
 	"Hello world!"
@@ -12,7 +13,11 @@ async fn index() -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 	HttpServer::new(|| {
-		let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+		// Get the secret key from environment variable, or provide a helpful error message
+		let secret_key = env::var("CLERK_SECRET_KEY")
+			.expect("CLERK_SECRET_KEY environment variable must be set");
+		
+		let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
 		let clerk = Clerk::new(config);
 
 		App::new()
