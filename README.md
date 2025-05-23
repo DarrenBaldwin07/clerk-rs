@@ -20,10 +20,12 @@ For more detailed documentation, please reference the below links:
 ```rust
 use tokio;
 use clerk_rs::{clerk::Clerk, ClerkConfiguration, endpoints::ClerkGetEndpoint};
+use std::env;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+    // Get the secret key from environment variable
+    let config = ClerkConfiguration::from_env()?;
     let client = Clerk::new(config);
 
     let res = client.get(ClerkGetEndpoint::GetUserList).await?;
@@ -37,10 +39,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ```rust
 use tokio;
 use clerk_rs::{clerk::Clerk, ClerkConfiguration, apis::emails_api::Email};
+use std::env;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+    // Get the secret key from environment variable
+    let config = ClerkConfiguration::from_env()?;
     let client = Clerk::new(config);
 
     Email::create(&client, Some(your_clerk_email));
@@ -60,6 +64,7 @@ use clerk_rs::{
     validators::{actix::ClerkMiddleware, jwks::MemoryCacheJwksProvider},
     ClerkConfiguration,
 };
+use std::env;
 
 async fn index() -> impl Responder {
     "Hello world!"
@@ -68,7 +73,12 @@ async fn index() -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
-        let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+        // Get the secret key from environment variable
+        // In production, you should handle this error properly
+        let config = ClerkConfiguration::from_env().unwrap_or_else(|_| {
+            eprintln!("Warning: CLERK_SECRET_KEY environment variable not set");
+            ClerkConfiguration::new(None, None, Some(env::var("CLERK_SECRET_KEY").unwrap_or_default()), None)
+        });
         let clerk = Clerk::new(config);
 
         App::new()
@@ -92,6 +102,7 @@ use clerk_rs::{
     validators::{axum::ClerkLayer, jwks::MemoryCacheJwksProvider},
     ClerkConfiguration,
 };
+use std::env;
 
 async fn index() -> &'static str {
     "Hello world!"
@@ -99,7 +110,12 @@ async fn index() -> &'static str {
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+    // Get the secret key from environment variable
+    // In production, you should handle this error properly
+    let config = ClerkConfiguration::from_env().unwrap_or_else(|_| {
+        eprintln!("Warning: CLERK_SECRET_KEY environment variable not set");
+        ClerkConfiguration::new(None, None, Some(env::var("CLERK_SECRET_KEY").unwrap_or_default()), None)
+    });
     let clerk = Clerk::new(config);
 
     let app = Router::new()
@@ -128,6 +144,7 @@ use rocket::{
 	get, launch, routes,
 	serde::{Deserialize, Serialize},
 };
+use std::env;
 
 #[derive(Serialize, Deserialize)]
 struct Message {
@@ -141,7 +158,12 @@ fn index(jwt: ClerkGuard<MemoryCacheJwksProvider>) -> &'static str {
 
 #[launch]
 fn rocket() -> _ {
-	let config = ClerkConfiguration::new(None, None, Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_string()), None);
+	// Get the secret key from environment variable
+	// In production, you should handle this error properly
+	let config = ClerkConfiguration::from_env().unwrap_or_else(|_| {
+		eprintln!("Warning: CLERK_SECRET_KEY environment variable not set");
+		ClerkConfiguration::new(None, None, Some(env::var("CLERK_SECRET_KEY").unwrap_or_default()), None)
+	});
 	let clerk = Clerk::new(config);
 	let clerk_config = ClerkGuardConfig::new(
 		MemoryCacheJwksProvider::new(clerk),
@@ -164,6 +186,7 @@ use clerk_rs::{
     ClerkConfiguration,
 };
 use poem::{get, handler, listener::TcpListener, web::Path, EndpointExt, Route, Server};
+use std::env;
 
 #[handler]
 fn hello(Path(name): Path<String>) -> String {
@@ -172,12 +195,14 @@ fn hello(Path(name): Path<String>) -> String {
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    let clerk = Clerk::new(ClerkConfiguration::new(
-        None,
-        None,
-        Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_owned()),
-        None,
-    ));
+    // Get the secret key from environment variable
+    // In production, you should handle this error properly
+    let clerk = Clerk::new(
+        ClerkConfiguration::from_env().unwrap_or_else(|_| {
+            eprintln!("Warning: CLERK_SECRET_KEY environment variable not set");
+            ClerkConfiguration::new(None, None, Some(env::var("CLERK_SECRET_KEY").unwrap_or_default()), None)
+        })
+    );
     // Initialize middleware.
     let clerk_poem_middleware = ClerkPoemMiddleware::new(
         MemoryCacheJwksProvider::new(clerk.clone()),

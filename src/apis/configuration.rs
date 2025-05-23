@@ -1,5 +1,6 @@
 use crate::clerk::USER_AGENT;
 use reqwest::header::{HeaderMap, AUTHORIZATION, USER_AGENT as REQWEST_USER_AGENT};
+use std::env;
 
 /*
  * Clerk configuration for constructing authenticated requests to the clerk.dev api
@@ -29,6 +30,13 @@ pub struct ApiKey {
 }
 
 impl ClerkConfiguration {
+	/// Creates a new configuration using the CLERK_SECRET_KEY environment variable
+	pub fn from_env() -> Result<Self, Box<dyn std::error::Error>> {
+		let secret_key = env::var("CLERK_SECRET_KEY")
+			.map_err(|_| "CLERK_SECRET_KEY environment variable not set")?;
+		
+		Ok(Self::new(None, None, Some(secret_key), None))
+	}
 	// Creates a new client ClerkConfiguration object used to authenticate requests to the clerk.dev api
 	pub fn new(
 		basic_auth: Option<BasicAuth>,

@@ -4,6 +4,7 @@ use clerk_rs::{
 	validators::{authorizer::ClerkJwt, axum::ClerkLayer, jwks::MemoryCacheJwksProvider},
 	ClerkConfiguration,
 };
+use std::env;
 
 /// This is an unprotected route. 
 async fn index() -> &'static str {
@@ -23,7 +24,13 @@ async fn profile(Extension(clerk_jwt): Extension<ClerkJwt>) -> String {
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-	let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+	// Try to get the secret key from environment variable, fallback to a default value for demo purposes
+	// In production, you should handle this error properly
+	let config = ClerkConfiguration::from_env().unwrap_or_else(|_| {
+		eprintln!("Warning: CLERK_SECRET_KEY environment variable not set. Using fallback mechanism for demo only.");
+		// For demo purposes only, in production always use environment variables
+		ClerkConfiguration::new(None, None, Some(env::var("CLERK_SECRET_KEY").unwrap_or_default()), None)
+	});
 	let clerk = Clerk::new(config);
 
 	let app = Router::new()
