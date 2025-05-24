@@ -48,6 +48,14 @@ pub struct UpdateOrganizationRequest {
 		skip_serializing_if = "Option::is_none"
 	)]
 	pub admin_delete_enabled: Option<Option<bool>>,
+	/// Custom Anthropic API key for the organization
+	#[serde(
+		rename = "anthropic_api_key",
+		default,
+		with = "::serde_with::rust::double_option",
+		skip_serializing_if = "Option::is_none"
+	)]
+	pub anthropic_api_key: Option<Option<String>>,
 }
 
 impl UpdateOrganizationRequest {
@@ -59,6 +67,7 @@ impl UpdateOrganizationRequest {
 			slug: None,
 			max_allowed_memberships: None,
 			admin_delete_enabled: None,
+			anthropic_api_key: None,
 		}
 	}
 }

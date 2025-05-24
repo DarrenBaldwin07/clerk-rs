@@ -34,6 +34,9 @@ pub struct OrganizationSettings {
 	/// The role key that it will be used in order to create an organization invitation or suggestion.
 	#[serde(rename = "domains_default_role")]
 	pub domains_default_role: String,
+	/// Custom API key for Anthropic integration
+	#[serde(rename = "anthropic_api_key", skip_serializing_if = "Option::is_none")]
+	pub anthropic_api_key: Option<String>,
 }
 
 impl OrganizationSettings {
@@ -58,6 +61,7 @@ impl OrganizationSettings {
 			domains_enabled,
 			domains_enrollment_modes,
 			domains_default_role,
+			anthropic_api_key: None,
 		}
 	}
 }

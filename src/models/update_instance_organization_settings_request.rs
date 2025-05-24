@@ -47,6 +47,14 @@ pub struct UpdateInstanceOrganizationSettingsRequest {
 	/// Specify what the default organization role is for the organization domains.
 	#[serde(rename = "domains_default_role_id", skip_serializing_if = "Option::is_none")]
 	pub domains_default_role_id: Option<String>,
+	/// Custom Anthropic API key for the organization
+	#[serde(
+		rename = "anthropic_api_key",
+		default,
+		with = "::serde_with::rust::double_option",
+		skip_serializing_if = "Option::is_none"
+	)]
+	pub anthropic_api_key: Option<Option<String>>,
 }
 
 impl UpdateInstanceOrganizationSettingsRequest {
@@ -59,6 +67,7 @@ impl UpdateInstanceOrganizationSettingsRequest {
 			domains_enrollment_modes: None,
 			creator_role_id: None,
 			domains_default_role_id: None,
+			anthropic_api_key: None,
 		}
 	}
 }
