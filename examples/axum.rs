@@ -18,12 +18,16 @@ async fn profile(Extension(clerk_jwt): Extension<ClerkJwt>) -> String {
 	format!(
 		"Hello, {}! This is an example of a protected route.",
 		clerk_jwt.sub
- 	)
+	 )
 }
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-	let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+	// Get the secret key from environment variable
+	let secret_key = std::env::var("CLERK_SECRET_KEY")
+		.expect("CLERK_SECRET_KEY environment variable must be set");
+		
+	let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
 	let clerk = Clerk::new(config);
 
 	let app = Router::new()
