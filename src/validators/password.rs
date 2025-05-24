@@ -13,6 +13,50 @@ use log::{warn, error};
 pub struct PasswordValidator;
 
 impl PasswordValidator {
+    /// Validates password strength based on security best practices
+    ///
+    /// Returns true if the password meets all security requirements:
+    /// - Minimum 10 characters
+    /// - At least one uppercase letter
+    /// - At least one lowercase letter
+    /// - At least one number
+    /// - At least one special character
+    pub fn validate_password_strength(password: &str) -> bool {
+        if password.len() < 10 {
+            error!("Password too short (minimum 10 characters required)");
+            return false;
+        }
+        
+        // Check for at least one uppercase letter
+        let has_uppercase = password.chars().any(|c| c.is_ascii_uppercase());
+        if !has_uppercase {
+            error!("Password missing uppercase letter");
+            return false;
+        }
+        
+        // Check for at least one lowercase letter
+        let has_lowercase = password.chars().any(|c| c.is_ascii_lowercase());
+        if !has_lowercase {
+            error!("Password missing lowercase letter");
+            return false;
+        }
+        
+        // Check for at least one number
+        let has_number = password.chars().any(|c| c.is_ascii_digit());
+        if !has_number {
+            error!("Password missing numeric character");
+            return false;
+        }
+        
+        // Check for at least one special character
+        let has_special = password.chars().any(|c| !c.is_ascii_alphanumeric());
+        if !has_special {
+            error!("Password missing special character");
+            return false;
+        }
+        
+        true
+    }
     /// Logs a warning when skip_password_checks is used
     ///
     /// This method should be called whenever skip_password_checks is set to true
@@ -45,9 +89,11 @@ impl PasswordValidator {
     /// to skip password checks. Returns false if it's not appropriate to
     /// skip checks in the current context.
     pub fn is_safe_to_skip_password_checks(context: &str) -> bool {
-        // This implementation allows skipping only in controlled migration scenarios
-        // Add implementation-specific logic here
-        if context.contains("migration") || context.contains("import") {
+        // Only allow in controlled migration contexts with explicit migration tokens/identifiers
+        // Simple substring matching is insufficient for security purposes
+        if context.contains("authorized_migration") && context.contains("migration_token") {
+            // In a real implementation, you would validate the migration token here
+            // against a whitelist of authorized migration operations
             true
         } else {
             error!("Attempted to skip password checks in an unauthorized context: {}", context);
@@ -61,9 +107,11 @@ impl PasswordValidator {
     /// to skip password requirement. Returns false if it's not appropriate to
     /// skip requirement in the current context.
     pub fn is_safe_to_skip_password_requirement(context: &str) -> bool {
-        // This implementation allows skipping only in controlled migration scenarios
-        // Add implementation-specific logic here
-        if context.contains("migration") || context.contains("import") {
+        // Only allow in controlled migration contexts with explicit migration tokens/identifiers
+        // Simple substring matching is insufficient for security purposes
+        if context.contains("authorized_migration") && context.contains("migration_token") {
+            // In a real implementation, you would validate the migration token here
+            // against a whitelist of authorized migration operations
             true
         } else {
             error!("Attempted to skip password requirement in an unauthorized context: {}", context);
