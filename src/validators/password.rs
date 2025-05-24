@@ -8,6 +8,7 @@
  */
 
 use log::{warn, error};
+use crate::models::create_user_request::PasswordHasher;
 
 /// Validates and logs warnings for potentially risky password operations
 pub struct PasswordValidator;
@@ -37,6 +38,92 @@ impl PasswordValidator {
             in controlled migration scenarios. Reason: {}",
             context
         );
+    }
+
+    /// Logs a warning when an insecure password hashing algorithm is used
+    ///
+    /// This method should be called whenever an insecure algorithm like MD5 or SHA256
+    /// is specified. These algorithms will be transparently migrated to Bcrypt on first sign-in.
+    pub fn warn_on_insecure_password_hasher(hasher: &PasswordHasher, reason: Option<&str>) {
+        let context = reason.unwrap_or("No reason provided");
+        match hasher {
+            PasswordHasher::Md5 => {
+                warn!(
+                    "SECURITY WARNING: MD5 is cryptographically insecure and should not be used for password hashing. \
+                    It will be automatically upgraded to Bcrypt on the user's first successful sign-in. \
+                    Reason for use: {}",
+                    context
+                );
+            },
+            PasswordHasher::Sha256 => {
+                warn!(
+                    "SECURITY WARNING: SHA256 without salt/iterations is cryptographically insecure and should not be used \
+                    for password hashing. It will be automatically upgraded to Bcrypt on the user's first successful sign-in. \
+                    Reason for use: {}",
+                    context
+                );
+            },
+            PasswordHasher::Phpass => {
+                warn!(
+                    "SECURITY WARNING: phpass is based on MD5 which is insecure and should not be used for password hashing. \
+                    Consider using Argon2id, Bcrypt, or PBKDF2 instead. \
+                    Reason for use: {}",
+                    context
+                );
+            },
+            PasswordHasher::Pbkdf2Sha1 => {
+                warn!(
+                    "SECURITY WARNING: SHA1 is considered weak and should not be used for password hashing. \
+                    Consider using pbkdf2_sha256 instead. \
+                    Reason for use: {}",
+                    context
+                );
+            },
+            _ => {} // No warning for secure algorithms
+        }
+    }
+
+    /// Checks if the provided password hasher is considered secure
+    ///
+    /// Returns true for secure algorithms and false for deprecated/insecure ones
+    pub fn is_secure_password_hasher(hasher: &PasswordHasher) -> bool {
+        match hasher {
+            PasswordHasher::Argon2i => true,
+            PasswordHasher::Argon2id => true,
+            PasswordHasher::Bcrypt => true,
+            PasswordHasher::BcryptSha256Django => true,
+            PasswordHasher::Pbkdf2Sha256 => true,
+            PasswordHasher::Pbkdf2Sha256Django => true,
+            PasswordHasher::ScryptFirebase => true,
+            PasswordHasher::Md5 => false,
+            PasswordHasher::Sha256 => false,
+            PasswordHasher::Phpass => false,
+            PasswordHasher::Pbkdf2Sha1 => false,
+        }
+    }
+
+    /// Validates whether it's safe to use an insecure password hasher
+    ///
+    /// This function determines if the current context makes it acceptable
+    /// to use an insecure algorithm. Returns false if it's not appropriate.
+    pub fn is_safe_to_use_insecure_hasher(hasher: &PasswordHasher, context: &str) -> bool {
+        // Always allow secure algorithms
+        if Self::is_secure_password_hasher(hasher) {
+            return true;
+        }
+
+        // Only allow insecure algorithms in controlled migration scenarios
+        if context.contains("migration") || context.contains("import") {
+            // Log a warning but allow it
+            Self::warn_on_insecure_password_hasher(hasher, Some(context));
+            true
+        } else {
+            error!(
+                "Attempted to use insecure password hasher {:?} in an unauthorized context: {}",
+                hasher, context
+            );
+            false
+        }
     }
 
     /// Validates whether it's safe to skip password checks
