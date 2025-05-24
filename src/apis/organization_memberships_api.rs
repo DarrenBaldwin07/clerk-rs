@@ -12,6 +12,7 @@ use reqwest;
 
 use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
+use crate::models::ClerkErrors;
 
 /// struct for typed errors of method [`create_organization_membership`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -67,11 +68,40 @@ pub struct OrganizationMembership;
 
 impl OrganizationMembership {
 	/// Adds a user as a member to the given organization. Only users in the same instance as the organization can be added as members.
+	/// 
+	/// Validates:
+	/// 1. User ID format is valid
+	/// 2. Before making the API call, which will validate:
+	///    - User exists in the same instance
+	///    - User is not already a member of the organization
 	pub async fn create(
 		clerk_client: &Clerk,
 		organization_id: &str,
 		create_organization_membership_request: crate::models::CreateOrganizationMembershipRequest,
 	) -> Result<crate::models::OrganizationMembership, Error<CreateOrganizationMembershipError>> {
+		// Validate user_id format
+		if !create_organization_membership_request.validate_user_id() {
+			let error_message = format!(
+				"Invalid user_id format: {}. User ID must start with 'user_' followed by alphanumeric characters.",
+				create_organization_membership_request.user_id
+			);
+			
+			let error = ClerkErrors {
+				errors: vec![crate::models::ClerkError {
+					code: "invalid_input".to_string(),
+					long_message: Some(error_message.clone()),
+					message: error_message,
+					meta: None,
+				}],
+			};
+			
+			return Err(Error::ResponseError(ResponseContent {
+				status: reqwest::StatusCode::BAD_REQUEST,
+				content: serde_json::to_string(&error).unwrap_or_default(),
+				entity: Some(CreateOrganizationMembershipError::Status400(error)),
+			}));
+		}
+		
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
