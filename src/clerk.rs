@@ -16,10 +16,12 @@ pub const USER_AGENT: &str = concat!("Clerk/v1 RustBindings/", env!("CARGO_PKG_V
 /// # Examples
 ///
 /// ```rust
-/// use clerk_rs::Clerk;
+/// use clerk_rs::{Clerk, load_clerk_secret_key};
 /// use clerk_rs::apis::configuration::ClerkConfiguration;
 ///
-/// let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_owned()), None);
+/// // Get secret key from environment variable using helper function
+/// let secret_key = load_clerk_secret_key();
+/// let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
 /// let client = Clerk::new(config);
 ///
 /// let res = client.get(ClerkGetEndpoint::GetUserList).await?;

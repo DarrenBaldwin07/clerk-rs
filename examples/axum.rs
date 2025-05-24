@@ -2,7 +2,7 @@ use axum::{routing::get, Router, Extension};
 use clerk_rs::{
 	clerk::Clerk,
 	validators::{authorizer::ClerkJwt, axum::ClerkLayer, jwks::MemoryCacheJwksProvider},
-	ClerkConfiguration,
+	ClerkConfiguration, load_clerk_secret_key,
 };
 
 /// This is an unprotected route. 
@@ -23,7 +23,10 @@ async fn profile(Extension(clerk_jwt): Extension<ClerkJwt>) -> String {
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-	let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+	// Get secret key from environment variable using helper function
+	let secret_key = load_clerk_secret_key();
+	
+	let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
 	let clerk = Clerk::new(config);
 
 	let app = Router::new()
