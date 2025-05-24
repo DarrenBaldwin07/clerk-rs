@@ -51,7 +51,14 @@ pub struct CreateUserRequest {
 		skip_serializing_if = "Option::is_none"
 	)]
 	pub username: Option<Option<String>>,
-	/// The plaintext password to give the user. Must be at least 8 characters long, and can not be in any list of hacked passwords.
+	/// The plaintext password to give the user. Password requirements:
+	/// - Must be at least 8 characters long
+	/// - Must contain at least one uppercase letter
+	/// - Must contain at least one lowercase letter
+	/// - Must contain at least one digit
+	/// - Must contain at least one special character
+	/// - Cannot be a commonly used password
+	/// - Cannot be in any list of compromised passwords
 	#[serde(
 		rename = "password",
 		default,
