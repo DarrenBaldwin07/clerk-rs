@@ -7,8 +7,9 @@
  * Contact: support@clerk.com
  */
 
+use log::{error, warn};
 use crate::models::{CreateUserRequest, UpdateUserRequest};
-use crate::validators::password::PasswordValidator;
+use crate::validators::password::{PasswordValidator, PasswordValidationError};
 
 /// Middleware for validating user creation parameters
 pub struct UsersMiddleware;
@@ -41,6 +42,27 @@ impl UsersMiddleware {
             }
         }
 
+        // Validate password if provided and not skipping checks
+        if let Some(Some(password)) = &request.password {
+            // If skip_password_checks is explicitly set to false or not set at all
+            let should_validate = request.skip_password_checks.unwrap_or(false) == false;
+            
+            if should_validate {
+                match PasswordValidator::validate_password(password) {
+                    Ok(()) => {
+                        // Password meets all requirements
+                        return true;
+                    },
+                    Err(validation_error) => {
+                        // Password failed validation
+                        let error_message = PasswordValidator::get_validation_error_message(&validation_error);
+                        error!("Password validation failed: {}", error_message);
+                        return false;
+                    }
+                }
+            }
+        }
+
         true
     }
 
@@ -56,6 +78,32 @@ impl UsersMiddleware {
                     // Evaluate if this is a controlled migration context
                     // This is a stub - in a real implementation, you might check additional context
                     return true;
+                }
+            }
+        }
+
+        // Validate password if provided and not skipping checks
+        if let Some(password) = &request.password {
+            if let Some(pw_value) = password {
+                // Determine if we should validate based on skip_password_checks
+                let should_validate = match &request.skip_password_checks {
+                    Some(Some(skip)) => !skip,
+                    _ => true, // Default to validation if not specified
+                };
+
+                if should_validate {
+                    match PasswordValidator::validate_password(pw_value) {
+                        Ok(()) => {
+                            // Password meets all requirements
+                            return true;
+                        },
+                        Err(validation_error) => {
+                            // Password failed validation
+                            let error_message = PasswordValidator::get_validation_error_message(&validation_error);
+                            error!("Password validation failed: {}", error_message);
+                            return false;
+                        }
+                    }
                 }
             }
         }
