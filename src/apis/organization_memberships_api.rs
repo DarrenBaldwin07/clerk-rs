@@ -283,4 +283,28 @@ impl OrganizationMembership {
 			Err(Error::ResponseError(local_var_error))
 		}
 	}
+	
+	/// Helper method to create a validated UpdateOrganizationMembershipRequest
+	pub fn create_validated_update_request(role: String) -> Result<crate::models::UpdateOrganizationMembershipRequest, crate::models::update_organization_membership_request::ValidationError> {
+		crate::models::UpdateOrganizationMembershipRequest::new(role)
+	}
+	
+	/// Updates the role of an organization membership with validation
+	pub async fn update_organization_membership_with_validation(
+		clerk_client: &Clerk,
+		organization_id: &str,
+		user_id: &str,
+		role: String,
+	) -> Result<crate::models::OrganizationMembership, Box<dyn std::error::Error>> {
+		// Validate the role
+		let request = Self::create_validated_update_request(role)?;
+		
+		// Call the original method with the validated request
+		Ok(Self::update_organization_membership(
+			clerk_client,
+			organization_id,
+			user_id,
+			request,
+		).await?)
+	}
 }
