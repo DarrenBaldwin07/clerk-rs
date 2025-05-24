@@ -145,6 +145,11 @@ impl ListIdentifier {
 		clerk_client: &Clerk,
 		identifier_id: &str,
 	) -> Result<crate::models::DeletedObject, Error<DeleteAllowlistIdentifierError>> {
+		// Validate the identifier_id parameter
+		if identifier_id.trim().is_empty() {
+			return Err(Error::Validation("identifier_id cannot be empty".to_string()));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -184,6 +189,11 @@ impl ListIdentifier {
 		clerk_client: &Clerk,
 		identifier_id: &str,
 	) -> Result<crate::models::DeletedObject, Error<DeleteBlocklistIdentifierError>> {
+		// Validate the identifier_id parameter
+		if identifier_id.trim().is_empty() {
+			return Err(Error::Validation("identifier_id cannot be empty".to_string()));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
