@@ -12,6 +12,7 @@ use reqwest;
 
 use super::{configuration, Error};
 use crate::apis::ResponseContent;
+use crate::util::validate_id;
 
 /// struct for typed errors of method [`create_saml_connection`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -108,6 +109,11 @@ pub async fn delete_saml_connection(
 	configuration: &configuration::Configuration,
 	saml_connection_id: &str,
 ) -> Result<crate::models::DeletedObject, Error<DeleteSamlConnectionError>> {
+	// Validate the SAML connection ID before proceeding
+	if let Err(err) = validate_id(saml_connection_id, "SAML Connection") {
+		return Err(Error::Validation(err));
+	}
+
 	let local_var_configuration = configuration;
 
 	let local_var_client = &local_var_configuration.client;
@@ -150,6 +156,11 @@ pub async fn get_saml_connection(
 	configuration: &configuration::Configuration,
 	saml_connection_id: &str,
 ) -> Result<crate::models::SamlConnection, Error<GetSamlConnectionError>> {
+	// Validate the SAML connection ID before proceeding
+	if let Err(err) = validate_id(saml_connection_id, "SAML Connection") {
+		return Err(Error::Validation(err));
+	}
+
 	let local_var_configuration = configuration;
 
 	let local_var_client = &local_var_configuration.client;
@@ -238,6 +249,11 @@ pub async fn update_saml_connection(
 	saml_connection_id: &str,
 	update_saml_connection_request: crate::models::UpdateSamlConnectionRequest,
 ) -> Result<crate::models::SamlConnection, Error<UpdateSamlConnectionError>> {
+	// Validate the SAML connection ID before proceeding
+	if let Err(err) = validate_id(saml_connection_id, "SAML Connection") {
+		return Err(Error::Validation(err));
+	}
+
 	let local_var_configuration = configuration;
 
 	let local_var_client = &local_var_configuration.client;
