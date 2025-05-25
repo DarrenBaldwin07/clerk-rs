@@ -11,7 +11,7 @@
 use reqwest;
 
 use super::Error;
-use crate::{apis::ResponseContent, clerk::Clerk};
+use crate::{apis::ResponseContent, clerk::Clerk, validators::input};
 
 /// struct for typed errors of method [`create_session_token_from_template`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -71,6 +71,15 @@ impl Session {
 		session_id: &str,
 		template_name: &str,
 	) -> Result<crate::models::CreateSessionTokenFromTemplate200Response, Error<CreateSessionTokenFromTemplateError>> {
+		// Validate inputs before making API call
+		if let Err(e) = input::validate_session_id(session_id) {
+			return Err(Error::Validation(e));
+		}
+		
+		if let Err(e) = input::validate_template_name(template_name) {
+			return Err(Error::Validation(e));
+		}
+		
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -108,6 +117,11 @@ impl Session {
 
 	/// Retrieve the details of a session
 	pub async fn get_session(clerk_client: &Clerk, session_id: &str) -> Result<crate::models::Session, Error<GetSessionError>> {
+		// Validate session_id before making API call
+		if let Err(e) = input::validate_session_id(session_id) {
+			return Err(Error::Validation(e));
+		}
+		
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -198,6 +212,11 @@ impl Session {
 
 	/// Sets the status of a session as \"revoked\", which is an unauthenticated state. In multi-session mode, a revoked session will still be returned along with its client object, however the user will need to sign in again.
 	pub async fn revoke_session(clerk_client: &Clerk, session_id: &str) -> Result<crate::models::Session, Error<RevokeSessionError>> {
+		// Validate session_id before making API call
+		if let Err(e) = input::validate_session_id(session_id) {
+			return Err(Error::Validation(e));
+		}
+		
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -238,6 +257,11 @@ impl Session {
 		session_id: &str,
 		verify_session_request: Option<crate::models::VerifySessionRequest>,
 	) -> Result<crate::models::Session, Error<VerifySessionError>> {
+		// Validate session_id before making API call
+		if let Err(e) = input::validate_session_id(session_id) {
+			return Err(Error::Validation(e));
+		}
+		
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
