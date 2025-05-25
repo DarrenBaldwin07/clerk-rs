@@ -13,6 +13,14 @@ use reqwest;
 use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
 
+/// Validates that the template_id is not empty or containing only whitespace
+fn validate_template_id(template_id: &str) -> Result<(), String> {
+    if template_id.trim().is_empty() {
+        return Err("Template ID cannot be empty".to_string());
+    }
+    Ok(())
+}
+
 /// struct for typed errors of method [`create_jwt_template`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -99,6 +107,9 @@ impl JwtTemplate {
 
 	///
 	pub async fn delete_jwt_template(clerk_client: &Clerk, template_id: &str) -> Result<crate::models::DeletedObject, Error<DeleteJwtTemplateError>> {
+		if let Err(e) = validate_template_id(template_id) {
+			return Err(Error::Validation(e));
+		}
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -135,6 +146,9 @@ impl JwtTemplate {
 
 	/// Retrieve the details of a given JWT template
 	pub async fn get_jwt_template(clerk_client: &Clerk, template_id: &str) -> Result<crate::models::JwtTemplate, Error<GetJwtTemplateError>> {
+		if let Err(e) = validate_template_id(template_id) {
+			return Err(Error::Validation(e));
+		}
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -206,6 +220,9 @@ impl JwtTemplate {
 		template_id: &str,
 		create_jwt_template_request: Option<crate::models::CreateJwtTemplateRequest>,
 	) -> Result<crate::models::JwtTemplate, Error<UpdateJwtTemplateError>> {
+		if let Err(e) = validate_template_id(template_id) {
+			return Err(Error::Validation(e));
+		}
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
