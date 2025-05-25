@@ -151,6 +151,11 @@ pub struct User;
 impl User {
 	/// Marks the given user as banned, which means that all their sessions are revoked and they are not allowed to sign in again.
 	pub async fn ban_user(clerk_client: &Clerk, user_id: &str) -> Result<crate::models::User, Error<BanUserError>> {
+		// Validate user_id parameter
+		if let Err(err) = crate::validators::input::validate_str_param("user_id", user_id) {
+			return Err(Error::Validation(err.to_string()));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -190,8 +195,12 @@ impl User {
 		clerk_client: &Clerk,
 		create_user_request: crate::models::CreateUserRequest,
 	) -> Result<crate::models::User, Error<CreateUserError>> {
-		let local_var_configuration = &clerk_client.config;
+		// Validate request (similar to validate_request but for non-Option type)
+		if !serde_json::to_string(&create_user_request).map_or(false, |s| !s.is_empty() && s != "null") {
+			return Err(Error::Validation("Invalid create_user_request: Request must not be empty".to_string()));
+		}
 
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -225,6 +234,11 @@ impl User {
 
 	/// Delete the specified user
 	pub async fn delete_user(clerk_client: &Clerk, user_id: &str) -> Result<crate::models::DeletedObject, Error<DeleteUserError>> {
+		// Validate user_id parameter
+		if let Err(err) = crate::validators::input::validate_str_param("user_id", user_id) {
+			return Err(Error::Validation(err.to_string()));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -301,6 +315,16 @@ impl User {
 		user_id: &str,
 		provider: &str,
 	) -> Result<Vec<crate::models::GetOAuthAccessToken200ResponseInner>, Error<GetOAuthAccessTokenError>> {
+		// Validate user_id parameter
+		if let Err(err) = crate::validators::input::validate_str_param("user_id", user_id) {
+			return Err(Error::Validation(err.to_string()));
+		}
+
+		// Validate provider parameter
+		if let Err(err) = crate::validators::input::validate_str_param("provider", provider) {
+			return Err(Error::Validation(err.to_string()));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -338,6 +362,11 @@ impl User {
 
 	/// Retrieve the details of a user
 	pub async fn get_user(clerk_client: &Clerk, user_id: &str) -> Result<crate::models::User, Error<GetUserError>> {
+		// Validate user_id parameter
+		if let Err(err) = crate::validators::input::validate_str_param("user_id", user_id) {
+			return Err(Error::Validation(err.to_string()));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;

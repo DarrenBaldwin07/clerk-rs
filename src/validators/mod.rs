@@ -1,6 +1,10 @@
 pub mod authorizer;
+pub mod input;
 pub mod jwks;
 pub mod password;
+
+#[cfg(test)]
+mod tests;
 
 // Framework-specific modules
 // Validators for Rocket, etc coming very soon

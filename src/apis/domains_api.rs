@@ -53,6 +53,11 @@ pub enum UpdateDomainError {
 
 /// Add a new domain for your instance. Useful in the case of multi-domain instances, allows adding satellite domains to an instance. The new domain must have a `name`. The domain name can contain the port for development instances, like `localhost:3000`. At the moment, instances can have only one primary domain, so the `is_satellite` parameter must be set to `true`. If you're planning to configure the new satellite domain to run behind a proxy, pass the `proxy_url` parameter accordingly.
 pub async fn add_domain(configuration: &configuration::Configuration, add_domain_request: Option<crate::models::AddDomainRequest>) -> Result<crate::models::Domain, Error<AddDomainError>> {
+    // Validate request
+    if let Err(err) = crate::validators::input::validate_request(&add_domain_request) {
+        return Err(Error::Validation(err.to_string()));
+    }
+
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -85,6 +90,11 @@ pub async fn add_domain(configuration: &configuration::Configuration, add_domain
 
 /// Deletes a satellite domain for the instance. It is currently not possible to delete the instance's primary domain.
 pub async fn delete_domain(configuration: &configuration::Configuration, domain_id: &str) -> Result<crate::models::DeletedObject, Error<DeleteDomainError>> {
+    // Validate domain_id parameter
+    if let Err(err) = crate::validators::input::validate_str_param("domain_id", domain_id) {
+        return Err(Error::Validation(err.to_string()));
+    }
+
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -147,6 +157,16 @@ pub async fn list_domains(configuration: &configuration::Configuration, ) -> Res
 
 /// The `proxy_url` can be updated only for production instances. Update one of the instance's domains. Both primary and satellite domains can be updated. If you choose to use Clerk via proxy, use this endpoint to specify the `proxy_url`. Whenever you decide you'd rather switch to DNS setup for Clerk, simply set `proxy_url` to `null` for the domain. When you update a production instance's primary domain name, you have to make sure that you've completed all the necessary setup steps for DNS and emails to work. Expect downtime otherwise. Updating a primary domain's name will also update the instance's home origin, affecting the default application paths.
 pub async fn update_domain(configuration: &configuration::Configuration, domain_id: &str, update_domain_request: crate::models::UpdateDomainRequest) -> Result<crate::models::Domain, Error<UpdateDomainError>> {
+    // Validate domain_id parameter
+    if let Err(err) = crate::validators::input::validate_str_param("domain_id", domain_id) {
+        return Err(Error::Validation(err.to_string()));
+    }
+
+    // Validate request (we don't use validate_request here because UpdateDomainRequest is not wrapped in Option)
+    if !serde_json::to_string(&update_domain_request).map_or(false, |s| !s.is_empty() && s != "null") {
+        return Err(Error::Validation("Invalid update_domain_request: Request must not be empty".to_string()));
+    }
+
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
