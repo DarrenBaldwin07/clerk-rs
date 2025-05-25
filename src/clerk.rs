@@ -1,10 +1,20 @@
 use crate::{
 	apis::configuration,
 	endpoints::{ClerkDeleteEndpoint, ClerkDynamicGetEndpoint, ClerkGetEndpoint, ClerkPostEndpoint, ClerkPutEndpoint},
-	util::generate_path_from_params,
+	util::{generate_path_from_params, validate_string_param, ValidationError},
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum ClerkClientError {
+    #[error("Validation error: {0}")]
+    ValidationError(#[from] ValidationError),
+    
+    #[error("Request error: {0}")]
+    RequestError(#[from] reqwest::Error),
+}
 
 // Default user agent used for clerk-rs sdk (this is sent with every clerk api request)
 pub const USER_AGENT: &str = concat!("Clerk/v1 RustBindings/", env!("CARGO_PKG_VERSION"));
@@ -39,16 +49,16 @@ impl Clerk {
 	}
 
 	/// Make a GET request to the specified Clerk API endpoint
-	pub async fn get(&self, endpoint: ClerkGetEndpoint) -> Result<serde_json::value::Value, reqwest::Error> {
+	pub async fn get(&self, endpoint: ClerkGetEndpoint) -> Result<serde_json::value::Value, ClerkClientError> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
 		match self.config.client.get(&url).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+				Err(e) => Err(ClerkClientError::RequestError(e)),
 			},
-			Err(e) => Err(e),
+			Err(e) => Err(ClerkClientError::RequestError(e)),
 		}
 	}
 
@@ -57,30 +67,30 @@ impl Clerk {
 		&self,
 		endpoint: ClerkPostEndpoint,
 		body: T,
-	) -> Result<serde_json::value::Value, reqwest::Error> {
+	) -> Result<serde_json::value::Value, ClerkClientError> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
 		match self.config.client.post(&url).json(&body).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+				Err(e) => Err(ClerkClientError::RequestError(e)),
 			},
-			Err(e) => Err(e),
+			Err(e) => Err(ClerkClientError::RequestError(e)),
 		}
 	}
 
 	/// Make a DELETE request to the specified Clerk API endpoint
-	pub async fn delete(&self, endpoint: ClerkDeleteEndpoint) -> Result<serde_json::value::Value, reqwest::Error> {
+	pub async fn delete(&self, endpoint: ClerkDeleteEndpoint) -> Result<serde_json::value::Value, ClerkClientError> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
 		match self.config.client.delete(&url).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+				Err(e) => Err(ClerkClientError::RequestError(e)),
 			},
-			Err(e) => Err(e),
+			Err(e) => Err(ClerkClientError::RequestError(e)),
 		}
 	}
 
@@ -89,49 +99,49 @@ impl Clerk {
 		&self,
 		endpoint: ClerkPutEndpoint,
 		body: T,
-	) -> Result<serde_json::value::Value, reqwest::Error> {
+	) -> Result<serde_json::value::Value, ClerkClientError> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
 		match self.config.client.put(&url).json(&body).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+				Err(e) => Err(ClerkClientError::RequestError(e)),
 			},
-			Err(e) => Err(e),
+			Err(e) => Err(ClerkClientError::RequestError(e)),
 		}
 	}
 
-	/// Make a PUT request to the specified Clerk API endpoint
+	/// Make a PATCH request to the specified Clerk API endpoint
 	pub async fn patch<'a, T: Serialize + Deserialize<'a>>(
 		&self,
 		endpoint: ClerkPutEndpoint,
 		body: T,
-	) -> Result<serde_json::value::Value, reqwest::Error> {
+	) -> Result<serde_json::value::Value, ClerkClientError> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
 		match self.config.client.patch(&url).json(&body).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+				Err(e) => Err(ClerkClientError::RequestError(e)),
 			},
-			Err(e) => Err(e),
+			Err(e) => Err(ClerkClientError::RequestError(e)),
 		}
 	}
 
 	/// Make a GET request with params to the specified Clerk API endpoint
-	pub async fn get_with_params(&self, endpoint: ClerkDynamicGetEndpoint, params: Vec<&str>) -> Result<serde_json::value::Value, reqwest::Error> {
+	pub async fn get_with_params(&self, endpoint: ClerkDynamicGetEndpoint, params: Vec<&str>) -> Result<serde_json::value::Value, ClerkClientError> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
-		let url_with_params = generate_path_from_params(url, params);
+		let url_with_params = generate_path_from_params(url, params)?;
 
 		match self.config.client.get(&url_with_params).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+				Err(e) => Err(ClerkClientError::RequestError(e)),
 			},
-			Err(e) => Err(e),
+			Err(e) => Err(ClerkClientError::RequestError(e)),
 		}
 	}
 
@@ -141,32 +151,32 @@ impl Clerk {
 		endpoint: ClerkPostEndpoint,
 		body: T,
 		params: Vec<&str>,
-	) -> Result<serde_json::value::Value, reqwest::Error> {
+	) -> Result<serde_json::value::Value, ClerkClientError> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
-		let url_with_params = generate_path_from_params(url, params);
+		let url_with_params = generate_path_from_params(url, params)?;
 
 		match self.config.client.post(&url_with_params).json(&body).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+				Err(e) => Err(ClerkClientError::RequestError(e)),
 			},
-			Err(e) => Err(e),
+			Err(e) => Err(ClerkClientError::RequestError(e)),
 		}
 	}
 
 	/// Make a DELETE request with params to the specified Clerk API endpoint
-	pub async fn delete_with_params(&self, endpoint: ClerkDeleteEndpoint, params: Vec<&str>) -> Result<serde_json::value::Value, reqwest::Error> {
+	pub async fn delete_with_params(&self, endpoint: ClerkDeleteEndpoint, params: Vec<&str>) -> Result<serde_json::value::Value, ClerkClientError> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
-		let url_with_params = generate_path_from_params(url, params);
+		let url_with_params = generate_path_from_params(url, params)?;
 
 		match self.config.client.delete(&url_with_params).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+				Err(e) => Err(ClerkClientError::RequestError(e)),
 			},
-			Err(e) => Err(e),
+			Err(e) => Err(ClerkClientError::RequestError(e)),
 		}
 	}
 
@@ -176,37 +186,37 @@ impl Clerk {
 		endpoint: ClerkPutEndpoint,
 		body: T,
 		params: Vec<&str>,
-	) -> Result<serde_json::value::Value, reqwest::Error> {
+	) -> Result<serde_json::value::Value, ClerkClientError> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
-		let url_with_params = generate_path_from_params(url, params);
+		let url_with_params = generate_path_from_params(url, params)?;
 
 		match self.config.client.put(&url_with_params).json(&body).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+				Err(e) => Err(ClerkClientError::RequestError(e)),
 			},
-			Err(e) => Err(e),
+			Err(e) => Err(ClerkClientError::RequestError(e)),
 		}
 	}
 
-	/// Make a PUT request with params to the specified Clerk API endpoint
+	/// Make a PATCH request with params to the specified Clerk API endpoint
 	pub async fn patch_with_params<'a, T: Serialize + Deserialize<'a>>(
 		&self,
 		endpoint: ClerkPutEndpoint,
 		body: T,
 		params: Vec<&str>,
-	) -> Result<serde_json::value::Value, reqwest::Error> {
+	) -> Result<serde_json::value::Value, ClerkClientError> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
-		let url_with_params = generate_path_from_params(url, params);
+		let url_with_params = generate_path_from_params(url, params)?;
 
 		match self.config.client.patch(&url_with_params).json(&body).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+				Err(e) => Err(ClerkClientError::RequestError(e)),
 			},
-			Err(e) => Err(e),
+			Err(e) => Err(ClerkClientError::RequestError(e)),
 		}
 	}
 }

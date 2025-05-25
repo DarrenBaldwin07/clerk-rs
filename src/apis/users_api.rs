@@ -609,8 +609,11 @@ impl User {
 		user_id: &str,
 		update_user_request: crate::models::UpdateUserRequest,
 	) -> Result<crate::models::User, Error<UpdateUserError>> {
-		let local_var_configuration = &clerk_client.config;
+		// Validate the user_id parameter
+		crate::util::validate_string_param(user_id, "user_id")
+			.map_err(|e| Error::Validation(e.to_string()))?;
 
+		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -652,6 +655,14 @@ impl User {
 		user_id: &str,
 		update_user_metadata_request: Option<crate::models::UpdateUserMetadataRequest>,
 	) -> Result<crate::models::User, Error<UpdateUserMetadataError>> {
+		// Validate the user_id parameter
+		crate::util::validate_string_param(user_id, "user_id")
+			.map_err(|e| Error::Validation(e.to_string()))?;
+
+		// Validate that the request body is present
+		crate::util::validate_request_body(&update_user_metadata_request, "update_user_metadata_request")
+			.map_err(|e| Error::Validation(e.to_string()))?;
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -695,6 +706,10 @@ impl User {
 		limit: Option<u64>,
 		offset: Option<u64>,
 	) -> Result<crate::models::OrganizationMemberships, Error<UsersGetOrganizationMembershipsError>> {
+		// Validate the user_id parameter
+		crate::util::validate_string_param(user_id, "user_id")
+			.map_err(|e| Error::Validation(e.to_string()))?;
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -741,6 +756,14 @@ impl User {
 		user_id: &str,
 		verify_password_request: Option<crate::models::VerifyPasswordRequest>,
 	) -> Result<crate::models::VerifyPassword200Response, Error<VerifyPasswordError>> {
+		// Validate the user_id parameter
+		crate::util::validate_string_param(user_id, "user_id")
+			.map_err(|e| Error::Validation(e.to_string()))?;
+
+		// Validate that the request body is present
+		crate::util::validate_request_body(&verify_password_request, "verify_password_request")
+			.map_err(|e| Error::Validation(e.to_string()))?;
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
