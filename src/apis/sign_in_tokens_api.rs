@@ -76,6 +76,11 @@ impl SignInToken {
 		clerk_client: &Clerk,
 		sign_in_token_id: &str,
 	) -> Result<crate::models::SignInToken, Error<RevokeSignInTokenError>> {
+		// Validate sign_in_token_id parameter
+		if sign_in_token_id.is_empty() {
+			return Err(Error::Validation("sign_in_token_id cannot be empty".to_string()));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
