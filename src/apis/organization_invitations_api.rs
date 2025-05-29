@@ -147,6 +147,11 @@ impl OrganizationInvitation {
 		invitation_id: &str,
 		revoke_organization_invitation_request: crate::models::RevokeOrganizationInvitationRequest,
 	) -> Result<crate::models::OrganizationInvitation, Error<RevokeOrganizationInvitationError>> {
+		// Validate the request
+		if let Err(validation_error) = revoke_organization_invitation_request.validate() {
+			return Err(Error::Validation(validation_error));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
