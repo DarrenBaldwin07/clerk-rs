@@ -52,6 +52,11 @@ impl OrganizationInvitation {
 		organization_id: &str,
 		create_organization_invitation_request: crate::models::CreateOrganizationInvitationRequest,
 	) -> Result<crate::models::OrganizationInvitation, Error<CreateOrganizationInvitationError>> {
+		// Validate the request
+		if let Err(validation_error) = create_organization_invitation_request.validate() {
+			return Err(Error::Validation(validation_error));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;

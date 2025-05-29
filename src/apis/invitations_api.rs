@@ -45,6 +45,13 @@ impl Invitation {
 		clerk_client: &Clerk,
 		create_invitation_request: Option<crate::models::CreateInvitationRequest>,
 	) -> Result<crate::models::Invitation, Error<CreateInvitationError>> {
+		// Validate the request if present
+		if let Some(ref request) = create_invitation_request {
+			if let Err(validation_error) = request.validate() {
+				return Err(Error::Validation(validation_error));
+			}
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
