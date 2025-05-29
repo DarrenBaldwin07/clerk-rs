@@ -22,6 +22,7 @@ pub enum CreatePhoneNumberError {
 	Status403(crate::models::ClerkErrors),
 	Status404(crate::models::ClerkErrors),
 	Status422(crate::models::ClerkErrors),
+	ValidationError(String),
 	UnknownValue(serde_json::Value),
 }
 
@@ -66,6 +67,17 @@ impl PhoneNumber {
 		clerk_client: &Clerk,
 		create_phone_number_request: Option<crate::models::CreatePhoneNumberRequest>,
 	) -> Result<crate::models::PhoneNumber, Error<CreatePhoneNumberError>> {
+		// Validate the request data if provided
+		if let Some(request) = &create_phone_number_request {
+			if let Err(validation_error) = request.validate() {
+				return Err(Error::ResponseError(ResponseContent {
+					status: reqwest::StatusCode::BAD_REQUEST,
+					content: validation_error.to_string(),
+					entity: Some(CreatePhoneNumberError::ValidationError(validation_error.to_string())),
+				}));
+			}
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
