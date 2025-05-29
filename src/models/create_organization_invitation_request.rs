@@ -31,7 +31,34 @@ pub struct CreateOrganizationInvitationRequest {
 }
 
 impl CreateOrganizationInvitationRequest {
-	pub fn new(email_address: String, inviter_user_id: String, role: String) -> CreateOrganizationInvitationRequest {
+	pub fn new(email_address: String, inviter_user_id: String, role: String) -> Result<CreateOrganizationInvitationRequest, &'static str> {
+		// Validate inviter_user_id - must not be empty
+		if inviter_user_id.trim().is_empty() {
+			return Err("inviter_user_id cannot be empty");
+		}
+
+		// Validate role - must not be empty
+		if role.trim().is_empty() {
+			return Err("role cannot be empty");
+		}
+
+		// Validate email_address - must not be empty
+		if email_address.trim().is_empty() {
+			return Err("email_address cannot be empty");
+		}
+
+		Ok(CreateOrganizationInvitationRequest {
+			email_address,
+			inviter_user_id,
+			role,
+			public_metadata: None,
+			private_metadata: None,
+			redirect_url: None,
+		})
+	}
+
+	/// Creates a new instance without validation - use with caution
+	pub fn new_unchecked(email_address: String, inviter_user_id: String, role: String) -> CreateOrganizationInvitationRequest {
 		CreateOrganizationInvitationRequest {
 			email_address,
 			inviter_user_id,
@@ -40,5 +67,25 @@ impl CreateOrganizationInvitationRequest {
 			private_metadata: None,
 			redirect_url: None,
 		}
+	}
+
+	/// Validates that the fields meet requirements
+	pub fn validate(&self) -> Result<(), &'static str> {
+		// Validate inviter_user_id - must not be empty
+		if self.inviter_user_id.trim().is_empty() {
+			return Err("inviter_user_id cannot be empty");
+		}
+
+		// Validate role - must not be empty
+		if self.role.trim().is_empty() {
+			return Err("role cannot be empty");
+		}
+
+		// Validate email_address - must not be empty
+		if self.email_address.trim().is_empty() {
+			return Err("email_address cannot be empty");
+		}
+
+		Ok(())
 	}
 }
