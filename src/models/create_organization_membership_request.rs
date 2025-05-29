@@ -15,11 +15,12 @@ pub struct CreateOrganizationMembershipRequest {
 	pub user_id: String,
 	/// The role that the new member will have in the organization.
 	#[serde(rename = "role")]
-	pub role: String,
+	pub role: crate::models::OrganizationRole,
 }
 
 impl CreateOrganizationMembershipRequest {
 	pub fn new(user_id: String, role: String) -> CreateOrganizationMembershipRequest {
+		let role = role.parse().unwrap_or(crate::models::OrganizationRole::Member);
 		CreateOrganizationMembershipRequest { user_id, role }
 	}
 }

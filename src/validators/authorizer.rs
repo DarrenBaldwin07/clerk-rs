@@ -10,7 +10,7 @@ pub struct ActiveOrganization {
 	#[serde(rename = "org_slug")]
 	pub slug: String,
 	#[serde(rename = "org_role")]
-	pub role: String,
+	pub role: crate::models::OrganizationRole,
 	#[serde(rename = "org_permissions")]
 	pub permissions: Vec<String>,
 }
@@ -26,7 +26,8 @@ impl ActiveOrganization {
 	/// should avoid it as much as possible. Usually, complex role checks can be
 	/// refactored with a single permission check.
 	pub fn has_role(&self, role: &str) -> bool {
-		self.role == role
+		let role_enum = role.parse::<crate::models::OrganizationRole>().unwrap_or(crate::models::OrganizationRole::Unknown);
+		self.role == role_enum
 	}
 }
 
@@ -212,7 +213,7 @@ mod tests {
 		act: Actor,
 		org_id: String,
 		org_slug: String,
-		org_role: String,
+		org_role: String, // String in test, will be parsed to OrganizationRole
 		org_permissions: Vec<String>,
 		custom_key: String,
 		custom_map: CustomFields,
@@ -255,7 +256,7 @@ mod tests {
 				sid: "session_id".to_string(),
 				org_id: "org_id".to_string(),
 				org_slug: "org_slug".to_string(),
-				org_role: "org_role".to_string(),
+				org_role: "admin".to_string(),
 				org_permissions: vec!["org_permission".to_string()],
 				act: Actor {
 					iss: "actor_iss".to_string(),
@@ -321,7 +322,7 @@ mod tests {
 			org: Some(ActiveOrganization {
 				id: "org_id".to_string(),
 				slug: "org_slug".to_string(),
-				role: "org_role".to_string(),
+				role: crate::models::OrganizationRole::Admin,
 				permissions: vec!["org_permission".to_string()],
 			}),
 			other: {
@@ -474,7 +475,7 @@ mod tests {
 			org: Some(ActiveOrganization {
 				id: "org_id".to_string(),
 				slug: "org_slug".to_string(),
-				role: "org_role".to_string(),
+				role: crate::models::OrganizationRole::Admin,
 				permissions: vec!["org_permission".to_string()],
 			}),
 			other: {

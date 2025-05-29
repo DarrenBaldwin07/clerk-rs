@@ -202,3 +202,5 @@ pub mod web3_wallet;
 pub use self::web3_wallet::Web3Wallet;
 pub mod web3_wallet_verification;
 pub use self::web3_wallet_verification::Web3WalletVerification;
+pub mod organization_role;
+pub use self::organization_role::OrganizationRole;

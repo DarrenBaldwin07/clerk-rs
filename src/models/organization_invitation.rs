@@ -20,7 +20,7 @@ pub struct OrganizationInvitation {
 	#[serde(rename = "email_address", skip_serializing_if = "Option::is_none")]
 	pub email_address: Option<String>,
 	#[serde(rename = "role", skip_serializing_if = "Option::is_none")]
-	pub role: Option<String>,
+	pub role: Option<crate::models::OrganizationRole>,
 	#[serde(rename = "organization_id", skip_serializing_if = "Option::is_none")]
 	pub organization_id: Option<String>,
 	#[serde(rename = "status", skip_serializing_if = "Option::is_none")]

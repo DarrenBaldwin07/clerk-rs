@@ -12,11 +12,12 @@
 pub struct UpdateOrganizationMembershipRequest {
 	/// The new role of the given membership.
 	#[serde(rename = "role")]
-	pub role: String,
+	pub role: crate::models::OrganizationRole,
 }
 
 impl UpdateOrganizationMembershipRequest {
 	pub fn new(role: String) -> UpdateOrganizationMembershipRequest {
+		let role = role.parse().unwrap_or(crate::models::OrganizationRole::Member);
 		UpdateOrganizationMembershipRequest { role }
 	}
 }
