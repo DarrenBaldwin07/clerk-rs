@@ -1,4 +1,5 @@
 pub mod authorizer;
+pub mod input;
 pub mod jwks;
 pub mod password;
 

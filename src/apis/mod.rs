@@ -13,6 +13,7 @@ pub enum Error<T> {
 	Serde(serde_json::Error),
 	Io(std::io::Error),
 	ResponseError(ResponseContent<T>),
+	Validation(String),
 }
 
 impl<T> fmt::Display for Error<T> {
@@ -22,6 +23,7 @@ impl<T> fmt::Display for Error<T> {
 			Error::Serde(e) => ("serde", e.to_string()),
 			Error::Io(e) => ("IO", e.to_string()),
 			Error::ResponseError(e) => ("response", format!("status code {}", e.status)),
+			Error::Validation(e) => ("validation", e.to_string()),
 		};
 		write!(f, "error in {}: {}", module, e)
 	}
@@ -34,6 +36,7 @@ impl<T: fmt::Debug> error::Error for Error<T> {
 			Error::Serde(e) => e,
 			Error::Io(e) => e,
 			Error::ResponseError(_) => return None,
+			Error::Validation(_) => return None,
 		})
 	}
 }
