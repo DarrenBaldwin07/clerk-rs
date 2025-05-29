@@ -38,4 +38,48 @@ impl CreateEmailRequest {
 			email_address_id: None,
 		}
 	}
+
+	/// Validates the email request to ensure required fields are present and valid.
+	/// Returns a Result with an error message if validation fails.
+	pub fn validate(&self) -> Result<(), String> {
+		// Validate subject (required for meaningful email)
+		if let Some(subject) = &self.subject {
+			if subject.trim().is_empty() {
+				return Err("Email subject cannot be empty".to_string());
+			}
+		} else {
+			return Err("Email subject is required".to_string());
+		}
+
+		// Validate body (required for meaningful email)
+		if let Some(body) = &self.body {
+			if body.trim().is_empty() {
+				return Err("Email body cannot be empty".to_string());
+			}
+		} else {
+			return Err("Email body is required".to_string());
+		}
+
+		// Validate email_address_id (required for delivery)
+		if let Some(email_address_id_opt) = &self.email_address_id {
+			if let Some(email_address_id) = email_address_id_opt {
+				if email_address_id.trim().is_empty() {
+					return Err("Email address ID cannot be empty".to_string());
+				}
+			} else {
+				return Err("Email address ID is required".to_string());
+			}
+		} else {
+			return Err("Email address ID is required".to_string());
+		}
+
+		// All validations passed
+		Ok(())
+	}
+
+	/// Checks if the email request is valid without providing detailed error messages.
+	/// Returns true if the request is valid, false otherwise.
+	pub fn is_valid(&self) -> bool {
+		self.validate().is_ok()
+	}
 }
