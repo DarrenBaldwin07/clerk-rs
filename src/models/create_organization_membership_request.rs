@@ -19,7 +19,37 @@ pub struct CreateOrganizationMembershipRequest {
 }
 
 impl CreateOrganizationMembershipRequest {
-	pub fn new(user_id: String, role: String) -> CreateOrganizationMembershipRequest {
+	pub fn new(user_id: String, role: String) -> Result<CreateOrganizationMembershipRequest, &'static str> {
+		// Validate user_id - must not be empty
+		if user_id.trim().is_empty() {
+			return Err("user_id cannot be empty");
+		}
+
+		// Validate role - must not be empty
+		if role.trim().is_empty() {
+			return Err("role cannot be empty");
+		}
+
+		Ok(CreateOrganizationMembershipRequest { user_id, role })
+	}
+
+	/// Creates a new instance without validation - use with caution
+	pub fn new_unchecked(user_id: String, role: String) -> CreateOrganizationMembershipRequest {
 		CreateOrganizationMembershipRequest { user_id, role }
+	}
+
+	/// Validates that the user_id and role meet requirements
+	pub fn validate(&self) -> Result<(), &'static str> {
+		// Validate user_id - must not be empty
+		if self.user_id.trim().is_empty() {
+			return Err("user_id cannot be empty");
+		}
+
+		// Validate role - must not be empty
+		if self.role.trim().is_empty() {
+			return Err("role cannot be empty");
+		}
+
+		Ok(())
 	}
 }
