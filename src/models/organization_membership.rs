@@ -18,7 +18,7 @@ pub struct OrganizationMembership {
 	#[serde(rename = "object", skip_serializing_if = "Option::is_none")]
 	pub object: Option<Object>,
 	#[serde(rename = "role", skip_serializing_if = "Option::is_none")]
-	pub role: Option<String>,
+	pub role: Option<crate::models::OrganizationRole>,
 	#[serde(rename = "permissions", skip_serializing_if = "Option::is_none")]
 	pub permissions: Option<Vec<String>>,
 	/// Metadata saved on the organization membership, accessible from both Frontend and Backend APIs
