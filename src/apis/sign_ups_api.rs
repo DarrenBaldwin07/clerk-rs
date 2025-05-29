@@ -12,11 +12,13 @@ use reqwest;
 
 use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
+use regex::Regex;
 
 /// struct for typed errors of method [`update_sign_up`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UpdateSignUpError {
+	Status400(crate::models::ClerkErrors),
 	Status403(crate::models::ClerkErrors),
 	UnknownValue(serde_json::Value),
 }
@@ -30,6 +32,27 @@ impl SignUps {
 		id: &str,
 		update_sign_up_request: Option<crate::models::UpdateSignUpRequest>,
 	) -> Result<crate::models::SignUp, Error<UpdateSignUpError>> {
+		// Validate the ID parameter
+		if id.is_empty() {
+			return Err(Error::Io(std::io::Error::new(std::io::ErrorKind::InvalidInput, "Sign-up ID cannot be empty")));
+		}
+
+		// Validate ID format (should be a UUID or other valid ID format)
+		let id_pattern = Regex::new(r"^[a-zA-Z0-9_-]+$").unwrap();
+		if !id_pattern.is_match(id) {
+			return Err(Error::Io(std::io::Error::new(std::io::ErrorKind::InvalidInput, "Sign-up ID contains invalid characters")));
+		}
+
+		// Validate the update_sign_up_request parameter if provided
+		if let Some(request) = &update_sign_up_request {
+			// Validate external_id if present
+			if let Some(Some(external_id)) = &request.external_id {
+				if external_id.len() > 255 {
+					return Err(Error::Io(std::io::Error::new(std::io::ErrorKind::InvalidInput, "External ID exceeds maximum length of 255 characters")));
+				}
+			}
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
