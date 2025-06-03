@@ -127,7 +127,7 @@ where
 				// If the user only wants to apply authentication to a select amount of routes, we handle that logic here
 				let path = request.uri().path();
 				// Check if the path was NOT contained inside of the routes specified by the user...
-				let path_not_in_specified_routes = route_matches.iter().find(|&route| route == path).is_none();
+				let path_not_in_specified_routes = route_matches.iter().find(|&route| path_matches_pattern(route, path)).is_none();
 
 				if path_not_in_specified_routes {
 					// Since the path was not inside of the listed routes we want to trigger an early exit
@@ -170,6 +170,32 @@ where
 			}
 		})
 	}
+
+	/// route_pattern example: "/api/users/{user_id}/profile"
+	/// actual_path example: "/api/users/fc428b58-50ad-45d2-8729-e50ecded3a7b/profile"
+	fn path_matches_pattern(route_pattern: &str, actual_path: &str) -> bool {
+		let pattern_segments: Vec<&str> = route_pattern.split('/').collect();
+		let path_segments: Vec<&str> = actual_path.split('/').collect();
+
+		if pattern_segments.len() != path_segments.len() {
+			return false;
+		}
+
+		for (pattern_seg, path_seg) in pattern_segments.iter().zip(path_segments.iter()) {
+			if pattern_seg.starts_with('{') && pattern_seg.ends_with('}') {
+				if path_seg.is_empty() {
+					return false;
+				}
+				continue;
+			} else {
+				if pattern_seg != path_seg {
+					return false;
+				}
+			}
+		}
+
+		true
+	}
 }
 
 impl<S: Clone, J> Clone for ClerkMiddleware<S, J> {
@@ -179,5 +205,44 @@ impl<S: Clone, J> Clone for ClerkMiddleware<S, J> {
 			authorizer: self.authorizer.clone(),
 			routes: self.routes.clone(),
 		}
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn test_path_matches_pattern() {
+		// Dynamic segment matches
+		assert!(path_matches_pattern(
+			"/api/users/{user_id}/profile",
+			"/api/users/fc428b58-50ad-45d2-8729-e50ecded3a7b/profile"
+		));
+
+		// Static segment matches
+		assert!(path_matches_pattern("/api/health", "/api/health"));
+		assert!(!path_matches_pattern("/api/health", "/api/status"));
+
+		// Multiple dynamic segments match
+		assert!(path_matches_pattern(
+			"/api/users/{user_id}/profile/{profile_id}",
+			"/api/users/123/profile/456"
+		));
+
+		// Static segment does not match
+		assert!(!path_matches_pattern(
+			"/api/users/{user_id}/profile",
+			"/api/users/fc428b58-50ad-45d2-8729-e50ecded3a7b/detail"
+		));
+
+		// The number of segments does not match
+		assert!(!path_matches_pattern(
+			"/api/users/{user_id}/profile",
+			"/api/users/fc428b58-50ad-45d2-8729-e50ecded3a7b"
+		));
+
+		// Empty dynamic segment
+		assert!(!path_matches_pattern("/api/users/{user_id}/profile", "/api/users//profile"));
 	}
 }
