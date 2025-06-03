@@ -46,6 +46,9 @@ impl ClerkRequest for AxumClerkRequest {
 
 /// Axum layer for protecting a http endpoint with Clerk.dev.
 ///
+/// Supports dynamic path matching using curly braces syntax (e.g., `/api/users/{user_id}`).
+/// When specifying routes, you can use dynamic segments that will match any non-empty path segment.
+///
 /// # Example
 /// ```
 /// async fn index() -> &'static str {
@@ -57,9 +60,16 @@ impl ClerkRequest for AxumClerkRequest {
 ///     let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
 ///     let clerk = Clerk::new(config);
 ///
+///     // Protect specific routes, including dynamic paths
+///     let protected_routes = vec![
+///         "/api/users".to_string(),
+///         "/api/users/{user_id}".to_string(),
+///         "/api/users/{user_id}/profile".to_string(),
+///     ];
+///
 ///     let app = Router::new()
 ///         .route("/index", get(index))
-///         .layer(ClerkLayer::new(MemoryCacheJwksProvider::new(clerk), None, true));
+///         .layer(ClerkLayer::new(MemoryCacheJwksProvider::new(clerk), Some(protected_routes), true));
 ///
 ///     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await?;
 ///     axum::serve(listener, app).await
