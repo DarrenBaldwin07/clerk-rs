@@ -11,6 +11,19 @@ For more detailed documentation, please reference the below links:
 
 > This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk api, please open an issue!
 
+## Environment Setup
+
+To use this SDK, you need to set up your Clerk API secret key as an environment variable. This is the recommended approach to keep your secret keys secure.
+
+1. Create a `.env` file in your project root (you can copy the provided `.env.example` file).
+2. Add your Clerk secret key:
+   ```
+   CLERK_SECRET_KEY=sk_test_your_clerk_secret_key
+   ```
+3. In your code, load the environment variables using the `dotenv` crate.
+
+> **Important**: Never hardcode your secret keys in your source code.
+
 ## Examples
 
 > Check out examples in the `/examples` directory
@@ -18,12 +31,21 @@ For more detailed documentation, please reference the below links:
 ### Using a traditional http request to a valid clerk endpoint:
 
 ```rust
+use dotenv::dotenv;
+use std::env;
 use tokio;
 use clerk_rs::{clerk::Clerk, ClerkConfiguration, endpoints::ClerkGetEndpoint};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+    // Load environment variables from .env file
+    dotenv().ok();
+    
+    // Get the secret key from environment variable
+    let secret_key = env::var("CLERK_SECRET_KEY")
+        .expect("CLERK_SECRET_KEY environment variable is not set");
+        
+    let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
     let client = Clerk::new(config);
 
     let res = client.get(ClerkGetEndpoint::GetUserList).await?;
@@ -35,12 +57,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ### Using a clerk-rs method:
 
 ```rust
+use dotenv::dotenv;
+use std::env;
 use tokio;
 use clerk_rs::{clerk::Clerk, ClerkConfiguration, apis::emails_api::Email};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+    // Load environment variables from .env file
+    dotenv().ok();
+    
+    // Get the secret key from environment variable
+    let secret_key = env::var("CLERK_SECRET_KEY")
+        .expect("CLERK_SECRET_KEY environment variable is not set");
+        
+    let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
     let client = Clerk::new(config);
 
     Email::create(&client, Some(your_clerk_email));
@@ -60,6 +91,8 @@ use clerk_rs::{
     validators::{actix::ClerkMiddleware, jwks::MemoryCacheJwksProvider},
     ClerkConfiguration,
 };
+use dotenv::dotenv;
+use std::env;
 
 async fn index() -> impl Responder {
     "Hello world!"
@@ -67,8 +100,15 @@ async fn index() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+    // Load environment variables from .env file
+    dotenv().ok();
+    
+    // Get the secret key from environment variable
+    let secret_key = env::var("CLERK_SECRET_KEY")
+        .expect("CLERK_SECRET_KEY environment variable is not set");
+        
+    HttpServer::new(move || {
+        let config = ClerkConfiguration::new(None, None, Some(secret_key.clone()), None);
         let clerk = Clerk::new(config);
 
         App::new()
@@ -92,6 +132,8 @@ use clerk_rs::{
     validators::{axum::ClerkLayer, jwks::MemoryCacheJwksProvider},
     ClerkConfiguration,
 };
+use dotenv::dotenv;
+use std::env;
 
 async fn index() -> &'static str {
     "Hello world!"
@@ -99,7 +141,14 @@ async fn index() -> &'static str {
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+    // Load environment variables from .env file
+    dotenv().ok();
+    
+    // Get the secret key from environment variable
+    let secret_key = env::var("CLERK_SECRET_KEY")
+        .expect("CLERK_SECRET_KEY environment variable is not set");
+        
+    let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
     let clerk = Clerk::new(config);
 
     let app = Router::new()
@@ -124,10 +173,12 @@ use clerk_rs::{
 	},
 	ClerkConfiguration,
 };
+use dotenv::dotenv;
 use rocket::{
 	get, launch, routes,
 	serde::{Deserialize, Serialize},
 };
+use std::env;
 
 #[derive(Serialize, Deserialize)]
 struct Message {
@@ -141,7 +192,14 @@ fn index(jwt: ClerkGuard<MemoryCacheJwksProvider>) -> &'static str {
 
 #[launch]
 fn rocket() -> _ {
-	let config = ClerkConfiguration::new(None, None, Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_string()), None);
+	// Load environment variables from .env file
+	dotenv().ok();
+	
+	// Get the secret key from environment variable
+	let secret_key = env::var("CLERK_SECRET_KEY")
+		.expect("CLERK_SECRET_KEY environment variable is not set");
+		
+	let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
 	let clerk = Clerk::new(config);
 	let clerk_config = ClerkGuardConfig::new(
 		MemoryCacheJwksProvider::new(clerk),
@@ -163,7 +221,9 @@ use clerk_rs::{
     validators::{jwks::MemoryCacheJwksProvider, poem::ClerkPoemMiddleware},
     ClerkConfiguration,
 };
+use dotenv::dotenv;
 use poem::{get, handler, listener::TcpListener, web::Path, EndpointExt, Route, Server};
+use std::env;
 
 #[handler]
 fn hello(Path(name): Path<String>) -> String {
@@ -172,10 +232,17 @@ fn hello(Path(name): Path<String>) -> String {
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
+    // Load environment variables from .env file
+    dotenv().ok();
+    
+    // Get the secret key from environment variable
+    let secret_key = env::var("CLERK_SECRET_KEY")
+        .expect("CLERK_SECRET_KEY environment variable is not set");
+        
     let clerk = Clerk::new(ClerkConfiguration::new(
         None,
         None,
-        Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_owned()),
+        Some(secret_key),
         None,
     ));
     // Initialize middleware.
