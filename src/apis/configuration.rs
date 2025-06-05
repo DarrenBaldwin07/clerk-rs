@@ -1,5 +1,6 @@
 use crate::clerk::USER_AGENT;
 use reqwest::header::{HeaderMap, AUTHORIZATION, USER_AGENT as REQWEST_USER_AGENT};
+use std::env;
 
 /*
  * Clerk configuration for constructing authenticated requests to the clerk.dev api
@@ -36,8 +37,13 @@ impl ClerkConfiguration {
 		bearer_access_token: Option<String>,
 		api_key: Option<ApiKey>,
 	) -> Self {
+		// Try to load the secret key from environment variable if bearer_access_token is not provided
+		let token = match bearer_access_token {
+			Some(token) => Some(token),
+			None => env::var("CLERK_SECRET_KEY").ok(),
+		};
 		// Generate our auth token
-		let construct_bearer_token = format!("Bearer {}", bearer_access_token.as_ref().unwrap_or(&String::from("")));
+		let construct_bearer_token = format!("Bearer {}", token.as_ref().unwrap_or(&String::from("")));
 		// Initialize our Clerk SDK with the default user_agent and auth headers
 		let mut headers = HeaderMap::new();
 		headers.insert(REQWEST_USER_AGENT, USER_AGENT.parse().unwrap());

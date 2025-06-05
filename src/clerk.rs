@@ -18,8 +18,15 @@ pub const USER_AGENT: &str = concat!("Clerk/v1 RustBindings/", env!("CARGO_PKG_V
 /// ```rust
 /// use clerk_rs::Clerk;
 /// use clerk_rs::apis::configuration::ClerkConfiguration;
+/// use std::env;
 ///
-/// let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_owned()), None);
+/// // Set environment variable (in production, use a proper env setup)
+/// // std::env::set_var("CLERK_SECRET_KEY", "your_secret_key");
+///
+/// // The secret key will be automatically loaded from CLERK_SECRET_KEY environment variable
+/// let config = ClerkConfiguration::new(None, None, None, None);
+/// // Alternatively, provide it explicitly:
+/// // let config = ClerkConfiguration::new(None, None, Some(env::var("CLERK_SECRET_KEY").expect("Missing CLERK_SECRET_KEY")), None);
 /// let client = Clerk::new(config);
 ///
 /// let res = client.get(ClerkGetEndpoint::GetUserList).await?;
