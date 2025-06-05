@@ -48,13 +48,17 @@ impl ClerkRequest for AxumClerkRequest {
 ///
 /// # Example
 /// ```
+/// use std::env;
+///
 /// async fn index() -> &'static str {
 ///     "Hello world!"
 /// }
 ///
 /// #[tokio::main]
 /// async fn main() -> std::io::Result<()> {
-///     let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+///     // Get secret key from environment variable
+///     let secret_key = env::var("CLERK_SECRET_KEY").expect("CLERK_SECRET_KEY environment variable must be set");
+///     let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
 ///     let clerk = Clerk::new(config);
 ///
 ///     let app = Router::new()
