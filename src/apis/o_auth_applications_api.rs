@@ -75,6 +75,30 @@ pub enum UpdateOAuthApplicationError {
 
 /// Creates a new OAuth application with the given name and callback URL for an instance. The callback URL must be a valid url. All URL schemes are allowed such as `http://`, `https://`, `myapp://`, etc...
 pub async fn create_o_auth_application(configuration: &configuration::Configuration, create_o_auth_application_request: Option<crate::models::CreateOAuthApplicationRequest>) -> Result<crate::models::OAuthApplicationWithSecret, Error<CreateOAuthApplicationError>> {
+    // Validate the request if it exists
+    if let Some(request) = &create_o_auth_application_request {
+        if let Err(validation_error) = request.validate() {
+            // Convert validation error to a ClerkError
+            let clerk_error = crate::models::ClerkError::new(
+                validation_error.clone(),
+                validation_error.clone(),
+                "invalid_parameters".to_string()
+            );
+                
+            let clerk_errors = crate::models::ClerkErrors {
+                errors: vec![clerk_error],
+            };
+            
+            let content = serde_json::to_string(&clerk_errors).unwrap_or_else(|_| String::from("{{\"errors\":[{\"message\":\"Validation error\"}]}}"));
+            
+            return Err(Error::ResponseError(ResponseContent {
+                status: reqwest::StatusCode::UNPROCESSABLE_ENTITY,
+                content,
+                entity: Some(CreateOAuthApplicationError::Status422(clerk_errors)),
+            }));
+        }
+    }
+    
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -237,6 +261,28 @@ pub async fn rotate_o_auth_application_secret(configuration: &configuration::Con
 
 /// Updates an existing OAuth application
 pub async fn update_o_auth_application(configuration: &configuration::Configuration, oauth_application_id: &str, update_o_auth_application_request: crate::models::UpdateOAuthApplicationRequest) -> Result<crate::models::OAuthApplication, Error<UpdateOAuthApplicationError>> {
+    // Validate the request first
+    if let Err(validation_error) = update_o_auth_application_request.validate() {
+        // Convert validation error to a ClerkError
+        let clerk_error = crate::models::ClerkError::new(
+            validation_error.clone(),
+            validation_error.clone(),
+            "invalid_parameters".to_string()
+        );
+            
+        let clerk_errors = crate::models::ClerkErrors {
+            errors: vec![clerk_error],
+        };
+        
+        let content = serde_json::to_string(&clerk_errors).unwrap_or_else(|_| String::from("{{\"errors\":[{\"message\":\"Validation error\"}]}}"));
+        
+        return Err(Error::ResponseError(ResponseContent {
+            status: reqwest::StatusCode::UNPROCESSABLE_ENTITY,
+            content,
+            entity: Some(UpdateOAuthApplicationError::Status422(clerk_errors)),
+        }));
+    }
+    
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
