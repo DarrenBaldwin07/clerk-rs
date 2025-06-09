@@ -10,27 +10,7 @@
 
 use reqwest;
 
-use super::Error;
-use crate::{apis::ResponseContent, clerk::Clerk};
-
-/// struct for typed errors of method [`create_actor_token`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum CreateActorTokenError {
-	Status400(crate::models::ClerkErrors),
-	Status402(crate::models::ClerkErrors),
-	Status422(crate::models::ClerkErrors),
-	UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`revoke_actor_token`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum RevokeActorTokenError {
-	Status400(crate::models::ClerkErrors),
-	Status404(crate::models::ClerkErrors),
-	UnknownValue(serde_json::Value),
-}
+use crate::{clerk::Clerk, error::{ApiError, Error}};
 
 pub struct ActorToken;
 
@@ -39,7 +19,7 @@ impl ActorToken {
 	pub async fn create(
 		clerk_client: &Clerk,
 		create_actor_token_request: Option<crate::models::CreateActorTokenRequest>,
-	) -> Result<crate::models::ActorToken, Error<CreateActorTokenError>> {
+	) -> Result<crate::models::ActorToken, Error> {
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -61,19 +41,13 @@ impl ActorToken {
 			local_var_resp.json().await.map_err(Error::from)
 		} else {
 			let local_var_content = local_var_resp.text().await?;
-
-			let local_var_entity: Option<CreateActorTokenError> = serde_json::from_str(&local_var_content).ok();
-			let local_var_error = ResponseContent {
-				status: local_var_status,
-				content: local_var_content,
-				entity: local_var_entity,
-			};
-			Err(Error::ResponseError(local_var_error))
+			let api_error = ApiError::new(local_var_status, local_var_content);
+			Err(Error::ApiError(api_error))
 		}
 	}
 
 	/// Revokes a pending actor token.
-	pub async fn revoke(clerk_client: &Clerk, actor_token_id: &str) -> Result<crate::models::ActorToken, Error<RevokeActorTokenError>> {
+	pub async fn revoke(clerk_client: &Clerk, actor_token_id: &str) -> Result<crate::models::ActorToken, Error> {
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -101,13 +75,8 @@ impl ActorToken {
 		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
 			serde_json::from_str(&local_var_content).map_err(Error::from)
 		} else {
-			let local_var_entity: Option<RevokeActorTokenError> = serde_json::from_str(&local_var_content).ok();
-			let local_var_error = ResponseContent {
-				status: local_var_status,
-				content: local_var_content,
-				entity: local_var_entity,
-			};
-			Err(Error::ResponseError(local_var_error))
+			let api_error = ApiError::new(local_var_status, local_var_content);
+			Err(Error::ApiError(api_error))
 		}
 	}
 }

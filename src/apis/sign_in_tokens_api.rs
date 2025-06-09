@@ -10,26 +10,7 @@
 
 use reqwest;
 
-use super::Error;
-use crate::{apis::ResponseContent, clerk::Clerk};
-
-/// struct for typed errors of method [`create_sign_in_token`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum CreateSignInTokenError {
-	Status404(crate::models::ClerkErrors),
-	Status422(crate::models::ClerkErrors),
-	UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`revoke_sign_in_token`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum RevokeSignInTokenError {
-	Status400(crate::models::ClerkErrors),
-	Status404(crate::models::ClerkErrors),
-	UnknownValue(serde_json::Value),
-}
+use crate::{clerk::Clerk, error::{ApiError, Error}};
 
 pub struct SignInToken;
 
@@ -38,7 +19,7 @@ impl SignInToken {
 	pub async fn create_sign_in_token(
 		clerk_client: &Clerk,
 		create_sign_in_token_request: Option<crate::models::CreateSignInTokenRequest>,
-	) -> Result<crate::models::SignInToken, Error<CreateSignInTokenError>> {
+	) -> Result<crate::models::SignInToken, Error> {
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -61,13 +42,8 @@ impl SignInToken {
 		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
 			serde_json::from_str(&local_var_content).map_err(Error::from)
 		} else {
-			let local_var_entity: Option<CreateSignInTokenError> = serde_json::from_str(&local_var_content).ok();
-			let local_var_error = ResponseContent {
-				status: local_var_status,
-				content: local_var_content,
-				entity: local_var_entity,
-			};
-			Err(Error::ResponseError(local_var_error))
+			let api_error = ApiError::new(local_var_status, local_var_content);
+			Err(Error::ApiError(api_error))
 		}
 	}
 
@@ -75,7 +51,7 @@ impl SignInToken {
 	pub async fn revoke_sign_in_token(
 		clerk_client: &Clerk,
 		sign_in_token_id: &str,
-	) -> Result<crate::models::SignInToken, Error<RevokeSignInTokenError>> {
+	) -> Result<crate::models::SignInToken, Error> {
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -100,13 +76,8 @@ impl SignInToken {
 		if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
 			serde_json::from_str(&local_var_content).map_err(Error::from)
 		} else {
-			let local_var_entity: Option<RevokeSignInTokenError> = serde_json::from_str(&local_var_content).ok();
-			let local_var_error = ResponseContent {
-				status: local_var_status,
-				content: local_var_content,
-				entity: local_var_entity,
-			};
-			Err(Error::ResponseError(local_var_error))
+			let api_error = ApiError::new(local_var_status, local_var_content);
+			Err(Error::ApiError(api_error))
 		}
 	}
 }
