@@ -87,6 +87,16 @@ impl Redirect {
 
 	/// Remove the selected redirect URL from the whitelist of the instance
 	pub async fn delete_redirect_url(clerk_client: &Clerk, id: &str) -> Result<crate::models::DeletedObject, Error<DeleteRedirectUrlError>> {
+		// Validate id parameter
+		if id.is_empty() {
+			return Err(Error::Validation("id cannot be empty".to_string()));
+		}
+
+		// Basic format validation for ID
+		if !id.chars().all(|c| c.is_alphanumeric() || c == '_' || c == '-') {
+			return Err(Error::Validation("id contains invalid characters".to_string()));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -123,6 +133,16 @@ impl Redirect {
 
 	/// Retrieve the details of the redirect URL with the given ID
 	pub async fn get_redirect_url(clerk_client: &Clerk, id: &str) -> Result<crate::models::RedirectUrl, Error<GetRedirectUrlError>> {
+		// Validate id parameter
+		if id.is_empty() {
+			return Err(Error::Validation("id cannot be empty".to_string()));
+		}
+
+		// Basic format validation for ID
+		if !id.chars().all(|c| c.is_alphanumeric() || c == '_' || c == '-') {
+			return Err(Error::Validation("id contains invalid characters".to_string()));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
