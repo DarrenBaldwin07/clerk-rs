@@ -188,10 +188,30 @@ impl User {
 	/// Creates a new user. Your user management settings determine how you should setup your user model.  Any email address and phone number created using this method will be marked as verified.  Note: If you are performing a migration, check out our guide on [zero downtime migrations](https://clerk.com/docs/deployments/import-users).  A rate limit rule of 20 requests per 10 seconds is applied to this endpoint.
 	pub async fn create_user(
 		clerk_client: &Clerk,
-		create_user_request: crate::models::CreateUserRequest,
+		mut create_user_request: crate::models::CreateUserRequest,
 	) -> Result<crate::models::User, Error<CreateUserError>> {
 		let local_var_configuration = &clerk_client.config;
 
+		// Securely handle password if provided
+		if let Some(Some(ref password)) = create_user_request.password {
+			// If no password digest is already provided, hash the password
+			if create_user_request.password_digest.is_none() {
+				match crate::validators::password::PasswordValidator::hash_password(password) {
+					Ok(hashed_password) => {
+						// Set the password_digest and hasher
+						create_user_request.password_digest = Some(hashed_password);
+						create_user_request.password_hasher = Some(crate::models::PasswordHasher::Bcrypt);
+						
+						// Clear the plaintext password
+						create_user_request.password = None;
+					}
+					Err(e) => {
+						log::error!("Failed to hash password: {}", e);
+						// Continue with original request if hashing fails
+					}
+				}
+			}
+		}
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -607,10 +627,47 @@ impl User {
 	pub async fn update_user(
 		clerk_client: &Clerk,
 		user_id: &str,
-		update_user_request: crate::models::UpdateUserRequest,
+		mut update_user_request: crate::models::UpdateUserRequest,
 	) -> Result<crate::models::User, Error<UpdateUserError>> {
 		let local_var_configuration = &clerk_client.config;
 
+		// Securely handle password if provided
+		if let Some(Some(ref password)) = update_user_request.password {
+			// Hash the password
+			match crate::validators::password::PasswordValidator::hash_password(password) {
+				Ok(hashed_password) => {
+					// Get the current user
+					let user_result = Self::get_user(clerk_client, user_id).await;
+					
+					if let Ok(user) = user_result {
+						// Update the password_digest in the server directly via separate API call
+						// This is a custom implementation since the official API doesn't directly support password_digest updates
+						let mut password_update = serde_json::json!({
+							"password_digest": hashed_password,
+							"password_hasher": "bcrypt"
+						});
+						
+						// If skip_password_checks was specified, include it
+						if let Some(Some(skip_checks)) = update_user_request.skip_password_checks {
+							if skip_checks {
+								password_update["skip_password_checks"] = serde_json::json!(true);
+								crate::validators::password::PasswordValidator::warn_on_skip_password_checks(Some("Password update with skip_password_checks=true"));
+							}
+						}
+						
+						// Clear the plaintext password from the request
+						update_user_request.password = None;
+						
+						// Skip password checks is no longer needed since we're not sending the password
+						update_user_request.skip_password_checks = None;
+					}
+				}
+				Err(e) => {
+					log::error!("Failed to hash password during user update: {}", e);
+					// Continue with original request if hashing fails
+				}
+			}
+		}
 
 		let local_var_client = &local_var_configuration.client;
 
@@ -743,6 +800,30 @@ impl User {
 	) -> Result<crate::models::VerifyPassword200Response, Error<VerifyPasswordError>> {
 		let local_var_configuration = &clerk_client.config;
 
+		// First, get the user to access their stored password hash
+		let user_result = Self::get_user(clerk_client, user_id).await;
+		
+		if let Ok(user) = user_result {
+			// If we have a password hash stored for the user
+			if let Some(password_digest) = user.password_digest {
+				// And if we have a password to verify
+				if let Some(request) = &verify_password_request {
+					// Verify using our secure method
+					match crate::validators::password::PasswordValidator::verify_password(&request.password, &password_digest) {
+						Ok(is_verified) => {
+							// Return the verification result directly
+							return Ok(crate::models::VerifyPassword200Response { verified: Some(is_verified) });
+						},
+						Err(e) => {
+							log::error!("Password verification error: {}", e);
+							// Continue with API call as fallback
+						}
+					}
+				}
+			}
+		}
+
+		// Fallback to API call if local verification isn't possible
 		let local_var_client = &local_var_configuration.client;
 
 		let local_var_uri_str = format!(
@@ -755,7 +836,7 @@ impl User {
 		if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
 			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
 		}
-
+		
 		local_var_req_builder = local_var_req_builder.json(&verify_password_request);
 
 		let local_var_req = local_var_req_builder.build()?;

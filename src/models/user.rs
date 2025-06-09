@@ -103,6 +103,9 @@ pub struct User {
 	pub web3_wallets: Option<Vec<crate::models::Web3Wallet>>,
 	#[serde(rename = "password_enabled", skip_serializing_if = "Option::is_none")]
 	pub password_enabled: Option<bool>,
+	/// The hashed password for this user (never exposed via public API)
+	#[serde(rename = "password_digest", skip_serializing_if = "Option::is_none")]
+	pub password_digest: Option<String>,
 	#[serde(rename = "two_factor_enabled", skip_serializing_if = "Option::is_none")]
 	pub two_factor_enabled: Option<bool>,
 	#[serde(rename = "totp_enabled", skip_serializing_if = "Option::is_none")]
@@ -189,6 +192,7 @@ impl User {
 			phone_numbers: None,
 			web3_wallets: None,
 			password_enabled: None,
+			password_digest: None,
 			two_factor_enabled: None,
 			totp_enabled: None,
 			backup_code_enabled: None,

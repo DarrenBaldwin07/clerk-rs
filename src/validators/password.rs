@@ -7,6 +7,7 @@
  * Contact: support@clerk.com
  */
 
+use bcrypt::{hash, verify, DEFAULT_COST};
 use log::{error, warn};
 
 /// Validates and logs warnings for potentially risky password operations
@@ -69,5 +70,21 @@ impl PasswordValidator {
 			error!("Attempted to skip password requirement in an unauthorized context: {}", context);
 			false
 		}
+	}
+
+	/// Securely hashes a password using bcrypt
+	///
+	/// This method should be used whenever a password needs to be stored.
+	/// It applies bcrypt hashing with a secure cost factor.
+	pub fn hash_password(password: &str) -> Result<String, String> {
+		hash(password, DEFAULT_COST).map_err(|e| format!("Password hashing error: {}", e))
+	}
+
+	/// Verifies a password against a stored hash
+	///
+	/// This method should be used to validate a user's password by comparing
+	/// the provided plain text password with a previously stored hash.
+	pub fn verify_password(password: &str, hash: &str) -> Result<bool, String> {
+		verify(password, hash).map_err(|e| format!("Password verification error: {}", e))
 	}
 }
