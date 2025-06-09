@@ -20,3 +20,20 @@ pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> Strin
 
 	new_route_path
 }
+
+/// Validates that a Clerk resource ID is not empty and follows the expected format
+/// Clerk resource IDs typically follow specific patterns (e.g., "user_2KCnJpD3QptPj48Twy9z0qz2JAn")
+pub fn validate_resource_id(id: &str) -> Result<(), String> {
+    if id.is_empty() {
+        return Err("Resource ID cannot be empty".to_string());
+    }
+
+    // Most Clerk IDs follow a pattern of resource_type_<alphanumeric>
+    // The validation below ensures the ID has a minimum format with a resource prefix and alphanumeric characters
+    let id_regex = Regex::new(r"^[a-z]+_[A-Za-z0-9]+$").unwrap();
+    if !id_regex.is_match(id) {
+        return Err(format!("Invalid resource ID format: {}", id));
+    }
+
+    Ok(())
+}
