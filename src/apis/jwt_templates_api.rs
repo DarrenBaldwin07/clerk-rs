@@ -99,6 +99,11 @@ impl JwtTemplate {
 
 	///
 	pub async fn delete_jwt_template(clerk_client: &Clerk, template_id: &str) -> Result<crate::models::DeletedObject, Error<DeleteJwtTemplateError>> {
+		// Validate the template_id parameter
+		if let Err(err) = crate::util::validate_template_id(template_id) {
+			return Err(Error::Validation(err));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -135,6 +140,11 @@ impl JwtTemplate {
 
 	/// Retrieve the details of a given JWT template
 	pub async fn get_jwt_template(clerk_client: &Clerk, template_id: &str) -> Result<crate::models::JwtTemplate, Error<GetJwtTemplateError>> {
+		// Validate the template_id parameter
+		if let Err(err) = crate::util::validate_template_id(template_id) {
+			return Err(Error::Validation(err));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -206,6 +216,11 @@ impl JwtTemplate {
 		template_id: &str,
 		create_jwt_template_request: Option<crate::models::CreateJwtTemplateRequest>,
 	) -> Result<crate::models::JwtTemplate, Error<UpdateJwtTemplateError>> {
+		// Validate the template_id parameter
+		if let Err(err) = crate::util::validate_template_id(template_id) {
+			return Err(Error::Validation(err));
+		}
+
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
