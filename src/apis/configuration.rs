@@ -36,17 +36,23 @@ impl ClerkConfiguration {
 		bearer_access_token: Option<String>,
 		api_key: Option<ApiKey>,
 	) -> Self {
-		// Generate our auth token
-		let construct_bearer_token = format!("Bearer {}", bearer_access_token.as_ref().unwrap_or(&String::from("")));
+		// We'll handle the auth token when needed
 		// Initialize our Clerk SDK with the default user_agent and auth headers
 		let mut headers = HeaderMap::new();
 		headers.insert(REQWEST_USER_AGENT, USER_AGENT.parse().unwrap());
-		headers.insert(
-			AUTHORIZATION,
-			construct_bearer_token
-				.parse()
-				.expect("Error: could not parse Bearer auth token into a valid request header."),
-		);
+		
+		// Only add Authorization header if bearer token is provided and not empty
+		if let Some(token) = bearer_access_token.as_ref() {
+			if !token.is_empty() {
+				let construct_bearer_token = format!("Bearer {}", token);
+				headers.insert(
+					AUTHORIZATION,
+					construct_bearer_token
+						.parse()
+						.expect("Error: could not parse Bearer auth token into a valid request header."),
+				);
+			}
+		}
 
 		// Construct our http client (we should also support hyper client instead of reqwest in the future)
 		let client = reqwest::Client::builder()
