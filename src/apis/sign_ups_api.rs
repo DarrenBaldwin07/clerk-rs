@@ -12,6 +12,8 @@ use reqwest;
 
 use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
+use std::error::Error as StdError;
+use std::fmt;
 
 /// struct for typed errors of method [`update_sign_up`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -20,6 +22,23 @@ pub enum UpdateSignUpError {
 	Status403(crate::models::ClerkErrors),
 	UnknownValue(serde_json::Value),
 }
+
+#[derive(Debug)]
+pub enum ValidationError {
+	EmptyId,
+	InvalidId,
+}
+
+impl fmt::Display for ValidationError {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		match self {
+			ValidationError::EmptyId => write!(f, "ID cannot be empty"),
+			ValidationError::InvalidId => write!(f, "ID format is invalid"),
+		}
+	}
+}
+
+impl StdError for ValidationError {}
 
 pub struct SignUps;
 
@@ -30,6 +49,21 @@ impl SignUps {
 		id: &str,
 		update_sign_up_request: Option<crate::models::UpdateSignUpRequest>,
 	) -> Result<crate::models::SignUp, Error<UpdateSignUpError>> {
+		// Validate id parameter
+		if id.is_empty() {
+			return Err(Error::Io(std::io::Error::new(
+				std::io::ErrorKind::InvalidInput,
+				ValidationError::EmptyId,
+			)));
+		}
+
+		// Validate id format (assuming it should be alphanumeric)
+		if !id.chars().all(|c| c.is_alphanumeric() || c == '_' || c == '-') {
+			return Err(Error::Io(std::io::Error::new(
+				std::io::ErrorKind::InvalidInput,
+				ValidationError::InvalidId,
+			)));
+		}
 		let local_var_configuration = &clerk_client.config;
 
 		let local_var_client = &local_var_configuration.client;
@@ -41,7 +75,16 @@ impl SignUps {
 			local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
 		}
 
-		local_var_req_builder = local_var_req_builder.json(&update_sign_up_request);
+		// Ensure we're not sending an empty update request
+		if let Some(req) = &update_sign_up_request {
+			local_var_req_builder = local_var_req_builder.json(req);
+		} else {
+			// If no update fields are provided, return an error
+			return Err(Error::Io(std::io::Error::new(
+				std::io::ErrorKind::InvalidInput,
+				"Update request cannot be empty",
+			)));
+		}
 
 		let local_var_req = local_var_req_builder.build()?;
 		let local_var_resp = local_var_client.execute(local_var_req).await?;
