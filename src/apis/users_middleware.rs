@@ -14,6 +14,80 @@ use crate::validators::password::PasswordValidator;
 pub struct UsersMiddleware;
 
 impl UsersMiddleware {
+    /// Minimum password length requirement
+    const MIN_PASSWORD_LENGTH: usize = 8;
+    
+    /// Extract context information from a create user request to determine if password checks can be skipped
+    fn extract_context_from_request(request: &CreateUserRequest) -> String {
+        // Check if this appears to be a migration scenario
+        // Indicators: presence of external_id, password_digest, or specific metadata
+        let mut context_indicators = Vec::new();
+        
+        if request.external_id.is_some() {
+            context_indicators.push("external_id");
+        }
+        
+        if request.password_digest.is_some() {
+            context_indicators.push("password_digest");
+        }
+        
+        if let Some(metadata) = &request.private_metadata {
+            if metadata.to_string().contains("migration") || metadata.to_string().contains("import") {
+                context_indicators.push("migration_metadata");
+            }
+        }
+        
+        if context_indicators.is_empty() {
+            "regular_creation".to_string()
+        } else {
+            format!("migration:{}", context_indicators.join(","))
+        }
+    }
+    
+    /// Extract context information from an update user request to determine if password checks can be skipped
+    fn extract_context_from_update_request(request: &UpdateUserRequest) -> String {
+        // Check if this appears to be a migration scenario
+        // Indicators: presence of external_id or specific metadata
+        let mut context_indicators = Vec::new();
+        
+        if request.external_id.is_some() {
+            context_indicators.push("external_id");
+        }
+        
+        if let Some(metadata) = &request.private_metadata {
+            if metadata.to_string().contains("migration") || metadata.to_string().contains("import") {
+                context_indicators.push("migration_metadata");
+            }
+        }
+        
+        if context_indicators.is_empty() {
+            "regular_update".to_string()
+        } else {
+            format!("migration:{}", context_indicators.join(","))
+        }
+    }
+    
+    /// Validate password strength against security requirements
+    fn validate_password_strength(password: &str) -> bool {
+        // Check minimum length
+        if password.len() < Self::MIN_PASSWORD_LENGTH {
+            return false;
+        }
+        
+        // Check for complexity requirements
+        let has_lowercase = password.chars().any(|c| c.is_lowercase());
+        let has_uppercase = password.chars().any(|c| c.is_uppercase());
+        let has_number = password.chars().any(|c| c.is_ascii_digit());
+        let has_special = password.chars().any(|c| !c.is_alphanumeric());
+        
+        // Password should meet at least 3 of the 4 complexity requirements
+        let complexity_count = [has_lowercase, has_uppercase, has_number, has_special]
+            .iter()
+            .filter(|&&x| x)
+            .count();
+            
+        complexity_count >= 3
+    }
     /// Validate and log any security concerns in the user creation request
     pub fn validate_create_user_request(request: &CreateUserRequest) -> bool {
         // Check for potential security risks with password handling
@@ -23,9 +97,11 @@ impl UsersMiddleware {
                 PasswordValidator::warn_on_skip_password_checks(Some("CreateUserRequest"));
                 
                 // Evaluate if this is a controlled migration context
-                // This is a stub - in a real implementation, you might check additional context
-                // like headers, metadata, or other request attributes
-                return true;
+                // Extract context from the request to determine if skip is allowed
+                let context = Self::extract_context_from_request(request);
+                
+                // Only allow skipping in safe contexts
+                return PasswordValidator::is_safe_to_skip_password_checks(&context);
             }
         }
 
@@ -36,8 +112,19 @@ impl UsersMiddleware {
                 PasswordValidator::warn_on_skip_password_requirement(Some("CreateUserRequest"));
                 
                 // Evaluate if this is a controlled migration context
-                // This is a stub - in a real implementation, you might check additional context
-                return true;
+                // Extract context from the request to determine if skip is allowed
+                let context = Self::extract_context_from_request(request);
+                
+                // Only allow skipping in safe contexts
+                return PasswordValidator::is_safe_to_skip_password_requirement(&context);
+            }
+        }
+
+        // Validate password strength if a password is provided and not skipping checks
+        if let Some(Some(password)) = &request.password {
+            if request.skip_password_checks.unwrap_or(false) == false {
+                // Validate password strength
+                return Self::validate_password_strength(password);
             }
         }
 
@@ -54,9 +141,25 @@ impl UsersMiddleware {
                     PasswordValidator::warn_on_skip_password_checks(Some("UpdateUserRequest"));
                     
                     // Evaluate if this is a controlled migration context
-                    // This is a stub - in a real implementation, you might check additional context
-                    return true;
+                    // Extract context from the request to determine if skip is allowed
+                    let context = Self::extract_context_from_update_request(request);
+                    
+                    // Only allow skipping in safe contexts
+                    return PasswordValidator::is_safe_to_skip_password_checks(&context);
                 }
+            }
+        }
+
+        // Validate password strength if a password is provided and not skipping checks
+        if let Some(Some(password)) = &request.password {
+            let is_skipping = match &request.skip_password_checks {
+                Some(Some(skip)) => *skip,
+                _ => false,
+            };
+            
+            if !is_skipping {
+                // Validate password strength
+                return Self::validate_password_strength(password);
             }
         }
 
