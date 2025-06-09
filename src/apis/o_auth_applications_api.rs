@@ -107,6 +107,11 @@ pub async fn create_o_auth_application(configuration: &configuration::Configurat
 
 /// Deletes the given OAuth application. This is not reversible.
 pub async fn delete_o_auth_application(configuration: &configuration::Configuration, oauth_application_id: &str) -> Result<crate::models::DeletedObject, Error<DeleteOAuthApplicationError>> {
+    // Validate oauth_application_id before proceeding
+    if let Err(e) = crate::validators::oauth::OAuthValidator::validate_application_id(oauth_application_id) {
+        return Err(Error::Io(e));
+    }
+    
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -138,6 +143,11 @@ pub async fn delete_o_auth_application(configuration: &configuration::Configurat
 
 /// Fetches the OAuth application whose ID matches the provided `id` in the path.
 pub async fn get_o_auth_application(configuration: &configuration::Configuration, oauth_application_id: &str) -> Result<crate::models::OAuthApplication, Error<GetOAuthApplicationError>> {
+    // Validate oauth_application_id before proceeding
+    if let Err(e) = crate::validators::oauth::OAuthValidator::validate_application_id(oauth_application_id) {
+        return Err(Error::Io(e));
+    }
+    
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -206,6 +216,11 @@ pub async fn list_o_auth_applications(configuration: &configuration::Configurati
 
 /// Rotates the OAuth application's client secret. When the client secret is rotated, make sure to update it in authorized OAuth clients.
 pub async fn rotate_o_auth_application_secret(configuration: &configuration::Configuration, oauth_application_id: &str) -> Result<crate::models::OAuthApplicationWithSecret, Error<RotateOAuthApplicationSecretError>> {
+    // Validate oauth_application_id before proceeding
+    if let Err(e) = crate::validators::oauth::OAuthValidator::validate_application_id(oauth_application_id) {
+        return Err(Error::Io(e));
+    }
+    
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -237,6 +252,11 @@ pub async fn rotate_o_auth_application_secret(configuration: &configuration::Con
 
 /// Updates an existing OAuth application
 pub async fn update_o_auth_application(configuration: &configuration::Configuration, oauth_application_id: &str, update_o_auth_application_request: crate::models::UpdateOAuthApplicationRequest) -> Result<crate::models::OAuthApplication, Error<UpdateOAuthApplicationError>> {
+    // Validate oauth_application_id before proceeding
+    if let Err(e) = crate::validators::oauth::OAuthValidator::validate_application_id(oauth_application_id) {
+        return Err(Error::Io(e));
+    }
+    
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;

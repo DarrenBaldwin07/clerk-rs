@@ -1,5 +1,6 @@
 pub mod authorizer;
 pub mod jwks;
+pub mod oauth;
 pub mod password;
 
 // Framework-specific modules
