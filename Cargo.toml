@@ -55,6 +55,7 @@ async-trait = "0.1.81"
 arc-swap = "1.7.1"
 poem = { version = "3", features = ["cookie"], optional = true }
 log = "0.4.27"
+dotenv = "0.15.0"
 
 [dependencies.reqwest]
 version = "^0.12"
