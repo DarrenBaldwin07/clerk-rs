@@ -1,5 +1,8 @@
 use crate::clerk::USER_AGENT;
 use reqwest::header::{HeaderMap, AUTHORIZATION, USER_AGENT as REQWEST_USER_AGENT};
+use std::sync::Arc;
+use std::time::{Duration, SystemTime};
+use async_trait::async_trait;
 
 /*
  * Clerk configuration for constructing authenticated requests to the clerk.dev api
@@ -7,6 +10,77 @@ use reqwest::header::{HeaderMap, AUTHORIZATION, USER_AGENT as REQWEST_USER_AGENT
  * Please refer to the clerk.dev official documentation for more information: https://docs.clerk.dev
  *
  */
+/// OAuth2 token with expiration information
+#[derive(Debug, Clone)]
+pub struct OAuth2Token {
+	pub access_token: String,
+	pub token_type: String,
+	pub refresh_token: Option<String>,
+	pub expiry: Option<SystemTime>,
+}
+
+impl OAuth2Token {
+	/// Create a new OAuth2Token
+	pub fn new(
+		access_token: String,
+		token_type: String,
+		refresh_token: Option<String>,
+		expiry: Option<SystemTime>,
+	) -> Self {
+		Self {
+			access_token,
+			token_type,
+			refresh_token,
+			expiry,
+		}
+	}
+
+	/// Check if the token is expired
+	pub fn is_expired(&self) -> bool {
+		if let Some(expiry) = self.expiry {
+			// Consider the token expired if it's within 30 seconds of expiry
+			let now = SystemTime::now();
+			if let Ok(duration) = expiry.duration_since(now) {
+				return duration <= Duration::from_secs(30);
+			}
+			return true;
+		}
+		false
+	}
+
+	/// Get the authorization header value
+	pub fn authorization_header(&self) -> String {
+		format!("{} {}", self.token_type, self.access_token)
+	}
+}
+
+/// A trait for sources that can provide OAuth2 tokens
+/// Similar to Go's TokenSource interface
+#[async_trait]
+pub trait OAuth2TokenSource: Send + Sync {
+	/// Return a valid token or error
+	async fn token(&self) -> Result<OAuth2Token, String>;
+}
+
+/// A source that always returns the same token
+#[derive(Debug, Clone)]
+pub struct StaticTokenSource {
+	token: OAuth2Token,
+}
+
+impl StaticTokenSource {
+	pub fn new(token: OAuth2Token) -> Self {
+		Self { token }
+	}
+}
+
+#[async_trait]
+impl OAuth2TokenSource for StaticTokenSource {
+	async fn token(&self) -> Result<OAuth2Token, String> {
+		Ok(self.token.clone())
+	}
+}
+
 #[derive(Debug, Clone)]
 pub struct ClerkConfiguration {
 	pub base_path: String,
@@ -16,7 +90,7 @@ pub struct ClerkConfiguration {
 	pub oauth_access_token: Option<String>,
 	pub bearer_access_token: Option<String>,
 	pub api_key: Option<ApiKey>,
-	// TODO: take an oauth2 token source, similar to the Go one
+	pub oauth2_token_source: Option<Arc<dyn OAuth2TokenSource>>,
 }
 
 /// Merged auth allowing user to pass in a bearer token AND a api_key etc
@@ -35,6 +109,7 @@ impl ClerkConfiguration {
 		oauth_access_token: Option<String>,
 		bearer_access_token: Option<String>,
 		api_key: Option<ApiKey>,
+		oauth2_token_source: Option<Arc<dyn OAuth2TokenSource>>,
 	) -> Self {
 		// Generate our auth token
 		let construct_bearer_token = format!("Bearer {}", bearer_access_token.as_ref().unwrap_or(&String::from("")));
@@ -62,6 +137,7 @@ impl ClerkConfiguration {
 			oauth_access_token,
 			bearer_access_token,
 			api_key,
+			oauth2_token_source,
 		}
 	}
 }
@@ -84,6 +160,7 @@ impl Default for ClerkConfiguration {
 			oauth_access_token: None,
 			bearer_access_token: None,
 			api_key: None,
+			oauth2_token_source: None,
 		}
 	}
 }
