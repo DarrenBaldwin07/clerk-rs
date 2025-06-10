@@ -1,6 +1,7 @@
 use actix_web::{web, App, HttpServer, Responder};
 use clerk_rs::{
 	clerk::Clerk,
+	get_clerk_secret_key,
 	validators::{actix::ClerkMiddleware, jwks::MemoryCacheJwksProvider},
 	ClerkConfiguration,
 };
@@ -12,7 +13,10 @@ async fn index() -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 	HttpServer::new(|| {
-		let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+		// Get the clerk secret key from the CLERK_SECRET_KEY environment variable
+		let secret_key = get_clerk_secret_key();
+		
+		let config = ClerkConfiguration::new(None, None, secret_key, None);
 		let clerk = Clerk::new(config);
 
 		App::new()
