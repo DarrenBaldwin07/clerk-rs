@@ -4,7 +4,9 @@ use tokio;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
 	// Create a new clerk configuration so that we can make authed requests
-	let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+	// Get secret key from environment variables - never hardcode
+	let secret_key = std::env::var("CLERK_SECRET_KEY").expect("CLERK_SECRET_KEY must be set");
+	let config = ClerkConfiguration::new(None, None, Some(secret_key), None);
 	// Initialize our Clerk client with the newly created configuration
 	let client = Clerk::new(config);
 	// Create a new email using the Email api...
