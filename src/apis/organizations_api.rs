@@ -334,6 +334,8 @@ impl Organization {
 	pub async fn upload_organization_logo(
 		clerk_client: &Clerk,
 		organization_id: &str,
+		file: Vec<u8>,
+		file_name: &str,
 		uploader_user_id: Option<&str>,
 	) -> Result<crate::models::OrganizationWithLogo, Error<UploadOrganizationLogoError>> {
 		let local_var_configuration = &clerk_client.config;
@@ -355,7 +357,12 @@ impl Organization {
 		if let Some(local_var_param_value) = uploader_user_id {
 			local_var_form = local_var_form.text("uploader_user_id", local_var_param_value.to_string());
 		}
-		// TODO: support file upload for 'file' parameter
+		// Add the file to the multipart form
+		let part = reqwest::multipart::Part::bytes(file)
+			.file_name(file_name.to_string())
+			.mime_str("application/octet-stream")
+			.map_err(|e| Error::Reqwest(e.into()))?;
+		local_var_form = local_var_form.part("file", part);
 		local_var_req_builder = local_var_req_builder.multipart(local_var_form);
 
 		let local_var_req = local_var_req_builder.build()?;
