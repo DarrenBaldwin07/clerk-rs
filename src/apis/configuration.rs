@@ -1,5 +1,7 @@
 use crate::clerk::USER_AGENT;
 use reqwest::header::{HeaderMap, AUTHORIZATION, USER_AGENT as REQWEST_USER_AGENT};
+use std::sync::Arc;
+use async_trait::async_trait;
 
 /*
  * Clerk configuration for constructing authenticated requests to the clerk.dev api
@@ -7,6 +9,11 @@ use reqwest::header::{HeaderMap, AUTHORIZATION, USER_AGENT as REQWEST_USER_AGENT
  * Please refer to the clerk.dev official documentation for more information: https://docs.clerk.dev
  *
  */
+
+#[async_trait]
+pub trait OAuth2TokenSource: Send + Sync + std::fmt::Debug {
+    async fn token(&self) -> Result<String, Box<dyn std::error::Error + Send + Sync>>;
+}
 #[derive(Debug, Clone)]
 pub struct ClerkConfiguration {
 	pub base_path: String,
@@ -16,7 +23,7 @@ pub struct ClerkConfiguration {
 	pub oauth_access_token: Option<String>,
 	pub bearer_access_token: Option<String>,
 	pub api_key: Option<ApiKey>,
-	// TODO: take an oauth2 token source, similar to the Go one
+	pub oauth2_token_source: Option<Arc<dyn OAuth2TokenSource>>,
 }
 
 /// Merged auth allowing user to pass in a bearer token AND a api_key etc
@@ -35,6 +42,7 @@ impl ClerkConfiguration {
 		oauth_access_token: Option<String>,
 		bearer_access_token: Option<String>,
 		api_key: Option<ApiKey>,
+		oauth2_token_source: Option<Arc<dyn OAuth2TokenSource>>,
 	) -> Self {
 		// Generate our auth token
 		let construct_bearer_token = format!("Bearer {}", bearer_access_token.as_ref().unwrap_or(&String::from("")));
@@ -62,6 +70,7 @@ impl ClerkConfiguration {
 			oauth_access_token,
 			bearer_access_token,
 			api_key,
+			oauth2_token_source,
 		}
 	}
 }
@@ -84,6 +93,7 @@ impl Default for ClerkConfiguration {
 			oauth_access_token: None,
 			bearer_access_token: None,
 			api_key: None,
+			oauth2_token_source: None,
 		}
 	}
 }
