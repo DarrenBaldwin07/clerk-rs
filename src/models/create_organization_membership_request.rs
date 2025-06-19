@@ -10,7 +10,7 @@
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CreateOrganizationMembershipRequest {
-	/// The ID of the user that will be added as a member in the organization. The user needs to exist in the same instance as the organization and must not be a member of the given organization already.
+	/// The ID of the user that will be added as a member in the organization. Format: string identifier prefixed with 'user_' followed by alphanumeric characters. The user needs to exist in the same instance as the organization and must not be a member of the given organization already.
 	#[serde(rename = "user_id")]
 	pub user_id: String,
 	/// The role that the new member will have in the organization.
