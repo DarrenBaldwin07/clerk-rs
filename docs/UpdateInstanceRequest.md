@@ -11,7 +11,7 @@ Name | Type | Description | Notes
 **clerk_js_version** | Option<**String**> |  | [optional]
 **experimental_allowed_origins** | Option<**Vec<String>**> |  | [optional]
 **allowed_origins** | Option<**Vec<String>**> |  | [optional]
-**cookieless_dev** | Option<**bool**> | Whether the instance should operate in cookieless development mode (i.e. without third-party cookies). Deprecated: Please use `url_based_session_syncing` instead. | [optional]
+**cookieless_dev** | Option<**bool**> | Whether the instance should operate in cookieless development mode (i.e. without third-party cookies). Deprecated in v0.4.0: Will be removed in v1.0.0. Please use `url_based_session_syncing` instead, which provides identical functionality. | [optional]
 **url_based_session_syncing** | Option<**bool**> | Whether the instance should use URL-based session syncing in development mode (i.e. without third-party cookies). | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -58,7 +58,7 @@ pub struct UpdateInstanceRequest {
 	/// For browser-like stacks such as browser extensions, Electron, or Capacitor.js the instance allowed origins need to be updated with the request origin value. For Chrome extensions popup, background, or service worker pages the origin is chrome-extension://extension_uiid. For Electron apps the default origin is http://localhost:3000. For Capacitor, the origin is capacitor://localhost.
 	#[serde(rename = "allowed_origins", skip_serializing_if = "Option::is_none")]
 	pub allowed_origins: Option<Vec<String>>,
-	/// Whether the instance should operate in cookieless development mode (i.e. without third-party cookies). Deprecated: Please use `url_based_session_syncing` instead.
+	/// Whether the instance should operate in cookieless development mode (i.e. without third-party cookies). Deprecated in v0.4.0: Will be removed in v1.0.0. Please use `url_based_session_syncing` instead, which provides identical functionality.
 	#[serde(rename = "cookieless_dev", skip_serializing_if = "Option::is_none")]
 	pub cookieless_dev: Option<bool>,
 	/// Whether the instance should use URL-based session syncing in development mode (i.e. without third-party cookies).
