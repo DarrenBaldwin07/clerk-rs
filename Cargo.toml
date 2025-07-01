@@ -55,6 +55,8 @@ async-trait = "0.1.81"
 arc-swap = "1.7.1"
 poem = { version = "3", features = ["cookie"], optional = true }
 log = "0.4.27"
+tokio = { version = "1.39.3", features = ["fs"] }
+tokio-util = { version = "0.7.10", features = ["io"] }
 
 [dependencies.reqwest]
 version = "^0.12"

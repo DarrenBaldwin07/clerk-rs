@@ -9,6 +9,8 @@
  */
 
 use reqwest;
+use tokio;
+use tokio_util::io::ReaderStream;
 
 use super::Error;
 use crate::{apis::ResponseContent, clerk::Clerk};
@@ -335,6 +337,7 @@ impl Organization {
 		clerk_client: &Clerk,
 		organization_id: &str,
 		uploader_user_id: Option<&str>,
+		file: Option<std::path::PathBuf>,
 	) -> Result<crate::models::OrganizationWithLogo, Error<UploadOrganizationLogoError>> {
 		let local_var_configuration = &clerk_client.config;
 
@@ -355,7 +358,13 @@ impl Organization {
 		if let Some(local_var_param_value) = uploader_user_id {
 			local_var_form = local_var_form.text("uploader_user_id", local_var_param_value.to_string());
 		}
-		// TODO: support file upload for 'file' parameter
+		if let Some(local_var_file_path) = file {
+			if let Ok(local_var_file) = tokio::fs::File::open(&local_var_file_path).await {
+				let local_var_file_part = reqwest::multipart::Part::stream(reqwest::Body::from_stream(ReaderStream::new(local_var_file)))
+					.file_name(local_var_file_path.file_name().unwrap_or_default().to_string_lossy().to_string());
+				local_var_form = local_var_form.part("file", local_var_file_part);
+			}
+		}
 		local_var_req_builder = local_var_req_builder.multipart(local_var_form);
 
 		let local_var_req = local_var_req_builder.build()?;
