@@ -360,7 +360,7 @@ impl Organization {
 		}
 		if let Some(local_var_file_path) = file {
 			if let Ok(local_var_file) = tokio::fs::File::open(&local_var_file_path).await {
-				let local_var_file_part = reqwest::multipart::Part::stream(reqwest::Body::from_stream(ReaderStream::new(local_var_file)))
+				let local_var_file_part = reqwest::multipart::Part::stream(reqwest::Body::wrap(ReaderStream::new(local_var_file)))
 					.file_name(local_var_file_path.file_name().unwrap_or_default().to_string_lossy().to_string());
 				local_var_form = local_var_form.part("file", local_var_file_part);
 			}
