@@ -87,16 +87,22 @@ impl ReuseTokenSource {
 #[async_trait]
 impl TokenSource for ReuseTokenSource {
 	async fn token(&self) -> Result<Token, String> {
-		let mut token_guard = self.current_token.lock().map_err(|e| e.to_string())?;
-		
-		if let Some(token) = token_guard.as_ref() {
-			if token.valid() {
-				return Ok(token.clone());
+		// First, check if we have a valid token already
+		{
+			let token_guard = self.current_token.lock().map_err(|e| e.to_string())?;
+			
+			if let Some(token) = token_guard.as_ref() {
+				if token.valid() {
+					return Ok(token.clone());
+				}
 			}
-		}
+		} // Lock is released here before the await point
 		
 		// Get a new token
 		let new_token = self.new_source.token().await?;
+		
+		// Acquire the lock again after the await
+		let mut token_guard = self.current_token.lock().map_err(|e| e.to_string())?;
 		*token_guard = Some(new_token.clone());
 		
 		Ok(new_token)
