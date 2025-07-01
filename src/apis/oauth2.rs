@@ -59,9 +59,10 @@ impl Token {
         
         if let Some(expiry) = self.expiry {
             // Add a 10-second buffer before expiration to avoid edge cases
-            match expiry.checked_sub(Duration::from_secs(10)) {
-                Ok(expiry_with_delta) => SystemTime::now() < expiry_with_delta,
-                Err(_) => SystemTime::now() < expiry,
+            if let Some(expiry_with_delta) = expiry.checked_sub(Duration::from_secs(10)) {
+                SystemTime::now() < expiry_with_delta
+            } else {
+                SystemTime::now() < expiry
             }
         } else {
             // No expiry time means not expired
@@ -70,7 +71,7 @@ impl Token {
     }
 
     /// Set the Authorization header with the token.
-    pub fn set_auth_header(&self, headers: &mut HeaderMap) -> Result<(), Box<dyn Error>> {
+    pub fn set_auth_header(&self, headers: &mut HeaderMap) -> Result<(), Box<dyn Error + Send + Sync>> {
         let token_type = self.token_type.as_deref().unwrap_or("Bearer");
         let auth_value = format!("{} {}", token_type, self.access_token);
         
