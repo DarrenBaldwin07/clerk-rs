@@ -19,7 +19,23 @@ pub const USER_AGENT: &str = concat!("Clerk/v1 RustBindings/", env!("CARGO_PKG_V
 /// use clerk_rs::Clerk;
 /// use clerk_rs::apis::configuration::ClerkConfiguration;
 ///
-/// let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_owned()), None);
+/// // Using a bearer token
+/// let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_owned()), None, None);
+/// let client = Clerk::new(config);
+///
+/// let res = client.get(ClerkGetEndpoint::GetUserList).await?;
+/// ```
+/// 
+/// You can also use an OAuth2 token source for automatic token refreshing:
+/// 
+/// ```rust
+/// use clerk_rs::Clerk;
+/// use clerk_rs::apis::configuration::{ClerkConfiguration, StaticTokenSource};
+/// use std::sync::Arc;
+///
+/// // Using a token source
+/// let token_source = Arc::new(StaticTokenSource::new("your_access_token".to_string()));
+/// let config = ClerkConfiguration::new(None, None, None, None, Some(token_source));
 /// let client = Clerk::new(config);
 ///
 /// let res = client.get(ClerkGetEndpoint::GetUserList).await?;
@@ -42,8 +58,20 @@ impl Clerk {
 	pub async fn get(&self, endpoint: ClerkGetEndpoint) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
+		let request = self.config.client.get(&url);
+		
+		// Use token source if available
+		let request = if let Some(token_source) = &self.config.token_source {
+			if let Ok(token) = token_source.token().await {
+				request.header(reqwest::header::AUTHORIZATION, format!("{} {}", token.token_type, token.access_token))
+			} else {
+				request
+			}
+		} else {
+			request
+		};
 
-		match self.config.client.get(&url).send().await {
+		match request.send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
 				Err(e) => Err(e),
@@ -60,8 +88,20 @@ impl Clerk {
 	) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
+		let request = self.config.client.post(&url).json(&body);
+		
+		// Use token source if available
+		let request = if let Some(token_source) = &self.config.token_source {
+			if let Ok(token) = token_source.token().await {
+				request.header(reqwest::header::AUTHORIZATION, format!("{} {}", token.token_type, token.access_token))
+			} else {
+				request
+			}
+		} else {
+			request
+		};
 
-		match self.config.client.post(&url).json(&body).send().await {
+		match request.send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
 				Err(e) => Err(e),
@@ -74,8 +114,20 @@ impl Clerk {
 	pub async fn delete(&self, endpoint: ClerkDeleteEndpoint) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
+		let request = self.config.client.delete(&url);
+		
+		// Use token source if available
+		let request = if let Some(token_source) = &self.config.token_source {
+			if let Ok(token) = token_source.token().await {
+				request.header(reqwest::header::AUTHORIZATION, format!("{} {}", token.token_type, token.access_token))
+			} else {
+				request
+			}
+		} else {
+			request
+		};
 
-		match self.config.client.delete(&url).send().await {
+		match request.send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
 				Err(e) => Err(e),
@@ -92,8 +144,20 @@ impl Clerk {
 	) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
+		let request = self.config.client.put(&url).json(&body);
+		
+		// Use token source if available
+		let request = if let Some(token_source) = &self.config.token_source {
+			if let Ok(token) = token_source.token().await {
+				request.header(reqwest::header::AUTHORIZATION, format!("{} {}", token.token_type, token.access_token))
+			} else {
+				request
+			}
+		} else {
+			request
+		};
 
-		match self.config.client.put(&url).json(&body).send().await {
+		match request.send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
 				Err(e) => Err(e),
@@ -110,8 +174,20 @@ impl Clerk {
 	) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
+		let request = self.config.client.patch(&url).json(&body);
+		
+		// Use token source if available
+		let request = if let Some(token_source) = &self.config.token_source {
+			if let Ok(token) = token_source.token().await {
+				request.header(reqwest::header::AUTHORIZATION, format!("{} {}", token.token_type, token.access_token))
+			} else {
+				request
+			}
+		} else {
+			request
+		};
 
-		match self.config.client.patch(&url).json(&body).send().await {
+		match request.send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
 				Err(e) => Err(e),
@@ -125,8 +201,20 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
+		let request = self.config.client.get(&url_with_params);
+		
+		// Use token source if available
+		let request = if let Some(token_source) = &self.config.token_source {
+			if let Ok(token) = token_source.token().await {
+				request.header(reqwest::header::AUTHORIZATION, format!("{} {}", token.token_type, token.access_token))
+			} else {
+				request
+			}
+		} else {
+			request
+		};
 
-		match self.config.client.get(&url_with_params).send().await {
+		match request.send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
 				Err(e) => Err(e),
@@ -145,8 +233,20 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
+		let request = self.config.client.post(&url_with_params).json(&body);
+		
+		// Use token source if available
+		let request = if let Some(token_source) = &self.config.token_source {
+			if let Ok(token) = token_source.token().await {
+				request.header(reqwest::header::AUTHORIZATION, format!("{} {}", token.token_type, token.access_token))
+			} else {
+				request
+			}
+		} else {
+			request
+		};
 
-		match self.config.client.post(&url_with_params).json(&body).send().await {
+		match request.send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
 				Err(e) => Err(e),
@@ -160,8 +260,20 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
+		let request = self.config.client.delete(&url_with_params);
+		
+		// Use token source if available
+		let request = if let Some(token_source) = &self.config.token_source {
+			if let Ok(token) = token_source.token().await {
+				request.header(reqwest::header::AUTHORIZATION, format!("{} {}", token.token_type, token.access_token))
+			} else {
+				request
+			}
+		} else {
+			request
+		};
 
-		match self.config.client.delete(&url_with_params).send().await {
+		match request.send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
 				Err(e) => Err(e),
@@ -180,8 +292,20 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
+		let request = self.config.client.put(&url_with_params).json(&body);
+		
+		// Use token source if available
+		let request = if let Some(token_source) = &self.config.token_source {
+			if let Ok(token) = token_source.token().await {
+				request.header(reqwest::header::AUTHORIZATION, format!("{} {}", token.token_type, token.access_token))
+			} else {
+				request
+			}
+		} else {
+			request
+		};
 
-		match self.config.client.put(&url_with_params).json(&body).send().await {
+		match request.send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
 				Err(e) => Err(e),
@@ -200,8 +324,20 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
+		let request = self.config.client.patch(&url_with_params).json(&body);
+		
+		// Use token source if available
+		let request = if let Some(token_source) = &self.config.token_source {
+			if let Ok(token) = token_source.token().await {
+				request.header(reqwest::header::AUTHORIZATION, format!("{} {}", token.token_type, token.access_token))
+			} else {
+				request
+			}
+		} else {
+			request
+		};
 
-		match self.config.client.patch(&url_with_params).json(&body).send().await {
+		match request.send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
 				Err(e) => Err(e),

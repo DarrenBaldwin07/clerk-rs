@@ -12,5 +12,5 @@ pub mod endpoints;
 pub mod models;
 pub(crate) mod util;
 pub mod validators;
-pub use apis::configuration::ClerkConfiguration;
+pub use apis::configuration::{ClerkConfiguration, Token, TokenSource, StaticTokenSource, ReuseTokenSource};
 pub use models as ClerkModels;

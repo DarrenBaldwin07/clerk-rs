@@ -33,6 +33,10 @@ name = "rocket"
 path = "examples/rocket.rs"
 required-features = ["rocket"]
 
+[[example]]
+name = "oauth_token_source"
+path = "examples/oauth_token_source.rs"
+
 [lib]
 doctest = false
 
