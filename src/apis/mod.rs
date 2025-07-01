@@ -96,6 +96,7 @@ pub mod invitations_api;
 pub mod jwks_api;
 pub mod jwt_templates_api;
 pub mod miscellaneous_api;
+pub mod oauth2;
 pub mod organization_invitations_api;
 pub mod organization_memberships_api;
 pub mod organizations_api;
