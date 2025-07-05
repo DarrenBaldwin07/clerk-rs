@@ -7,7 +7,7 @@
 For more detailed documentation, please reference the below links:
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
-- [Clerk-rs SDK API docs](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/docs.md)
+- [Clerk-rs SDK API docs](https://docs.rs/clerk-rs)
 
 > This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk api, please open an issue!
 
@@ -141,7 +141,7 @@ fn index(jwt: ClerkGuard<MemoryCacheJwksProvider>) -> &'static str {
 
 #[launch]
 fn rocket() -> _ {
-	let config = ClerkConfiguration::new(None, None, Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_string()), None);
+	let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
 	let clerk = Clerk::new(config);
 	let clerk_config = ClerkGuardConfig::new(
 		MemoryCacheJwksProvider::new(clerk),
@@ -175,7 +175,7 @@ async fn main() -> Result<(), std::io::Error> {
     let clerk = Clerk::new(ClerkConfiguration::new(
         None,
         None,
-        Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_owned()),
+        Some("your_secret_key".to_owned()),
         None,
     ));
     // Initialize middleware.
@@ -205,7 +205,9 @@ The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 - [ ] Tokio and async-std async runtimes for hyper clients
 - [ ] Optional reqwest blocking client
 - [x] Support authorization via \_\_session cookie on same-origin
-- [ ] Add validator support for axum, rocket, warp
+- [x] Add validator support for axum
+- [x] Add validator support for rocket
+- [ ] Add validator support for warp
 
 # Production users
 
@@ -214,5 +216,3 @@ The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 - [Gitar](https://gitar.co)
 - [Have I Been Squatted](https://haveibeensquatted.com)
 - Open a PR and add your company here :)
-
-</br>
