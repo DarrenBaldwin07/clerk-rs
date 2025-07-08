@@ -2,9 +2,13 @@
 [![Downloads](https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![docs.rs](https://img.shields.io/docsrs/clerk-rs?style=flat-square)](https://docs.rs/clerk-rs)
 
-# clerk-rs: Official Community-Maintained Clerk SDK for Rust
+# clerk-rs: The Official Community-Maintained Clerk SDK for Rust
 
-A robust Rust SDK for integrating [Clerk](https://clerk.com/) authentication and user management into your Rust applications. This SDK provides idiomatic Rust interfaces to Clerk's Backend API and supports multiple web frameworks.
+![Clerk + Rust](https://img.shields.io/badge/Clerk%20%2B%20Rust-Auth%20Made%20Easy-8A2BE2?style=flat-square)
+
+A robust Rust SDK for integrating [Clerk](https://clerk.com/) authentication and user management into your Rust applications. This community-maintained SDK provides idiomatic Rust interfaces to Clerk's Backend API and supports multiple web frameworks including Actix Web, Axum, Rocket, and Poem.
+
+With clerk-rs, you can quickly add secure authentication, user management, and session handling to your Rust web applications with minimal boilerplate code.
 
 ## Features
 
@@ -17,14 +21,26 @@ A robust Rust SDK for integrating [Clerk](https://clerk.com/) authentication and
 - JWT validation and session management
 - Memory-cached JWKS provider for efficient authentication
 - Type-safe API client
+- Comprehensive error handling
+- Session cookie support
+- Configurable authentication options
 
 ## Documentation
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
 - [clerk-rs SDK API docs](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/docs.md)
 - [Examples directory](/examples)
+- [API Reference on docs.rs](https://docs.rs/clerk-rs)
 
 > This SDK is actively maintained to stay in sync with the official Clerk API. If you find any discrepancies or missing features, please [open an issue](https://github.com/DarrenBaldwin07/clerk-rs/issues)!
+
+## Quick Start
+
+Get started with clerk-rs in three simple steps:
+
+1. **Sign up for Clerk** at [clerk.com](https://clerk.com/) and create an application to obtain your API keys.
+2. **Add clerk-rs** to your Rust project (see Installation section below).
+3. **Integrate authentication** using the examples for your preferred web framework.
 
 ## Installation
 
@@ -32,7 +48,7 @@ Add clerk-rs to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-clerk-rs = "0.1"  # Use the latest version
+clerk-rs = "0.1"  # Check crates.io for the latest version
 ```
 
 To enable framework-specific features:
@@ -55,8 +71,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
     let client = Clerk::new(config);
 
-    let res = client.get(ClerkGetEndpoint::GetUserList).await?;
-
+    let users = client.get(ClerkGetEndpoint::GetUserList).await?;
+    println!("Retrieved user list successfully");
+    
     Ok(())
 }
 ```
@@ -71,8 +88,16 @@ use clerk_rs::{clerk::Clerk, ClerkConfiguration, apis::emails_api::Email};
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
     let client = Clerk::new(config);
-
-    Email::create(&client, Some(your_clerk_email));
+    
+    // Example email data structure (replace with actual fields from the API)
+    let email_data = serde_json::json!({
+        "from_email_name": "support",
+        "subject": "Welcome to our service",
+        "body": "Thanks for signing up!",
+        "email_address_id": "email_address_id_value"
+    });
+    
+    Email::create(&client, Some(email_data)).await?;
 
     Ok(())
 }
@@ -218,7 +243,7 @@ async fn main() -> Result<(), std::io::Error> {
 }
 ```
 
-The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
+The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`). This gives you access to the decoded JWT payload containing user information and claims.
 
 ## Roadmap
 
@@ -227,6 +252,9 @@ The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 - [ ] Optional reqwest blocking client
 - [x] Support authorization via \_\_session cookie on same-origin
 - [x] Add validator support for axum, rocket, poem
+- [ ] Improved error handling and custom error types
+- [ ] Enhanced documentation with more examples
+- [ ] Frontend integration examples for popular Rust WASM frameworks
 
 ## Production Users
 
@@ -235,11 +263,15 @@ The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 - [Gitar](https://gitar.co)
 - [Have I Been Squatted](https://haveibeensquatted.com)
 
-Want to be listed here? Open a PR and add your company!
+Want to be listed here? Open a PR and add your company! We'd love to showcase how clerk-rs is being used in production.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please feel free to submit a Pull Request. Check out the roadmap for areas that need attention or propose your own improvements.
+
+## Support
+
+If you encounter any issues or have questions, please [open an issue](https://github.com/DarrenBaldwin07/clerk-rs/issues) on GitHub.
 
 ## License
 
