@@ -4,9 +4,8 @@ use crate::{
     endpoints::ClerkGetEndpoint,
     util::check_system_functionality,
 };
-use serde_json::json;
 use std::error::Error;
-use mockito::{mock, server_url};
+use mockito::mock;
 
 #[tokio::test]
 async fn test_system_functionality() -> Result<(), Box<dyn Error>> {
@@ -26,7 +25,7 @@ async fn test_system_functionality() -> Result<(), Box<dyn Error>> {
     );
     
     // Override base path to use mock server
-    config.base_path = format!("{}/v1", server_url());
+    config.base_path = format!("{}/v1", mockito::server_address().url());
     
     // Initialize client with mock configuration
     let client = Clerk::new(config);
@@ -69,7 +68,7 @@ async fn test_error_handling() -> Result<(), Box<dyn Error>> {
     );
     
     // Override base path to use mock server
-    config.base_path = format!("{}/v1", server_url());
+    config.base_path = format!("{}/v1", mockito::server_address().url());
     
     // Initialize client with mock configuration
     let client = Clerk::new(config);
