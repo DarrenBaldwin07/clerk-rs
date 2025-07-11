@@ -10,7 +10,9 @@ pub mod apis;
 pub mod clerk;
 pub mod endpoints;
 pub mod models;
-pub(crate) mod util;
+pub mod util;
 pub mod validators;
+#[cfg(test)]
+mod tests;
 pub use apis::configuration::ClerkConfiguration;
 pub use models as ClerkModels;

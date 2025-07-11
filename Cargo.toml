@@ -33,6 +33,10 @@ name = "rocket"
 path = "examples/rocket.rs"
 required-features = ["rocket"]
 
+[[example]]
+name = "system"
+path = "examples/system.rs"
+
 [lib]
 doctest = false
 
