@@ -5,12 +5,13 @@ use crate::{
     util::check_system_functionality,
 };
 use std::error::Error;
-use mockito;
+use mockito::Server;
 
 #[tokio::test]
 async fn test_system_functionality() -> Result<(), Box<dyn Error>> {
     // Setup mock server
-    let mock_server = mockito::mock("GET", "/v1/users")
+    let mut server = Server::new();
+    let mock_server = server.mock("GET", "/v1/users")
         .with_status(200)
         .with_header("content-type", "application/json")
         .with_body(r#"{"data": [{"id": "user_123", "email": "test@example.com"}]}"#)
@@ -25,7 +26,7 @@ async fn test_system_functionality() -> Result<(), Box<dyn Error>> {
     );
     
     // Override base path to use mock server
-    config.base_path = format!("{}/v1", mockito::server_url());
+    config.base_path = format!("{}/v1", server.url());
     
     // Initialize client with mock configuration
     let client = Clerk::new(config);
@@ -53,7 +54,8 @@ async fn test_system_functionality() -> Result<(), Box<dyn Error>> {
 #[tokio::test]
 async fn test_error_handling() -> Result<(), Box<dyn Error>> {
     // Setup mock server with error response
-    let mock_server = mockito::mock("GET", "/v1/users")
+    let mut server = Server::new();
+    let mock_server = server.mock("GET", "/v1/users")
         .with_status(401)
         .with_header("content-type", "application/json")
         .with_body(r#"{"error": {"message": "Unauthorized access"}}"#)
@@ -68,7 +70,7 @@ async fn test_error_handling() -> Result<(), Box<dyn Error>> {
     );
     
     // Override base path to use mock server
-    config.base_path = format!("{}/v1", mockito::server_url());
+    config.base_path = format!("{}/v1", server.url());
     
     // Initialize client with mock configuration
     let client = Clerk::new(config);
