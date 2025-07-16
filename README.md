@@ -2,20 +2,31 @@
 [![Downloads](https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![docs.rs](https://img.shields.io/docsrs/clerk-rs?style=flat-square)](https://docs.rs/clerk-rs)
 
-# The official community-maintained Clerk SDK for Rust
+# clerk-rs: Official Community-Maintained Clerk SDK for Rust
 
-For more detailed documentation, please reference the below links:
+A Rust library for interacting with the Clerk authentication and user management API.
 
-- [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
-- [Clerk-rs SDK API docs](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/docs.md)
+## Documentation
 
-> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk api, please open an issue!
+- [Official Clerk Backend API](https://clerk.com/docs/reference/backend-api)
+- [clerk-rs SDK API Documentation](https://docs.rs/clerk-rs)
 
-## Examples
+> This SDK is actively maintained to stay synchronized with the official Clerk API. If you find any discrepancies or issues, please [open an issue](https://github.com/DarrenBaldwin07/clerk-rs/issues/new).
 
-> Check out examples in the `/examples` directory
+## Installation
 
-### Using a traditional http request to a valid clerk endpoint:
+Add clerk-rs to your Cargo.toml:
+
+```toml
+[dependencies]
+clerk-rs = "0.9"
+```
+
+## Usage Examples
+
+Explore complete examples in the `/examples` directory.
+
+### Basic HTTP Request to Clerk Endpoint:
 
 ```rust
 use tokio;
@@ -32,7 +43,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-### Using a clerk-rs method:
+### Using clerk-rs Methods:
 
 ```rust
 use tokio;
@@ -49,9 +60,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-### Protecting a actix-web endpoint with Clerk.dev:
+## Web Framework Integration
 
-With the `actix` feature enabled:
+### Protecting Actix-Web Endpoints
+
+Enable with the `actix` feature:
 
 ```rust
 use actix_web::{web, App, HttpServer, Responder};
@@ -81,9 +94,9 @@ async fn main() -> std::io::Result<()> {
 }
 ```
 
-### Protecting a axum endpoint with Clerk.dev:
+### Protecting Axum Endpoints
 
-With the `axum` feature enabled:
+Enable with the `axum` feature:
 
 ```rust
 use axum::{routing::get, Router};
@@ -111,9 +124,9 @@ async fn main() -> std::io::Result<()> {
 }
 ```
 
-### Protecting a rocket endpoint with Clerk.dev:
+### Protecting Rocket Endpoints
 
-With the `rocket` feature enabled:
+Enable with the `rocket` feature:
 
 ```rust
 use clerk_rs::{
@@ -151,12 +164,12 @@ fn rocket() -> _ {
 
 	rocket::build().mount("/", routes![index]).manage(clerk_config)
 }
-
 ```
 
-### Protecting a Poem endpoint with Clerk
+### Protecting Poem Endpoints
 
-With the `poem` feature enabled and poem v3 installed:
+Enable with the `poem` feature (requires Poem v3):
+
 ```rust
 use clerk_rs::{
     clerk::Clerk,
@@ -199,20 +212,30 @@ async fn main() -> Result<(), std::io::Error> {
 
 The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 
+## Features
+
+- HTTP client for Clerk API interactions
+- JWT validation and verification
+- Web framework integrations: Actix, Axum, Rocket, and Poem
+- Session cookie authentication
+
 ## Roadmap
 
-- [ ] Support other http clients along with the default reqwest client (like hyper)
-- [ ] Tokio and async-std async runtimes for hyper clients
+- [ ] Support for additional HTTP clients (hyper, etc.)
+- [ ] Support for Tokio and async-std runtimes with hyper clients
 - [ ] Optional reqwest blocking client
-- [x] Support authorization via \_\_session cookie on same-origin
-- [ ] Add validator support for axum, rocket, warp
+- [x] Support authorization via __session cookie on same-origin
+- [ ] Additional web framework integrations
 
-# Production users
+## Production Users
 
 - [Tembo](https://tembo.io)
 - [Rezon](https://rezon.ai)
 - [Gitar](https://gitar.co)
 - [Have I Been Squatted](https://haveibeensquatted.com)
-- Open a PR and add your company here :)
 
-</br>
+Open a PR to add your company here!
+
+## License
+
+Licensed under the MIT License.
