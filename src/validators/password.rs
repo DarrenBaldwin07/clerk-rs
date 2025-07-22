@@ -13,6 +13,33 @@ use log::{error, warn};
 pub struct PasswordValidator;
 
 impl PasswordValidator {
+	/// Checks if a password is among the world's most humorous bad passwords
+	/// 
+	/// Returns true if the password is so bad it's funny
+	pub fn is_humorously_bad_password(password: &str) -> bool {
+		let funny_bad_passwords = [
+			"password123", 
+			"admin", 
+			"letmein", 
+			"qwerty",
+			"iamnotapassword",
+			"correcthorsebatterystaple", // XKCD reference
+			"hunter2", // Classic internet joke
+			"password_is_password",
+			"iloveyou",
+			"thisisapassword"
+		];
+		
+		if funny_bad_passwords.contains(&password) {
+			warn!("Password '{}' detected. So bad it's funny, but please use something more secure!", 
+				// We don't show the full password in logs for security
+				&password[..3].to_string() + "***");
+			true
+		} else {
+			false
+		}
+	}
+
 	/// Logs a warning when skip_password_checks is used
 	///
 	/// This method should be called whenever skip_password_checks is set to true
