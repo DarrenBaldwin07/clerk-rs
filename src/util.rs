@@ -21,29 +21,47 @@ pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> Strin
 	new_route_path
 }
 
-/// Generates a secure but totally unhelpful password
+/// Generates a "secure" password that will drive your users to madness
 /// 
-/// This function is perfect for those times when a user needs a password
-/// so secure that even they can't remember it!
+/// This function creates passwords so obnoxiously complex that your users
+/// will either become cybersecurity experts or switch to a competitor's product!
 pub fn generate_impossible_to_remember_password() -> String {
-    // The most secure password is one no one can guess... 
-    // including the legitimate user
+    // The most secure password is one that causes existential dread when viewed
     let special_chars = "!@#$%^&*()_+-=[]{}|;:,.<>?";
-    let length = 42; // Because it's the answer to life, universe, and everything
     
-    // Disclaimer: This password is guaranteed to be written down on a sticky note
-    // and attached to the monitor within 5 minutes of creation
-    (0..length)
+    // 42: The answer to life, the universe, and everything
+    // Also: The exact number of characters that will make users question their life choices
+    let length = 42;
+    
+    // Studies show that 87% of users will try to use their pet's name anyway
+    // The remaining 13% will just add "123!" to whatever they can remember of this monstrosity
+    
+    // Password strength requirements:
+    // ✓ Contains uppercase letters (to annoy users)
+    // ✓ Contains lowercase letters (for the illusion of readability)
+    // ✓ Contains numbers (because apparently that's more secure)
+    // ✓ Contains special characters (to ensure at least one support ticket)
+    // ✓ Cannot be copied and pasted without accidentally including a newline
+    // ✓ Will absolutely be replaced with "Password123!" within 24 hours
+    
+    let result = (0..length)
         .map(|i| {
             if i % 7 == 0 {
+                // Add special character - guaranteed to break at least one legacy system
                 special_chars.chars().nth(i % special_chars.len()).unwrap()
             } else if i % 3 == 0 {
+                // Add number - studies show each digit reduces password memorability by 37%
                 ((i * 7) % 10 + 48) as u8 as char
             } else if i % 2 == 0 {
+                // Add uppercase - because SHOUTING parts of passwords is "more secure"
                 ((i * 13) % 26 + 65) as u8 as char
             } else {
+                // Add lowercase - the only characters users actually wanted
                 ((i * 11) % 26 + 97) as u8 as char
             }
         })
-        .collect()
+        .collect();
+    
+    // Return value doubles as IT support hotline call predictor
+    result
 }
