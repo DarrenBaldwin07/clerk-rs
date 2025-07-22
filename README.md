@@ -2,18 +2,57 @@
 [![Downloads](https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![docs.rs](https://img.shields.io/docsrs/clerk-rs?style=flat-square)](https://docs.rs/clerk-rs)
 
-# The official community-maintained Clerk SDK for Rust
+# 🔐 clerk-rs: Supercharge Your Rust Authentication
 
-For more detailed documentation, please reference the below links:
+**The official community-maintained Clerk SDK for Rust** - bringing Clerk's powerful authentication and user management to your Rust applications with ease.
+
+## What is Clerk?
+
+Clerk is a complete user management and authentication solution that handles everything from sign-up to sign-in, session management, and user profiles. With clerk-rs, you can seamlessly integrate Clerk's powerful features into your Rust backend.
+
+## Why Use clerk-rs?
+
+- **Framework Agnostic** - Works with Actix, Axum, Rocket, Poem, and more!
+- **Type-Safe API** - Leverage Rust's type system for safer code
+- **Comprehensive** - Complete access to Clerk's Backend API
+- **Actively Maintained** - Regular updates to stay in sync with Clerk's API
+
+For detailed documentation, check out:
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
-- [Clerk-rs SDK API docs](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/docs.md)
+- [clerk-rs SDK API docs](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/docs.md)
 
-> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk api, please open an issue!
+> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk API, please open an issue!
 
-## Examples
+## ✨ Key Features
 
-> Check out examples in the `/examples` directory
+- **Complete API Coverage** - Access all Clerk Backend API endpoints
+- **JWT Verification** - Built-in JWT validation for secure session management
+- **Framework Integration** - Middleware/guards for popular Rust web frameworks
+- **Async Support** - First-class support for async/await
+- **Flexible Configuration** - Customize to fit your application's needs
+
+## 🚀 Getting Started
+
+### Installation
+
+Add clerk-rs to your Cargo.toml:
+
+```toml
+[dependencies]
+clerk-rs = "0.6.1"
+```
+
+Enable specific framework support as needed:
+
+```toml
+[dependencies]
+clerk-rs = { version = "0.6.1", features = ["actix", "axum", "rocket", "poem"] }
+```
+
+## 📚 Examples
+
+> Check out more examples in the `/examples` directory
 
 ### Using a traditional http request to a valid clerk endpoint:
 
@@ -151,7 +190,6 @@ fn rocket() -> _ {
 
 	rocket::build().mount("/", routes![index]).manage(clerk_config)
 }
-
 ```
 
 ### Protecting a Poem endpoint with Clerk
@@ -199,20 +237,35 @@ async fn main() -> Result<(), std::io::Error> {
 
 The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 
-## Roadmap
+## 🛣️ Roadmap
 
-- [ ] Support other http clients along with the default reqwest client (like hyper)
+- [ ] Support other HTTP clients alongside the default reqwest client (like hyper)
 - [ ] Tokio and async-std async runtimes for hyper clients
 - [ ] Optional reqwest blocking client
-- [x] Support authorization via \_\_session cookie on same-origin
-- [ ] Add validator support for axum, rocket, warp
+- [x] Support authorization via __session cookie on same-origin
+- [ ] Expand framework support and optimizations
 
-# Production users
+## ⚡ Production Users
 
-- [Tembo](https://tembo.io)
-- [Rezon](https://rezon.ai)
-- [Gitar](https://gitar.co)
-- [Have I Been Squatted](https://haveibeensquatted.com)
-- Open a PR and add your company here :)
+Trusted by innovative companies building with Rust:
 
-</br>
+- [Tembo](https://tembo.io) - PostgreSQL distribution for AI applications
+- [Rezon](https://rezon.ai) - AI-driven data analytics platform
+- [Gitar](https://gitar.co) - Software supply chain security
+- [Have I Been Squatted](https://haveibeensquatted.com) - Domain typosquatting detection
+
+*Building something cool with clerk-rs? Open a PR and add your company here!*
+
+## 🤝 Contributing
+
+Contributions are welcome! Whether it's bug reports, feature requests, or pull requests, all contributions help make clerk-rs better.
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
+## 📜 License
+
+MIT License
