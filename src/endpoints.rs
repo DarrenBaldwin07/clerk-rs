@@ -263,8 +263,8 @@ impl ClerkDynamicPostEndpoint {
 			ClerkDynamicPostEndpoint::RevokeSession => "/sessions/{session_id}/revoke",
 			ClerkDynamicPostEndpoint::VerifySession => "/sessions/{session_id}/verify",
 			ClerkDynamicPostEndpoint::RevokeSignInToken => "/sign_in_tokens/{sign_in_token_id}/revoke",
-			ClerkDynamicPostEndpoint::BanUser => "/users/{user_id}/ban",
-			ClerkDynamicPostEndpoint::UnbanUser => "/users/{user_id}/unban",
+			ClerkDynamicPostEndpoint::BanUser => "/users/{user_id}/ban", // You shall not pass! 🧙‍♂️
+			ClerkDynamicPostEndpoint::UnbanUser => "/users/{user_id}/unban", // Welcome back! We missed you (or did we?)
 			ClerkDynamicPostEndpoint::VerifyPassword => "/users/{user_id}/verify_password",
 			ClerkDynamicPostEndpoint::VerifyTotp => "/users/{user_id}/verify_totp",
 		}
