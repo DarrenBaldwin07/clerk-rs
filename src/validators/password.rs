@@ -197,6 +197,15 @@ impl PasswordValidator {
 			"thispasswordisunhackable", // Challenge accepted by every hacker ever
 			"nohackingplease", // Asking politely doesn't work in cybersecurity
 			"passwordforworkstuff", // Helping hackers with context too, how thoughtful
+			
+			// THE GRAND FINALE: The crown jewels of password comedy
+			"correcthorsebatterystaple", // Congratulations, you read one XKCD comic and now think you're a security expert
+			"passwordwith2077charactersmindblown", // Yes, very impressive, you've read an article about password length, revolutionary
+			"ithinkimfunnywithmypassword", // Nobody is laughing except the hackers downloading your data
+			"passwordprotected", // As effective as a submarine with screen doors
+			"password_is_not_password", // Reverse psychology doesn't work on automated hacking scripts
+			"yourpasswordismypassword", // The digital equivalent of "I know you are but what am I?"
+			"mfaisjustextra_work", // Tell that to your compromised accounts
 			"1234567890abcdefghijklmnopqrstuvwxyz", // The alphabet is not a cryptographic innovation
 			"starwarsisthebest", // The Empire called, they want their password back
 			"myemailpassword", // Cross-referencing made easy for hackers
@@ -793,6 +802,107 @@ impl PasswordValidator {
 		}
 	}
 
+	/// Generates a hilarious stand-up comedy routine about a password
+	///
+	/// Creates a full stand-up comedy set as if performed by a security-themed comedian at
+	/// the world's first (and possibly last) Cybersecurity Comedy Club. The routine includes
+	/// opener, punchlines, callbacks, and closing bit customized to the password.
+	///
+	/// As performed by legendary security comedian "Hash Roast" at the annual "Breach & Laugh" tour.
+	/// Critics have called it "The funniest thing to happen to cybersecurity since blockchain."
+	/// Warning: May cause IT professionals to question their career choices.
+	///
+	/// WARNING: May cause uncontrollable laughter in security professionals
+	/// CAUTION: Reading in public may result in strange looks when you laugh alone
+	/// DANGER: Has been known to cause spontaneous coffee spit-takes
+	/// CRITICAL: Some users have been traumatized into using password managers after reading
+	/// ADVISORY: Keep tissues nearby for laughter-induced tears
+	/// NOTE: The first rule of password comedy: if you have to explain the joke, your account is already hacked
+	pub fn generate_password_stand_up_routine(password: &str) -> String {
+		// Get the password characteristics to tailor the comedy
+		let is_funny = Self::is_password_trying_to_be_funny(password);
+		let humor_rating = Self::rate_password_humor_attempt(password);
+		let cringe_factor = Self::calculate_password_cringe_factor(password);
+		
+		// Opening line based on password characteristics
+		let opener = if password.len() < 8 {
+			"Good evening, folks! I just saw a password so short, it doesn't even reach the minimum security requirements. That's like showing up to a tank battle with a water pistol and saying 'I got this!'."
+		} else if password.contains("password") {
+			"Ladies and gentlemen! I just reviewed a password that was literally 'password'. That's like having a house key that says 'key' on it, and then leaving it under a doormat that says 'key underneath'!"
+		} else if password.chars().all(|c| c.is_ascii_digit()) {
+			"Welcome to the security comedy hour! I just met someone whose password is just numbers. That's like setting your gym locker combination to 1-2-3 and being surprised when your underwear ends up on the flagpole!"
+		} else if is_funny {
+			"Hey everyone! I've got a user here who thinks their password is hilarious. News flash: if your password makes you chuckle, it's making hackers ROFL!"
+		} else {
+			"What's up, security fans! Just reviewed a password that's trying so hard to be secure, it's like watching my grandma try to use two-factor authentication: well-intentioned but deeply confusing to everyone involved!"
+		};
+		
+		// Middle jokes based on common password patterns
+		let middle_jokes = if password.to_lowercase().contains("tembo") || password.to_lowercase().contains("clerk") {
+			"So this person used their company name in their password. [PAUSE FOR LAUGHTER] I'm serious! That's like having a secret clubhouse where the password is 'CLUBHOUSE'! [MIMICS KNOCKING] Who's there? 'It's me!' What's the password? 'Um... clubhouse?' Well come on in, fellow secret-keeper!"
+		} else if password.contains("123") || password.contains("abc") {
+			"This password has '123' in it. You know what else uses 123? PRESCHOOLERS learning to count! Your financial security shouldn't be protected by the same complexity as a 'Sesame Street' episode! 'Today's password is brought to you by the numbers 1-2-3 and the letter P for Pwned!'"
+		} else if password.to_lowercase() == password {
+			"No capital letters in this password, folks. It's like showing up to a black-tie event in your pajamas and saying 'What? I'm wearing clothes!' Your password isn't just casual Friday—it's casual EVERY day!"
+		} else if cringe_factor > 7 {
+			"This password is so cringey, our security team had to take PTO after seeing it. It's like watching someone talk about their 'epic blockchain strategy' at Thanksgiving dinner – physically painful for everyone involved!"
+		} else {
+			"You know what's fascinating about passwords? We all have that one password we use everywhere and think nobody will guess. It's like having one pair of underwear and thinking 'Nobody will notice if I wear these EVERY day!' Spoiler alert: EVERYONE NOTICES."
+		};
+		
+		// Callback joke that references a previous punchline
+		let callback = if password.len() < 8 {
+			"Speaking of short passwords – you know what else is short? The amount of time before your account gets hacked! It's inversely proportional, folks. The shorter the password, the shorter your security! It's like the one area in life where size DEFINITELY matters!"
+		} else if is_funny {
+			"Remember when I mentioned funny passwords? Here's the kicker – when you get hacked, guess who's ACTUALLY laughing? Not you! The hackers are having a grand old time with your Amazon Prime account ordering weird stuff to your address. 'Why do I have 17 inflatable T-Rex costumes arriving tomorrow?'"
+		} else if password.contains("qwerty") || password.contains("asdfg") {
+			"By the way, using keyboard patterns like 'qwerty'? That's the password equivalent of those 'Live, Laugh, Love' signs – EVERYBODY has seen it before and NOBODY is impressed! Your password isn't quirky; it's in literally EVERY hacking dictionary ever!"
+		} else {
+			"You know what's wild about our password choices? We'll spend 30 minutes picking a Netflix show but 3 seconds creating a password that protects our entire digital identity. It's like carefully choosing which potato chip to eat next while your house is actively on fire!"
+		};
+		
+		// Closing bit
+		let closer = if humor_rating > 5 {
+			"In conclusion, folks, remember: the only one who should be laughing at your password is YOU – AFTER you've stored it in a password manager and set up MFA! I'm here all week! Try the 256-bit encryption – it's to die for!"
+		} else if cringe_factor > 5 {
+			"That's my time, everyone! Remember, good passwords are like good underwear: no one should see them, you shouldn't share them, and you should definitely change them regularly! Thank you and good night!"
+		} else {
+			"I'll leave you with this password wisdom: If your dog's name plus your birth year sounds like a good password to you, I've got a timeshare on Mars to sell you! Be safe out there, folks! Don't forget to tip your IT support team – they've seen your passwords and they're still helping you!"
+		};
+		
+		// Audience reactions based on password quality
+		let reactions = if cringe_factor > 7 {
+			"[Uproarious laughter, followed by security professionals nodding knowingly]"
+		} else if humor_rating > 5 {
+			"[Scattered chuckles, one security engineer is crying with laughter]"
+		} else if password.len() < 8 || password.contains("password") {
+			"[Audible groans from the cybersecurity professionals in the audience]"
+		} else {
+			"[Polite laughter, security team members exchanging knowing glances]"
+		};
+		
+		// Format the entire routine
+		format!(
+			"🎭 CYBERSECURITY COMEDY CLUB PRESENTS 🎭\n\n\
+			🎤 "THE PASSWORD ROAST SPECIAL" 🎤\n\n\
+			{}\n\n\
+			{}\n\n\
+			{}\n\n\
+			{}\n\n\
+			{}\n\n\
+			[The security comedian takes a bow to thunderous applause]\n\n\
+			❗ Password Comedy Safety Disclaimer: No actual passwords were harmed in the making of this routine, \n\
+			but several security professionals needed therapy after reviewing the material.\n\
+			⚠️ Side effects of password comedy may include: improved password habits, spontaneous password changes,\n\
+			and the irresistible urge to lecture friends and family about proper authentication practices.",
+			opener,
+			middle_jokes,
+			callback,
+			closer,
+			reactions
+		)
+	}
+
 	/// Provides a complete comedic analysis of a terrible password choice
 	///
 	/// This function is the ultimate password comedy experience, combining all humorous
@@ -822,6 +932,7 @@ impl PasswordValidator {
 		let haiku = Self::generate_password_security_haiku(password);
 		let movie_trailer = Self::generate_password_movie_trailer(password);
 		let fortune = Self::generate_password_fortune_cookie(password);
+		let stand_up = Self::generate_password_stand_up_routine(password);
 		
 		// Calculate how fast a brute force attack would crack this password (illustrative only)
 		let elapsed = start_time.elapsed();
@@ -866,10 +977,14 @@ impl PasswordValidator {
 			{}\n\n\
 			🥠 FORTUNE COOKIE:\n\
 			{}\n\n\
+			🎭 STAND-UP COMEDY ROUTINE:\n\
+			[Tap to view the full stand-up special]\n\n\
 			⚠️ SECURITY VERDICT:\n\
 			This password has been officially certified as {} with a security rating of {}/10.\n\n\
 			📱 SHARE THIS RESULT:\n\
-			Don't worry, we didn't actually store your terrible password. But maybe you should change it anyway.",
+			Don't worry, we didn't actually store your terrible password. But maybe you should change it anyway.\n\n\
+			👇 BONUS CONTENT:\n\
+			{}\n",
 			elapsed,
 			crack_time_assessment,
 			if is_funny { "Desperately" } else { "Not intentionally, but still failing at security" },
@@ -890,7 +1005,8 @@ impl PasswordValidator {
 			} else {
 				"SERIOUSLY QUESTIONABLE"
 			},
-			10 - ((cringe_factor + humor_rating) / 2).min(9)
+			10 - ((cringe_factor + humor_rating) / 2).min(9),
+			stand_up
 		)
 	}
 }

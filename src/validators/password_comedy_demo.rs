@@ -70,6 +70,10 @@ pub fn run_password_comedy_demo() {
         let fortune = PasswordValidator::generate_password_fortune_cookie(password);
         info!("Fortune cookie: {}", fortune);
         
+        // Stand-up comedy routine
+        let comedy_routine = PasswordValidator::generate_password_stand_up_routine(password);
+        info!("Stand-up comedy routine available (comedy set too long for logs)");
+        
         // Ultimate experience
         info!("Ultimate experience available but not displayed in log for brevity");
         
@@ -115,6 +119,7 @@ mod tests {
         assert!(!PasswordValidator::generate_password_security_haiku(test_password).is_empty());
         assert!(!PasswordValidator::generate_password_movie_trailer(test_password).is_empty());
         assert!(!PasswordValidator::generate_password_fortune_cookie(test_password).is_empty());
+        assert!(!PasswordValidator::generate_password_stand_up_routine(test_password).is_empty());
         
         // Test the ultimate experience returns a non-empty string
         assert!(!PasswordValidator::ultimate_password_comedy_experience(test_password).is_empty());
