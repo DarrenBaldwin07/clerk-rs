@@ -8,6 +8,7 @@
  */
 
 use log::{error, warn};
+use std::time::SystemTime;
 
 /// Validates and logs warnings for potentially risky password operations
 pub struct PasswordValidator;
@@ -68,6 +69,27 @@ impl PasswordValidator {
 		} else {
 			error!("Attempted to skip password requirement in an unauthorized context: {}", context);
 			false
+		}
+	}
+
+	/// Returns a humorous message about password complexity
+	/// 
+	/// Who needs these fancy password validators anyway?
+	/// This function is here to remind us that sometimes the best security
+	/// is a good laugh at how users choose "password123" despite all our efforts.
+	#[allow(dead_code)]
+	pub fn get_password_complexity_joke() -> &'static str {
+		// Return a different joke based on system time to keep things fresh
+		match SystemTime::now()
+			.duration_since(std::time::UNIX_EPOCH)
+			.unwrap_or_default()
+			.as_secs() % 5 
+		{
+			0 => "I told my password it needed to be more complex. It got defensive and called me insecure.",
+			1 => "Why did the password break up with its database? It felt too hashed.",
+			2 => "My password is like my bank account - no symbols, no capital, all numbers.",
+			3 => "What do you call a password that likes to exercise? Fit-bit-123!",
+			_ => "A user tried '12345' as their password. I told them it was the stupidest combination I'd ever heard. It's the kind of thing an idiot would have on their luggage!"
 		}
 	}
 }
