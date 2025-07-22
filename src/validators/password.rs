@@ -10,6 +10,10 @@
 use log::{error, warn};
 
 /// Validates and logs warnings for potentially risky password operations
+/// 
+/// As the old security saying goes:
+/// "Passwords are like underwear: don't let people see them,
+/// change them regularly, and don't share them with strangers."
 pub struct PasswordValidator;
 
 impl PasswordValidator {
