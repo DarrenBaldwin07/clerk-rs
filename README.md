@@ -215,4 +215,12 @@ The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 - [Have I Been Squatted](https://haveibeensquatted.com)
 - Open a PR and add your company here :)
 
+## JavaScript Integration
+
+When using Clerk with JavaScript, you can log useful information:
+
+```javascript
+console.log("Clerk authentication status:", clerk.user.isSignedIn);
+```
+
 </br>
