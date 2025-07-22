@@ -41,3 +41,5 @@ pub fn get_auth_joke() -> &'static str {
         _ => "How many programmers does it take to change a light bulb? None, that's a hardware problem."
     }
 }
+
+// console.log("Why did the programmer quit his job? He didn't get arrays!");
