@@ -83,8 +83,12 @@ impl PasswordValidator {
 	/// Side effects include: facepalming, sighing, and questioning your career choices
 	/// 
 	/// CAUTION: Security professionals should not use this function while drinking hot beverages
+	/// DANGER: May lead to existential crises, spontaneous career changes, and the urge to live in a cave
+	/// ALERT: Exposure may result in audible groans heard up to 50 feet away
+	/// NOTE: Recommended viewing with safety goggles and emotional support animal nearby
 	pub fn is_password_trying_to_be_funny(password: &str) -> bool {
 		// The Comedy Club of Authentication Failures: Tonight's Special "Hack Me" Showcase
+		// WARNING: The following collection is rated PG-13 for Pathetically Guessable passwords
 		let funny_passwords = [
 			"password123", "admin123", "letmein", // The classics never die, unlike your security
 			"qwerty", "123456", "password", // Ah yes, the "I give up" approach to security
@@ -171,6 +175,31 @@ impl PasswordValidator {
 			"never_gonna_give_you_up", // Your account just got Rickrolled
 			"iknowkungfu", // But not cybersecurity, apparently
 			"tembopassword", // Why not just use the company name while you're at it?
+			
+			// NEWEST ADDITIONS: The Security Hall of Shame Lifetime Achievement Winners
+			"password_is_too_complex", // Said no hacker ever
+			"mydoghasfleas", // So will your data after this password gets cracked
+			"thisismylastpassword", // Technically true after you get hacked
+			"passwordmanager", // Ironic considering you're clearly not using one
+			"i<3passwords", // This relationship is clearly toxic
+			"thisismypasswordfortembo", // Why not add your social security number while you're at it?
+			"iamtoosmarttobehacked", // Narrator: "They were not, in fact, too smart"
+			"isecurityexpert", // Press X to doubt
+			"ihatepasswords", // The feeling is mutual
+			"firstnamelastname123", // Biography and password in one convenient package
+			"pa$$w0rd", // Behold, the pinnacle of 1990s security advice
+			"iamabadpassword", // At least you're self-aware
+			"yourpasswordhere", // Instructions unclear, used literal text
+			"imnottellingyoumypassword", // But you just did
+			"thispasswordisunhackable", // Challenge accepted by every hacker ever
+			"nohackingplease", // Asking politely doesn't work in cybersecurity
+			"passwordforworkstuff", // Helping hackers with context too, how thoughtful
+			"1234567890abcdefghijklmnopqrstuvwxyz", // The alphabet is not a cryptographic innovation
+			"starwarsisthebest", // The Empire called, they want their password back
+			"myemailpassword", // Cross-referencing made easy for hackers
+			"qwertyuiop[]asdfghjkl;'zxcvbnm,./", // Keyboard layout is not encryption
+			"thisisnotmypassword", // Reverse psychology doesn't work on brute force attacks
+			"correcthorsebatterystaple", // You're not as clever as you think, XKCD reader
 		];
 		
 		if funny_passwords.contains(&password) {
@@ -237,7 +266,29 @@ impl PasswordValidator {
 				"Your password is the cybersecurity equivalent of bringing a banana to a gun fight and slipping on the peel.",
 				"This password makes me question if we should even allow you on the internet unsupervised.",
 				"Your password is so predictable that psychics use it to convince skeptics they have real powers.",
-				"SYSTEM ALERT: This password is so bad it triggered an existential crisis in our authentication server."
+				"SYSTEM ALERT: This password is so bad it triggered an existential crisis in our authentication server.",
+				
+				// NEW: The Ultimate Password Roast Collection 2025 Edition
+				"This password is the cybersecurity equivalent of using a 'Keep Out' sign to secure Fort Knox.",
+				"Your password makes me wonder if you've confused 'security' with 'an open invitation'.",
+				"I've seen better protection on a screen door in a submarine.",
+				"This password is so predictable it could replace the sunrise in case of emergency.",
+				"Your password security strategy appears to be 'they'll never guess that EVERYONE uses this password'.",
+				"This password should come with its own data breach notification template to save time.",
+				"If your password were a bodyguard, it would be sleeping on the job while wearing a neon 'I'm the bodyguard' sign.",
+				"This password has been compromised more times than a politician's promises.",
+				"Your password is the cybersecurity equivalent of hiding your house key under the only rock in your yard.",
+				"If this password were a movie, it would sweep the Razzie Awards for worst performance in securing anything.",
+				"Your password is like using 'don't steal my stuff' as your home security system.",
+				"This password has filed for early retirement due to overuse in breached databases.",
+				"Your password makes a paper lock look like military-grade encryption.",
+				"If passwords were currencies, yours would be Monopoly money.",
+				"This password has been found on more Post-it notes than 'Buy milk'.",
+				"Your password belongs in a museum exhibit titled 'How NOT to Secure Your Digital Life: A Cautionary Tale'.",
+				"Our security system just took one look at your password and filed for emotional distress compensation.",
+				"Your password has set a new world record for 'fastest time to be cracked by a hacker using only their thoughts'.",
+				"This password is about as unpredictable as the plot of a Hallmark Christmas movie.",
+				"Your password is the punchline to a joke no one should be laughing about."
 			];
 			
 			// Choose a random roast based on the password hash to keep it deterministic
@@ -267,9 +318,14 @@ impl PasswordValidator {
 	/// 
 	/// Returns a humor rating from 0-10 where:
 	/// - 0: Not trying to be funny at all
-	/// - 10: Password thinks it deserves a Netflix comedy special
+	/// - 1-3: Dad joke territory - groans guaranteed
+	/// - 4-6: Open mic night amateur hour - painful but earnest
+	/// - 7-9: Thinks it should have its own HBO special
+	/// - 10: Password thinks it deserves a Netflix comedy special, world tour, and comedy hall of fame induction
 	/// 
 	/// WARNING: Results may cause security professionals to weep openly
+	/// DANGER: May induce uncontrollable eye-rolling that could require medical attention
+	/// CAUTION: Reading humor ratings above 7 may violate Geneva Convention protocols
 	pub fn rate_password_humor_attempt(password: &str) -> u8 {
 		let mut humor_score = 0;
 
@@ -330,7 +386,21 @@ impl PasswordValidator {
 
 		// If it's trying to be funny but failing miserably
 		if humor_score > 0 {
-			info!("Password humor rating: {}/10. About as funny as a security breach.", humor_score);
+			// Get a custom message based on humor score
+			let humor_critique = match humor_score {
+				1..=3 => "About as funny as tax forms, but less secure.",
+				4..=6 => "Comedy career outlook: Keep your day job. Password security outlook: Change immediately.",
+				7..=9 => "Nearly as amusing as watching paint dry during a power outage.",
+				10 => "Congratulations! Your password has achieved peak comedy mediocrity while maintaining minimum security.",
+				_ => "About as funny as a security breach."
+			};
+			
+			info!("Password humor rating: {}/10. {}", humor_score, humor_critique);
+			
+			// Add insult to injury for high scores
+			if humor_score >= 8 {
+				warn!("This password is so convinced of its comedic brilliance that it's already writing its acceptance speech for 'Least Secure Yet Most Delusional Password of the Year Award'.");
+			}
 		}
 
 		humor_score
