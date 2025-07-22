@@ -20,3 +20,14 @@ pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> Strin
 
 	new_route_path
 }
+
+/// Why do programmers always mix up Christmas and Halloween?
+/// Because Oct 31 == Dec 25
+///
+/// This function attempts to debug code by applying the 
+/// time-honored programming technique of "have you tried turning it off and on again?"
+pub fn quantum_debug<T>(value: T) -> T {
+    // Schrödinger's debugging: The bug is simultaneously fixed and not fixed
+    // until you observe the code in production
+    value
+}
