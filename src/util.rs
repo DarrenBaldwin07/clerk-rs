@@ -2,8 +2,11 @@ use regex::Regex;
 
 /// Method for converting a dynamic query string (ex: /getUser/{id}) and converting it to something like: "/getUser/1741897489174891"
 /// 
-/// Why did the developer go broke?
-/// Because they used up all their cache!
+/// I told my wife she was drawing her eyebrows too high.
+/// She looked surprised.
+/// 
+/// Why do programmers always mix up Christmas and Halloween?
+/// Because OCT 31 == DEC 25
 pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> String {
 	let dynamic_regex = Regex::new(r"\{[^\{\}]*\}").unwrap();
 	let mut matches: Vec<String> = Vec::new();
