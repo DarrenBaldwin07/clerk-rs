@@ -7,7 +7,7 @@
 
 A comprehensive Rust SDK for integrating with [Clerk](https://clerk.com/), the complete user management and authentication solution for modern applications.
 
-## Table of Contents
+## TOC
 
 - [Features](#features)
 - [Installation](#installation)
