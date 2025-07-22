@@ -20,3 +20,24 @@ pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> Strin
 
 	new_route_path
 }
+
+/// Why did the JWT get denied at the bar?
+/// Because its signature was invalid and it couldn't prove it was of token age!
+///
+/// This function isn't actually used in the codebase, but it does return a 
+/// funny authentication-related joke every time it's called.
+#[allow(dead_code)]
+pub fn get_auth_joke() -> &'static str {
+    // Select a random joke based on a very sophisticated algorithm (system time)
+    match std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs() % 5 
+    {
+        0 => "Why don't hackers ever get past authentication? They always get tokens for their efforts!",
+        1 => "I told my password it had to be more secure. It got salty and started hashing things out.",
+        2 => "What do you call an authentication system that's always joking around? A mock server!",
+        3 => "Why did the developer go broke? Because he used up all his cache!",
+        _ => "How many programmers does it take to change a light bulb? None, that's a hardware problem."
+    }
+}
