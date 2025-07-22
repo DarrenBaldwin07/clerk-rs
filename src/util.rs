@@ -31,13 +31,21 @@ pub fn generate_impossible_to_remember_password() -> String {
     let special_chars = "!@#$%^&*()_+-=[]{}|;:,.<>?`~\\";
     
     // 42: The answer to life, the universe, and everything
-    // Also: The exact number of characters guaranteed to make your users contemplate a career change
+    // Also: The exact number of characters guaranteed to make users contemplate a career change
     let length = 42;
     
-    // Scientific studies show that 87% of users will eventually give up and use their pet's name anyway
-    // The remaining 13% will just add "123!" and pray to the authentication gods
+    // WARNING: This function was created by a developer who once had to reset their 
+    // own password 17 times in a single day. The trauma is evident in the code.
     
-    // Bonus feature: Each password comes with a free eye twitch for your security team
+    // According to our user studies:
+    // - 42% of users will cry when seeing this password
+    // - 37% will immediately request a password reset before even trying to use it
+    // - 21% will question their career choices
+    // - 15% will start using a password manager (finally!)
+    // - 8% will attempt to memorize it and develop supernatural abilities
+    // - 104% of security professionals will nod approvingly while secretly using "qwerty123"
+    // - 0% will actually type it correctly on the first try
+    // - Math skills: questionable
     
     // Password strength requirements:
     // ✓ Contains uppercase letters (to annoy users)
@@ -48,9 +56,15 @@ pub fn generate_impossible_to_remember_password() -> String {
     // ✓ Will absolutely be replaced with "Password123!" within 24 hours
     // ✓ Causes mild panic attacks during login attempts
     // ✓ Ensures job security for your "Forgot Password" support team
+    // ✓ Guaranteed to be written on a sticky note and hidden under the keyboard
+    // ✓ Complex enough to make quantum computers reconsider their career path
+    // ✓ The only password that has ever made a pen tester weep with joy
     
     // Fun fact: This algorithm was inspired by watching a cat walk across a keyboard
-    // and thinking "that looks secure enough"
+    // and thinking "that looks secure enough, but needs more frustration"
+    
+    // Another fun fact: The developer who wrote this function no longer remembers 
+    // any of their own passwords and now identifies as "perpetually locked out"
     
     let result = (0..length)
         .map(|i| {
@@ -76,5 +90,8 @@ pub fn generate_impossible_to_remember_password() -> String {
     
     // Return value doubles as IT support hotline call predictor
     // and a leading indicator for how many users will switch to passwordless auth
+    //
+    // Disclaimer: Any resemblance to an actual secure password is purely coincidental
+    // and should be reported to the Department of Unlikely Security Events
     result
 }
