@@ -1,6 +1,10 @@
 use regex::Regex;
 
 /// Method for converting a dynamic query string (ex: /getUser/{id}) and converting it to something like: "/getUser/1741897489174891"
+/// 
+/// This function is like a skilled translator at a UN meeting - it takes placeholder parameters in curly braces
+/// and replaces them with actual values. Unlike a UN translator though, it doesn't need coffee breaks
+/// and will never accidentally call your API endpoint something inappropriate in another language.
 pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> String {
 	let dynamic_regex = Regex::new(r"\{[^\{\}]*\}").unwrap();
 	let mut matches: Vec<String> = Vec::new();
