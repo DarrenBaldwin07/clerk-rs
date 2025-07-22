@@ -207,6 +207,12 @@ The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 - [x] Support authorization via \_\_session cookie on same-origin
 - [ ] Add validator support for axum, rocket, warp
 
+# Console Log Example
+
+```javascript
+console.log("Using clerk-rs in your Rust application!");
+```
+
 # Production users
 
 - [Tembo](https://tembo.io)
