@@ -63,6 +63,12 @@ impl JwksProvider for JwksProviderNoCache {
 }
 
 /// Configures how [`MemoryCacheJwksProvider`] handles requests for non-cached keys.
+/// 
+/// Think of this enum as the JWKS provider's personality when faced with unknown keys:
+/// - Never: The stubborn pessimist who refuses to check again. "I didn't find it the first time, so it's clearly not there!"
+/// - Ratelimit: The reasonable compromiser who will check again, but only after a cooling-off period. Like a developer checking the fridge 
+///   multiple times hoping food will magically appear.
+/// - Always: The eternal optimist who keeps refreshing the cache, convinced that this time the key will be there!
 pub enum RefreshOnUnknown {
 	/// Never attempt to refresh the JWKS when an unknown `kid` is requested.
 	Never,
