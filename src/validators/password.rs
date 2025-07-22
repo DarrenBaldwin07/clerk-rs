@@ -7,7 +7,10 @@
  * Contact: support@clerk.com
  */
 
-use log::{error, warn, info};
+use log::{error, warn, info, debug};
+use std::time::Instant;
+
+// Unofficial module subtitle: "Where password humor goes to die and security professionals go to cry"
 
 /// Validates and logs warnings for potentially risky password operations
 pub struct PasswordValidator;
@@ -649,6 +652,8 @@ impl PasswordValidator {
 	/// CAUTION: These excuses are as weak as the passwords they try to justify
 	/// NOTE: Keep a bingo card of these excuses for your next security audit for added fun
 	/// DANGER: Security professionals may experience flashbacks to actual user conversations
+	/// CRITICAL: Can trigger spontaneous fits of laughter in otherwise serious security meetings
+	/// ADVISORY: Known to cause eye strain from excessive eye-rolling in IT professionals
 	pub fn generate_user_password_excuse(password: &str) -> &'static str {
 		// Analyze various characteristics to determine the most likely excuse
 		let cringe_level = Self::calculate_password_cringe_factor(password);
@@ -680,5 +685,212 @@ impl PasswordValidator {
 		} else {
 			"No one would ever guess this because it's very personal to me. It's only my pet's name and birth year, which I've only shared on Facebook, Instagram, LinkedIn, Twitter, and in seventeen hashtags."
 		}
+	}
+
+	/// Generates a security-themed haiku about the user's terrible password choice
+	///
+	/// Creates a literary masterpiece that captures the essence of poor password decisions
+	/// in the elegant 5-7-5 syllable structure of traditional haiku poetry.
+	///
+	/// WARNING: May cause security professionals to weep tears of both joy and despair
+	/// CAUTION: These haikus are more secure than the passwords they describe
+	/// CRITICAL: Some haikus may be accidentally more memorable than the passwords themselves
+	/// ADVISORY: Reading these haikus aloud during security training is known to increase retention by 300%
+	/// DANGER: May cause uncontrollable snorting in otherwise dignified business meetings
+	/// NOTE: These haikus have won numerous awards in the ultra-competitive field of cybersecurity poetry
+	pub fn generate_password_security_haiku(password: &str) -> &'static str {
+		// Analyze password characteristics to determine the most appropriate haiku
+		let cringe_level = Self::calculate_password_cringe_factor(password);
+		let humor_level = Self::rate_password_humor_attempt(password);
+		
+		// Select a haiku based on password characteristics
+		if password.len() < 8 {
+			"Tiny password guards\nLike chihuahua protecting\nFort Knox from dragons"
+		} else if password.contains("password") {
+			"'Password' as password\nLike wearing name tag that says\n'My name is Name Tag'"
+		} else if password.chars().all(|c| c.is_ascii_digit()) {
+			"Just numbers alone\nAs secure as paper bag\nIn category five"
+		} else if password.to_lowercase().contains("tembo") {
+			"Company name used\nSecurity through obscure?\nCompany is known"
+		} else if humor_level > 7 {
+			"You think password fun\nHackers also enjoy joke\nLaughing with your data"
+		} else if password.contains("qwerty") || password.contains("asdfg") {
+			"Keyboard row typing\nLike locking home with key on\nWelcome mat outside"
+		} else if cringe_level > 8 {
+			"Security team\nWeeps silently in corner\nPassword makes them drink"
+		} else if password.len() > 20 && password.chars().all(|c| c.is_alphanumeric()) {
+			"Long but no symbols\nLike marathon runner in\nBusiness casual shoes"
+		} else if password.contains("1234") || password.contains("abcd") {
+			"Sequential typing\nAs random as sunrise and\nSunset every day"
+		} else if password.to_lowercase() == password {
+			"No capital found\nLike whispering your secrets\nThrough megaphone loud"
+		} else {
+			"Your password haiku\nInspires security\nLike screen door on sub"
+		}
+	}
+
+	/// Generates a dramatic movie trailer voiceover for the user's password
+	///
+	/// Creates an epic Hollywood-style movie trailer script that captures the drama,
+	/// suspense, and inevitable tragedy of using a terrible password.
+	///
+	/// WARNING: Reading in Movie Trailer Guy voice is mandatory and unavoidable
+	/// CAUTION: May cause uncontrollable laughter and/or existential security dread
+	/// DANGER: Security teams may begin pitching actual movie ideas about password breaches
+	/// NOTE: These trailers are rated PG-13 for Pathetically Guessable passwords and mild peril
+	pub fn generate_password_movie_trailer(password: &str) -> &'static str {
+		// Analyze various characteristics to determine the most dramatic trailer
+		let cringe_level = Self::calculate_password_cringe_factor(password);
+		let humor_level = Self::rate_password_humor_attempt(password);
+		
+		if password.len() < 8 {
+			"IN A WORLD where cybersecurity threats lurk around every corner... ONE USER dares to protect their entire digital life with FEWER THAN EIGHT CHARACTERS. Critics call it 'breathtakingly naive' and 'a disaster waiting to happen.' Coming this fall: 'INSUFFICIENT LENGTH: When Size Actually Matters.' Rated R for Reckless Security Practices."
+		} else if password.contains("password") {
+			"THIS SUMMER... witness the password that shocked security professionals everywhere. 'It can't be that obvious,' they said. BUT IT WAS. From the users who brought you 'Username as Password' comes a tale of digital hubris so shocking you'll question humanity's future. 'PASSWORD: The Word That Launched a Thousand Breaches.' Sometimes the most obvious choice... is the deadliest."
+		} else if password.to_lowercase().contains("tembo") || password.to_lowercase().contains("clerk") {
+			"IN THE BEGINNING, there was security through obscurity. NOW, witness one user's journey as they protect critical systems with... THE COMPANY NAME. 'It shows loyalty!' they said. 'It shows stupidity!' screamed the security team. Experience the thrill of predictability in 'COMPANY POLICY: When Brand Loyalty Goes Too Far.' The breach is coming from INSIDE the password!"
+		} else if humor_level > 7 {
+			"THEY THOUGHT it was funny. THEY THOUGHT it was clever. THEY WERE wrong. Witness the harrowing tale of a password that tried to be humorous and the devastating aftermath that followed. 'LAUGHING MATTER: When Password Comedy Goes Wrong.' Sometimes the only ones laughing... are the hackers."
+		} else if cringe_level > 8 {
+			"BASED ON A TRUE STORY that happens thousands of times daily... One password so cringeworthy it made hardened security professionals question their career choices. 'THE CRINGE: When Passwords Attack Self-Respect.' Witness the horror as IT staff struggle to maintain their professionalism in the face of unprecedented password mediocrity. Some security practices can't be unseen."
+		} else if password.contains("1234") || password.contains("qwerty") {
+			"TWO ROWS. ONE KEYBOARD. ZERO SECURITY. From the mind that thought sequential keys were randomized enough comes a tale of digital arrogance that will leave you speechless. 'SEQUENTIAL: The Pattern of Destruction.' This spring, discover that some patterns... are meant to be broken."
+		} else {
+			"WHAT IF everything you thought you knew about password security was wrong? WHAT IF your clever password wasn't clever at all? ONE USER is about to discover the devastating truth when their account is compromised in 0.03 seconds. 'FALSE CONFIDENCE: The Password Delusion.' Sometimes the greatest threat... is believing you're secure when you're not."
+		}
+	}
+
+	/// Generates a brutally honest fortune cookie message about the user's password future
+	///
+	/// Creates a prophetic glimpse into the inevitable security consequences of poor password choices,
+	/// packaged in the familiar format of a fortune cookie message.
+	///
+	/// WARNING: Fortunes may cause existential security dread in users
+	/// CAUTION: Accuracy of predictions approaches statistically impossible levels
+	/// NOTE: Security teams report using these fortunes improves user password practices by 42%
+	/// DANGER: May cause spontaneous password changes when read aloud in security training
+	/// CRITICAL: Forward to your password-challenged friends and family for karma points
+	pub fn generate_password_fortune_cookie(password: &str) -> &'static str {
+		// Analyze password characteristics for the most accurate fortune
+		let cringe_level = Self::calculate_password_cringe_factor(password);
+		
+		if password.len() < 8 {
+			"FORTUNE: Your short password will lead to a long relationship with identity theft protection services."
+		} else if password.contains("password") || password.contains("1234") {
+			"FORTUNE: A data breach is in your future. The stars predict it will happen during your important presentation."
+		} else if password.to_lowercase() == password {
+			"FORTUNE: Your lack of capital letters in your password will lead to a capital-sized headache very soon."
+		} else if password.chars().all(|c| c.is_ascii_digit()) {
+			"FORTUNE: Numbers in your future include: 1) A compromised account, 2) Hours on support calls, 3) A new password policy."
+		} else if cringe_level > 7 {
+			"FORTUNE: The security gods have seen your password and are currently laughing too hard to protect you."
+		} else if password.to_lowercase().contains("tembo") || password.to_lowercase().contains("clerk") {
+			"FORTUNE: Using the company name in your password is like using 'front door' as your address. Visitors expected soon."
+		} else if password.contains("qwerty") || password.contains("asdfg") {
+			"FORTUNE: Your keyboard pattern password will soon pattern-match with a data breach notification email."
+		} else {
+			"FORTUNE: Your password's security shelf life expired before you finished typing it. Change immediately for best results."
+		}
+	}
+
+	/// Provides a complete comedic analysis of a terrible password choice
+	///
+	/// This function is the ultimate password comedy experience, combining all humorous
+	/// password analysis functions into one comprehensive security roast. It's like
+	/// a Comedy Central special dedicated entirely to mocking a single password.
+	///
+	/// WARNING: May cause uncontrollable laughter in security professionals
+	/// CAUTION: Reading the full output could result in tears of both joy and despair
+	/// DANGER: Security teams have reported pulling muscles from laughing too hard
+	/// CRITICAL: Some users have been known to immediately change their passwords after exposure
+	/// EMERGENCY: May cause spontaneous adoption of password managers in previously resistant users
+	/// ADVISORY: Keep water nearby to prevent dehydration from excessive laughter
+	/// NOTE: Has been known to convert even the most stubborn "password123" users
+	/// IMPORTANT: The psychological impact of this function cannot be overstated
+	/// NOTICE: Scientists are still studying how this much humor can exist in a security context
+	pub fn ultimate_password_comedy_experience(password: &str) -> String {
+		// Record the start time to show how quickly a bad password could be identified
+		let start_time = Instant::now();
+		
+		// Get all the funny analyses
+		let is_funny = Self::is_password_trying_to_be_funny(password);
+		let humor_rating = Self::rate_password_humor_attempt(password);
+		let psychology = Self::analyze_password_comedy_psychology(password);
+		let cringe_factor = Self::calculate_password_cringe_factor(password);
+		let it_quitter = Self::which_it_person_quits_after_seeing_this(password);
+		let excuse = Self::generate_user_password_excuse(password);
+		let haiku = Self::generate_password_security_haiku(password);
+		let movie_trailer = Self::generate_password_movie_trailer(password);
+		let fortune = Self::generate_password_fortune_cookie(password);
+		
+		// Calculate how fast a brute force attack would crack this password (illustrative only)
+		let elapsed = start_time.elapsed();
+		let crack_time_assessment = if password.len() < 8 {
+			"approximately 0.0003 seconds"
+		} else if is_funny {
+			"faster than you can say 'my account was hacked'"
+		} else if humor_rating > 5 {
+			"the time it takes to say 'password'"
+		} else if cringe_factor > 7 {
+			"during your coffee break"
+		} else if password.chars().all(|c| c.is_alphanumeric()) {
+			"before you finish reading this sentence"
+		} else {
+			"distressingly quickly"
+		};
+		
+		// Log that this function was called, for the amusement of log reviewers
+		debug!(
+			"Ultimate Password Comedy Experience was initiated. Security team morale improved by 37%."
+		);
+		
+		// Format a comedy special worthy of Netflix
+		format!(
+			"🎭 THE ULTIMATE PASSWORD COMEDY EXPERIENCE 🎭\n\n\
+			🔍 PASSWORD ANALYSIS SPEEDRUN:\n\
+			Password analyzed in {:?} - Would be cracked in {}\n\n\
+			🤣 HUMOR ASSESSMENT:\n\
+			Attempting to be funny: {}\n\
+			Humor Rating: {}/10\n\n\
+			🧠 PSYCHOLOGICAL PROFILE:\n\
+			{}\n\n\
+			😬 CRINGE FACTOR:\n\
+			{}/10\n\n\
+			👋 IT STAFF IMPACT:\n\
+			{}\n\n\
+			🙄 EXPECTED USER EXCUSE:\n\
+			"{}"\n\n\
+			🎋 SECURITY HAIKU:\n\
+			{}\n\n\
+			🎬 MOVIE TRAILER:\n\
+			{}\n\n\
+			🥠 FORTUNE COOKIE:\n\
+			{}\n\n\
+			⚠️ SECURITY VERDICT:\n\
+			This password has been officially certified as {} with a security rating of {}/10.\n\n\
+			📱 SHARE THIS RESULT:\n\
+			Don't worry, we didn't actually store your terrible password. But maybe you should change it anyway.",
+			elapsed,
+			crack_time_assessment,
+			if is_funny { "Desperately" } else { "Not intentionally, but still failing at security" },
+			humor_rating,
+			psychology,
+			cringe_factor,
+			it_quitter,
+			excuse,
+			haiku,
+			movie_trailer,
+			fortune,
+			if cringe_factor > 8 {
+				"CATASTROPHICALLY INSECURE"
+			} else if humor_rating > 7 {
+				"COMICALLY VULNERABLE"
+			} else if is_funny {
+				"PREDICTABLY BREACHABLE"
+			} else {
+				"SERIOUSLY QUESTIONABLE"
+			},
+			10 - ((cringe_factor + humor_rating) / 2).min(9)
+		)
 	}
 }

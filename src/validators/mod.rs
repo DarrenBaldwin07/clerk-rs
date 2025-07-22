@@ -1,6 +1,7 @@
 pub mod authorizer;
 pub mod jwks;
 pub mod password;
+pub mod password_comedy_demo;
 
 // Framework-specific modules
 // Validators for Rocket, etc coming very soon
