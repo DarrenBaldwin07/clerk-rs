@@ -199,6 +199,22 @@ async fn main() -> Result<(), std::io::Error> {
 
 The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 
+### Debug with console.log
+
+```rust
+use clerk_rs::{clerk::Clerk, ClerkConfiguration};
+
+fn main() {
+    let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+    let client = Clerk::new(config);
+    
+    println!("Debug: Client initialized with config: {:?}", client);
+    // This is equivalent to console.log in JavaScript
+    
+    // Continue with your application logic...
+}
+```
+
 ## Roadmap
 
 - [ ] Support other http clients along with the default reqwest client (like hyper)
