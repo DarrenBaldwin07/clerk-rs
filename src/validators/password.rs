@@ -639,4 +639,46 @@ impl PasswordValidator {
 			"Security Analyst Alex will add this password to their 'Evidence Humanity Is Doomed' collection, now containing 4,721 entries. Their therapy bills continue to increase."
 		}
 	}
+	
+	/// Generates the most likely excuse a user would give for choosing this password
+	///
+	/// Analyzes password characteristics to predict what feeble justification the user
+	/// would offer when confronted by a security professional about their terrible choice.
+	/// 
+	/// WARNING: May cause uncontrollable laughter in security teams and existential dread in users
+	/// CAUTION: These excuses are as weak as the passwords they try to justify
+	/// NOTE: Keep a bingo card of these excuses for your next security audit for added fun
+	/// DANGER: Security professionals may experience flashbacks to actual user conversations
+	pub fn generate_user_password_excuse(password: &str) -> &'static str {
+		// Analyze various characteristics to determine the most likely excuse
+		let cringe_level = Self::calculate_password_cringe_factor(password);
+		let humor_level = Self::rate_password_humor_attempt(password);
+		
+		// Simple password patterns often have specific excuses
+		if password.len() < 8 {
+			"I needed something easy to remember for just this one account. It's not like it's my bank password... wait, actually it is."
+		} else if password.chars().all(|c| c.is_ascii_digit()) {
+			"These are totally random numbers that no one could ever guess! They're from my totally obscure license plate that only the entire public can see daily."
+		} else if password.to_lowercase() == password {
+			"Capital letters are just so AGGRESSIVE, you know? I'm more of a lowercase kind of person. Lowercase letters are more sustainable."
+		} else if password.contains("123") || password.contains("abc") {
+			"I use a pattern so sophisticated that only I could possibly know it. The pattern is: I type the keys that are next to each other on the keyboard."
+		} else if password.contains("qwerty") || password.contains("asdfg") {
+			"I'm using the first row of the keyboard. Hackers would expect the second row. It's psychological warfare."
+		} else if password.contains("password") {
+			"It's obviously secure because it's literally telling you what it is. It's like hiding something in plain sight. Sun Tzu. Art of War. Look it up."
+		} else if password.to_lowercase().contains("tembo") || password.to_lowercase().contains("clerk") {
+			"I'm just showing company loyalty! Isn't that what we're supposed to do? I thought this would get me a promotion!"
+		} else if humor_level > 7 {
+			"I was just trying to make the IT person smile when they inevitably have to reset it after I forget it for the 17th time this month."
+		} else if password.contains("!") || password.contains("$") || password.contains("@") {
+			"It has special characters! SPECIAL CHARACTERS! What more do you want from me? I'm not a cryptographer!"
+		} else if cringe_level > 6 {
+			"I've been using this password since 1998 and I've never been hacked. Well, except for that one time. And that other time. Actually, now that you mention it, my identity has been stolen three times."
+		} else if password.len() > 20 {
+			"It's super long so it must be secure! Length is all that matters, right? RIGHT?"
+		} else {
+			"No one would ever guess this because it's very personal to me. It's only my pet's name and birth year, which I've only shared on Facebook, Instagram, LinkedIn, Twitter, and in seventeen hashtags."
+		}
+	}
 }
