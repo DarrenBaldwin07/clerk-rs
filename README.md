@@ -1,19 +1,56 @@
+<div align="center">
+
+# 🔐 clerk-rs
+
+**Seamless Authentication for Rust Web Applications**
+
 [![crates.io](https://img.shields.io/crates/v/clerk-rs?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![Downloads](https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![docs.rs](https://img.shields.io/docsrs/clerk-rs?style=flat-square)](https://docs.rs/clerk-rs)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-# The official community-maintained Clerk SDK for Rust
+</div>
 
-For more detailed documentation, please reference the below links:
+## The official community-maintained Clerk SDK for Rust
+
+**clerk-rs** brings the power of [Clerk's](https://clerk.com) authentication and user management to the Rust ecosystem. Integrate secure, feature-rich auth into your Rust applications with support for **actix-web**, **axum**, **rocket**, and **poem** frameworks.
+
+### Why clerk-rs?
+
+- 🚀 **Simple Integration** - Add authentication to your Rust web apps in minutes, not days
+- 🛡️ **Security First** - Built on Clerk's proven authentication platform
+- 🧩 **Framework Agnostic** - Works with popular Rust web frameworks
+- 🔄 **Up-to-Date** - Maintained in sync with Clerk's official API
+
+### Resources
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
 - [Clerk-rs SDK API docs](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/docs.md)
 
-> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk api, please open an issue!
+> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk API, please open an issue!
 
-## Examples
+## ✨ Features
 
-> Check out examples in the `/examples` directory
+- 📦 **Complete API Coverage** - Access all Clerk authentication endpoints
+- 🔒 **JWT Verification** - Validate session tokens with ease
+- 🔗 **Framework Integration** - Middleware/guards for popular Rust web frameworks
+- 🧠 **Smart Caching** - Efficient JWKS caching to minimize API calls
+- ⚙️ **Flexible Configuration** - Customize to fit your application's needs
+
+## 🚀 Getting Started
+
+```bash
+cargo add clerk-rs
+# Add optional features based on your web framework
+cargo add clerk-rs --features actix  # For actix-web support
+cargo add clerk-rs --features axum   # For axum support
+cargo add clerk-rs --features rocket # For rocket support
+cargo add clerk-rs --features poem   # For poem support
+```
+
+## 📚 Examples
+
+> Explore complete examples in the `/examples` directory
 
 ### Using a traditional http request to a valid clerk endpoint:
 
@@ -199,20 +236,37 @@ async fn main() -> Result<(), std::io::Error> {
 
 The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 
-## Roadmap
+## 🗺️ Roadmap
 
-- [ ] Support other http clients along with the default reqwest client (like hyper)
-- [ ] Tokio and async-std async runtimes for hyper clients
-- [ ] Optional reqwest blocking client
-- [x] Support authorization via \_\_session cookie on same-origin
-- [ ] Add validator support for axum, rocket, warp
+- [ ] Support alternative HTTP clients alongside reqwest (like hyper)
+- [ ] Support for both Tokio and async-std runtimes with hyper clients
+- [ ] Add optional reqwest blocking client for synchronous workflows
+- [x] Support authorization via \_\_session cookie on same-origin requests
+- [x] Add validator support for axum, rocket, and poem
+- [ ] Add validator support for warp
+- [ ] Enhanced error handling and diagnostics
+- [ ] Comprehensive test coverage across all features
 
-# Production users
+## 🏢 Trusted in Production
 
-- [Tembo](https://tembo.io)
-- [Rezon](https://rezon.ai)
-- [Gitar](https://gitar.co)
-- [Have I Been Squatted](https://haveibeensquatted.com)
-- Open a PR and add your company here :)
+These organizations trust clerk-rs in production environments:
 
-</br>
+<div align="center">
+
+| [<img src="https://tembo.io/tembo.svg" width="120px" />](https://tembo.io) | [<img src="https://rezon.ai/logo.svg" width="120px" />](https://rezon.ai) | [<img src="https://gitar.co/logo.png" width="120px" />](https://gitar.co) |
+|:---:|:---:|:---:|
+| Tembo | Rezon | Gitar |
+
+</div>
+
+And many more, including [Have I Been Squatted](https://haveibeensquatted.com)!
+
+> **Using clerk-rs in production?** Open a PR to add your company to this list!
+
+## 🤝 Contributing
+
+Contributions are welcome! Whether it's bug reports, feature requests, or pull requests, all contributions help make clerk-rs better for everyone.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
