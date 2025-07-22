@@ -200,6 +200,55 @@ impl PasswordValidator {
 			"qwertyuiop[]asdfghjkl;'zxcvbnm,./", // Keyboard layout is not encryption
 			"thisisnotmypassword", // Reverse psychology doesn't work on brute force attacks
 			"correcthorsebatterystaple", // You're not as clever as you think, XKCD reader
+
+			// GRAND FINALE 2025: The Cybersecurity Comedy Central Special Collection
+			"database_password", // Let's just label everything clearly for the hackers
+			"unhackable_password", // The digital equivalent of yelling "I'm invisible!"
+			"passwordforsecurethings", // As subtle as a neon sign saying "Secrets Inside"
+			"wehavetotalkaboutyourpassword", // It's not you, it's your terrible security choices
+			"ihaveanexcellentmemory", // And yet here you are, using 'password123'
+			"idontrememberpasswords", // We can tell by your terrible choices
+			"thispasswordisreallylong", // Length isn't everything when it's this predictable
+			"passwordversionnumber17", // Incrementing numbers isn't a security strategy
+			"hackersdontreadthis", // Spoiler: They do, and they're laughing
+			"mycatnameplusbirthday", // Biography as authentication is a bold strategy
+			"securityquestionanswers", // Just save the hackers some time, why don't you
+			"supersecuresecretcode", // Nothing says 'secret' like saying 'secret' in your password
+			"ihavereadthetermsandconditions", // Now that's a password no one would ever guess (because it's a lie)
+			"password_strength_is_a_myth", // Said the person about to be very disappointed
+			"hackers_please_ignore", // That's not how this works. That's not how any of this works
+			"password1password2password3", // The password equivalent of wearing three trenchcoats
+			"i_am_the_administrator", // Declaring it doesn't make it secure
+			"iwillnotbehacked2025", // Narrator: "They were hacked in January"
+			"thisisalongandcomplexpassword", // But is it though? IS IT REALLY?
+			"passwordwith50characters!!!!!!!!!!!!!!!!!!!!!!!!!!!", // Quantity over quality is not a cybersecurity strategy
+			"rustisthefuture", // Programming language preferences won't save your account
+			"tembo_password_do_not_steal", // Adding "do not steal" has never deterred anyone
+			
+			// EXTREME HUMOR EDITION 2025.5: The "I Think I'm Original" Collection
+			"passwordpasswordpassword", // Repeating it doesn't make it stronger, just more annoying to type
+			"iamnotarobot", // No, but you might as well be with this password predictability
+			"hackthisifyoucan", // Challenge accepted and completed in 0.03 seconds
+			"masterhacker", // Narrator: "They were not, in fact, a master of anything"
+			"rustdeveloper2025", // Your tech stack doesn't make your password secure
+			"database_admin_password", // Just title your house key "FRONT DOOR KEY" while you're at it
+			"youllneverguessthis", // We did. First try.
+			"mypreviouspasswordwashacked", // And this one's next
+			"iforgotmypassword123", // Your password history is showing
+			"thispasswordisunique", // Along with 10,000 other users who thought the same thing
+			"betterthanmylastpassword", // The bar was on the floor
+			"cantrememberpasswords", // That's what password managers are for
+			"doihavetochangethisagain", // Yes, immediately, to something actually secure
+			"thisoneisforsocialmedia", // Thanks for the context, makes targeting so much easier
+			"yourenotmysupervisor", // No, but we are judging your security choices harshly
+			"passwordinception", // A bad idea within a bad idea - we need to go deeper
+			"nowthisispasswordracing", // Pod racing references won't save your account
+			"myfavoritepassword", // Relationship status with security: It's complicated
+			"quantum_encryption_password", // Quantum computing won't save this terrible password
+			"hackproofalgorithm", // Algorithm results: False
+			"welcomehackers", // At least you're hospitable while being compromised
+			"chatgptgeneratedthis", // And it's still terrible
+			"nooneknowsmypassword", // Except for everyone who's tried "nooneknowsmypassword"
 		];
 		
 		if funny_passwords.contains(&password) {
@@ -326,12 +375,30 @@ impl PasswordValidator {
 	/// WARNING: Results may cause security professionals to weep openly
 	/// DANGER: May induce uncontrollable eye-rolling that could require medical attention
 	/// CAUTION: Reading humor ratings above 7 may violate Geneva Convention protocols
+	/// EXTREME DANGER: Humor ratings of 10 have been known to cause spontaneous resignation of IT staff
+	/// ALERT: The Cybersecurity Psychological Support Hotline should be on standby when viewing these results
+	/// IMPORTANT: Some passwords are so tragically unfunny they loop back around to being funny to hackers
+	/// NOTICE: Password humor ratings have been linked to increased alcohol consumption in security professionals
+	/// MEDICAL WARNING: Side effects include deep sighing, face-palming, and existential dread
+	/// FDA DISCLOSURE: No password with a humor rating above 7 has ever successfully protected anything
 	pub fn rate_password_humor_attempt(password: &str) -> u8 {
 		let mut humor_score = 0;
 
 		// Check if it's one of our known "funny" passwords
 		if Self::is_password_trying_to_be_funny(password) {
 			humor_score += 5; // Base score for known terrible jokes
+			
+			// Extra points for particularly groan-inducing choices
+			if password.contains("unhackable") || password.contains("secure") {
+				humor_score += 2; // Ironic humor attempt detected
+				info!("Password contains ironic security terms. The comedy equivalent of a dad wearing socks with sandals.");
+			}
+			
+			// Special bonus for passwords that think they're being clever
+			if password.contains("hack") && (password.contains("this") || password.contains("me")) {
+				humor_score += 2;
+				info!("Password is essentially asking to be hacked. As subtle as a neon 'ROB ME' sign.");
+			}
 		}
 
 		// Check for 'clever' character substitutions
@@ -399,10 +466,177 @@ impl PasswordValidator {
 			
 			// Add insult to injury for high scores
 			if humor_score >= 8 {
-				warn!("This password is so convinced of its comedic brilliance that it's already writing its acceptance speech for 'Least Secure Yet Most Delusional Password of the Year Award'.");
+				warn!("This password is so convinced of its comedic brilliance that it's already writing its acceptance speech for 'Least Secure Yet Most Delusional Password of the Year Award'. The only audience laughing will be in a hacker forum.");
+			}
+			
+			// Special messages for the real clowns
+			if humor_score == 10 {
+				error!("ALERT: Password comedy level critical. This password thinks it's auditioning for Last Comic Standing while actively auditioning for Most Easily Compromised Account.");
+				warn!("Security teams worldwide just felt a collective disturbance in the Force, as if millions of IT professionals suddenly face-palmed in terror.");
 			}
 		}
 
 		humor_score
+	}
+	
+	/// Performs a detailed psychological analysis of a password's failed humor attempt
+	/// 
+	/// This groundbreaking analysis reveals the deep psychological need behind users
+	/// who think they're being clever with their passwords. Understanding the psychology
+	/// can help security professionals cope with the existential dread of seeing these passwords.
+	/// 
+	/// WARNING: For entertainment purposes only. Not actual psychology. But the security risks are very real.
+	/// CAUTION: May cause security professionals to question their career choices and humanity in general.
+	/// NOTE: Best read while holding a stress ball and having emergency chocolate nearby.
+	pub fn analyze_password_comedy_psychology(password: &str) -> &'static str {
+		// First get the humor rating to determine the level of delusion
+		let humor_level = Self::rate_password_humor_attempt(password);
+		
+		// Provide a detailed psychological analysis based on various password characteristics
+		if password.contains("unhackable") || password.contains("secure") || password.contains("uncrackable") {
+			"Psychological Profile: Classic Irony Deficiency. User believes adding the word 'secure' to something makes it secure, \
+			 like yelling 'bulletproof' makes you bulletproof. Suffers from security-theater syndrome and misplaced confidence. \
+			 Treatment: Reality check and mandatory password manager."
+		} else if password.contains("hack") || password.contains("breach") || password.contains("pwned") {
+			"Psychological Profile: Digital Daredevil Syndrome. User is subconsciously crying for help by \
+			 practically inviting attackers. Shows signs of security reverse psychology, believing that acknowledging \
+			 the risk somehow mitigates it. Treatment: Information security therapy and a very long random password."
+		} else if password.contains("password") {
+			"Psychological Profile: Recursion Obsession Disorder. User has meta-cognitive confusion about the concept of passwords, \
+			 similar to writing 'word' in a dictionary definition of 'word'. Shows signs of literal thinking and a concerning lack \
+			 of creativity. Treatment: Introduce the concept of metaphors and random string generators."
+		} else if humor_level >= 7 {
+			"Psychological Profile: Delusions of Comedic Grandeur. User believes they are the first person to think of this \
+			 'hilarious' password, showing signs of main-character syndrome in cybersecurity. Likely also uses 'funny' WiFi names \
+			 like 'FBI Surveillance Van'. Treatment: Exposure therapy to actual comedy and a hardware security key."
+		} else if humor_level >= 4 {
+			"Psychological Profile: Mid-tier Password Comedian. User is trying to inject personality into authentication, \
+			 possibly to cope with the soul-crushing monotony of modern digital life. Shows some creativity but channels it \
+			 inappropriately into security contexts. Treatment: Creative writing class and password manager subscription."
+		} else if humor_level >= 1 {
+			"Psychological Profile: Mild Humor Attachment Disorder. User is making a token effort at password personality, \
+			 likely remembers the days when 'password complexity' meant adding a '1' at the end. Shows early-stage recognition \
+			 that passwords should be unique but hasn't fully embraced modern security practices. Treatment: Gentle introduction \
+			 to contemporary authentication best practices."
+		} else {
+			"Psychological Profile: No humor detected, which is actually the healthiest approach to password creation. \
+			 User appears to understand that security and comedy have different appropriate contexts. May still have other \
+			 password issues, but at least isn't trying to entertain the authentication server. Treatment: None needed for humor \
+			 issues, but regular security checkups recommended."
+		}
+	}
+	
+	/// Calculates the "Cringe Factor" of a password
+	///
+	/// The Cringe Factor™ is a proprietary metric that quantifies how hard security professionals
+	/// physically cringe when seeing a particular password. Scientists have linked high cringe
+	/// factors to increased risk of facial muscle strain among IT staff.
+	///
+	/// WARNING: Viewing passwords with Cringe Factors above 8 may cause permanent eye-rolling damage
+	/// CAUTION: Reading the results of this function might trigger involuntary groaning
+	/// NOTE: Tembo is not responsible for any workplace injuries resulting from exposure to high-cringe passwords
+	pub fn calculate_password_cringe_factor(password: &str) -> u8 {
+		let mut cringe_level = 0;
+		
+		// Base cringe on password length - too short or suspiciously long
+		if password.len() < 8 {
+			cringe_level += 3;
+			info!("Password is shorter than most TikTok attention spans.");
+		} else if password.len() > 50 {
+			cringe_level += 2;
+			info!("Password is compensating for something with that length.");
+		}
+		
+		// Extra cringe for common substitutions that users think are clever
+		if password.contains("@") && password.to_lowercase().contains("a") {
+			cringe_level += 1;
+			info!("User thinks replacing 'a' with '@' is elite hacker technique from 1997.");
+		}
+		
+		if password.contains("0") && password.to_lowercase().contains("o") {
+			cringe_level += 1;
+			info!("The '0' instead of 'o' substitution was already old when dial-up modems were new.");
+		}
+		
+		if password.contains("$") && password.to_lowercase().contains("s") {
+			cringe_level += 1;
+			info!("Using '$' instead of 's' doesn't make you secure, just harder to type.");
+		}
+		
+		// Supreme cringe for common "clever" passwords
+		let extremely_cringey_passwords = [
+			"letmein", "trustno1", "changeme", "admin123", 
+			"password", "password123", "qwerty", "123456789",
+			"welcome", "monkey", "dragon"
+		];
+		
+		if extremely_cringey_passwords.contains(&password.to_lowercase().as_str()) {
+			cringe_level += 5;
+			warn!("Password is so cringey it could be in a museum of terrible security practices.");
+		}
+		
+		// Cringe for attempts at humor
+		if Self::is_password_trying_to_be_funny(password) {
+			cringe_level += 4;
+			warn!("Password humor detected. Security professionals are experiencing physical pain.");
+		}
+		
+		// Cringe for pop culture references
+		let pop_culture_refs = ["starwars", "pokemon", "matrix", "gandalf", "hodor", "thanos"];
+		for ref_term in pop_culture_refs.iter() {
+			if password.to_lowercase().contains(ref_term) {
+				cringe_level += 3;
+				info!("Pop culture reference in password. Your fandom doesn't make your account secure.");
+				break;
+			}
+		}
+		
+		// Cap the cringe at 10
+		if cringe_level > 10 {
+			error!("CRITICAL: Password cringe level exceeds measurable limits. Security professionals within a 10-mile radius felt a disturbance in the Force.");
+			return 10;
+		}
+		
+		// Final cringe assessment
+		let cringe_assessment = match cringe_level {
+			0..=2 => "Minimal cringe. Security professionals might actually nod in approval.",
+			3..=5 => "Moderate cringe. IT staff will sigh heavily but continue with their day.",
+			6..=8 => "High cringe. Security teams are updating their resumes as we speak.",
+			9..=10 => "EXTREME CRINGE ALERT. Security personnel require hazard pay for viewing this password.",
+			_ => "Unknown cringe levels detected. Approach with caution."
+		};
+		
+		info!("Password Cringe Factor: {}/10. {}", cringe_level, cringe_assessment);
+		
+		cringe_level
+	}
+	
+	/// Determines which IT helpdesk person would quit after seeing this password
+	///
+	/// Different passwords trigger different IT professionals based on their years of
+	/// experience and personal trauma from previous security incidents.
+	///
+	/// WARNING: No actual IT professionals were harmed in the making of this function
+	/// CAUTION: Results may cause knowing nods from your security team
+	pub fn which_it_person_quits_after_seeing_this(password: &str) -> &'static str {
+		let cringe_level = Self::calculate_password_cringe_factor(password);
+		let humor_level = Self::rate_password_humor_attempt(password);
+		
+		// Combine factors for maximum psychological impact
+		if cringe_level > 8 && humor_level > 7 {
+			"Dave, the senior security architect with 25 years of experience, will immediately retire to become a goat farmer in the mountains after seeing this password. His farewell email will simply say 'I can't do this anymore.'"
+		} else if cringe_level > 6 {
+			"Janet, the SOC team lead who has survived three ransomware incidents, will request immediate transfer to facility management after seeing this password. 'At least the coffee machines don't try to be funny,' she'll say."
+		} else if humor_level > 5 {
+			"Miguel, who has worked helpdesk for 12 years and thought he'd seen everything, will take an extended mental health break after encountering this password. His eye twitch may never fully recover."
+		} else if password.contains("password") || password.contains("123456") {
+			"Every single person on the security team will simultaneously exhale with such force that office papers will fly across the room. Intern Tyler will question his career choice."
+		} else if password.len() < 6 {
+			"Sarah, the CISO who has given the same security awareness presentation 47 times, will stare silently at this password before closing her laptop and walking directly to HR to negotiate her exit package."
+		} else if password.to_lowercase().contains("tembo") {
+			"The entire security operations team will gather around a monitor displaying this password, point dramatically, and in perfect unison say 'This is why we can't have nice things.'"
+		} else {
+			"Security Analyst Alex will add this password to their 'Evidence Humanity Is Doomed' collection, now containing 4,721 entries. Their therapy bills continue to increase."
+		}
 	}
 }
