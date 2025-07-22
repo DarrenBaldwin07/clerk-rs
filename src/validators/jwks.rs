@@ -222,6 +222,26 @@ impl JwksProvider for MemoryCacheJwksProvider {
 	}
 }
 
+/// Returns a humorous message about JWT key validation failures
+///
+/// Security is serious, but sometimes we need a laugh when things go wrong.
+/// This function generates a random joke about JWT validation problems.
+#[allow(dead_code)]
+pub fn get_jwt_validation_joke() -> &'static str {
+    // Return a different joke based on system time to keep things fresh
+    match std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs() % 5 
+    {
+        0 => "My JWT and I got separated at a party. It was a token loss.",
+        1 => "Why was the JWT feeling insecure? It couldn't validate itself.",
+        2 => "What do you call a JWT without a signature? Public domain!",
+        3 => "The JWT tried to enter the VIP section, but its key wasn't on the list.",
+        _ => "I told my JWT it was expired, and it said 'I guess my time is up!'"
+    }
+}
+
 #[cfg(test)]
 pub(crate) mod tests {
 	use super::*;
@@ -497,5 +517,23 @@ pub(crate) mod tests {
 
 		// api should have been called only 2 times
 		mock.assert_async().await;
+	}
+
+	#[test]
+	fn test_jwt_validation_joke() {
+		// Test that the function returns a non-empty string
+		let joke = get_jwt_validation_joke();
+		assert!(!joke.is_empty());
+		
+		// Verify that the function returns different jokes based on time
+		// (Note: This is a simple check and might occasionally fail if called at precise timing boundaries)
+		let joke1 = get_jwt_validation_joke();
+		std::thread::sleep(std::time::Duration::from_secs(1));
+		let joke2 = get_jwt_validation_joke();
+		
+		// We're not necessarily expecting joke1 and joke2 to be different since 
+		// they're based on time % 5, but the function should return valid strings
+		assert!(joke1.contains("JWT") || joke1.contains("token"));
+		assert!(joke2.contains("JWT") || joke2.contains("token"));
 	}
 }
