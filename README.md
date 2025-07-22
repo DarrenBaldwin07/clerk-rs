@@ -1,21 +1,82 @@
+<div align="center">
+
+# 🔐 clerk-rs
+
+### The official community-maintained Clerk SDK for Rust
+
 [![crates.io](https://img.shields.io/crates/v/clerk-rs?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![Downloads](https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![docs.rs](https://img.shields.io/docsrs/clerk-rs?style=flat-square)](https://docs.rs/clerk-rs)
+[![Rust](https://img.shields.io/badge/rust-stable-orange?style=flat-square)](https://www.rust-lang.org/)
+[![License](https://img.shields.io/crates/l/clerk-rs?style=flat-square)](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/LICENSE)
 
-# The official community-maintained Clerk SDK for Rust
+**Seamless authentication and user management for your Rust applications**
 
-For more detailed documentation, please reference the below links:
+[Installation](#installation) • [Quick Start](#quick-start) • [Examples](#examples) • [Documentation](#documentation) • [Production Users](#production-users)
+
+</div>
+
+## ✨ Features
+
+- 🛡️ **Complete Authentication** - Full implementation of Clerk's authentication API
+- 🚀 **Framework Support** - Integrates with Actix, Axum, Rocket, and Poem
+- 🔄 **JWT Verification** - Built-in JWT validation and session management
+- 🔌 **Flexible** - Use as a standalone client or integrate with your favorite web framework
+- 🧩 **Modular Design** - Only include the features you need with cargo features
+
+## 🔥 Installation
+
+Add clerk-rs to your Cargo.toml:
+
+```toml
+[dependencies]
+clerk-rs = "0.8.0"
+```
+
+Or use cargo-add from the command line:
+
+```bash
+cargo add clerk-rs
+```
+
+Enable specific framework support with features:
+
+```toml
+[dependencies]
+clerk-rs = { version = "0.8.0", features = ["actix", "axum"] }
+```
+
+## 🚀 Quick Start
+
+```rust
+use clerk_rs::{clerk::Clerk, ClerkConfiguration};
+
+// Initialize Clerk with your secret key
+let config = ClerkConfiguration::new(None, None, Some("sk_test_your_api_key".to_string()), None);
+let clerk = Clerk::new(config);
+
+// Now you can use the clerk client to access the API
+// Example: Get a list of users
+let users = clerk.users().get_user_list().await?;
+```
+
+## 📚 Documentation
+
+For complete documentation, please reference:
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
 - [Clerk-rs SDK API docs](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/docs.md)
 
-> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk api, please open an issue!
+> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk API, please open an issue!
 
-## Examples
+## 💻 Examples
 
-> Check out examples in the `/examples` directory
+> 📁 **More examples** in the [`/examples`](https://github.com/DarrenBaldwin07/clerk-rs/tree/main/examples) directory
 
-### Using a traditional http request to a valid clerk endpoint:
+<details>
+<summary><b>🔗 Basic API Usage</b></summary>
+
+#### Using a direct HTTP request
 
 ```rust
 use tokio;
@@ -32,7 +93,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-### Using a clerk-rs method:
+#### Using clerk-rs methods
 
 ```rust
 use tokio;
@@ -49,7 +110,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-### Protecting a actix-web endpoint with Clerk.dev:
+</details>
+
+<details>
+<summary><b>🛡️ Web Framework Integration</b></summary>
+
+### Actix Web Integration
 
 With the `actix` feature enabled:
 
@@ -81,7 +147,7 @@ async fn main() -> std::io::Result<()> {
 }
 ```
 
-### Protecting a axum endpoint with Clerk.dev:
+### Axum Integration
 
 With the `axum` feature enabled:
 
@@ -111,7 +177,7 @@ async fn main() -> std::io::Result<()> {
 }
 ```
 
-### Protecting a rocket endpoint with Clerk.dev:
+### Rocket Integration
 
 With the `rocket` feature enabled:
 
@@ -154,7 +220,7 @@ fn rocket() -> _ {
 
 ```
 
-### Protecting a Poem endpoint with Clerk
+### Poem Integration
 
 With the `poem` feature enabled and poem v3 installed:
 ```rust
@@ -198,6 +264,7 @@ async fn main() -> Result<(), std::io::Error> {
 ```
 
 The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
+</details>
 
 ## Roadmap
 
@@ -207,12 +274,34 @@ The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 - [x] Support authorization via \_\_session cookie on same-origin
 - [ ] Add validator support for axum, rocket, warp
 
-# Production users
+## 🏗️ Production Users
 
-- [Tembo](https://tembo.io)
-- [Rezon](https://rezon.ai)
-- [Gitar](https://gitar.co)
-- [Have I Been Squatted](https://haveibeensquatted.com)
-- Open a PR and add your company here :)
+clerk-rs is trusted by these companies in production:
 
-</br>
+<div align="center">
+
+| [![Tembo](https://img.shields.io/badge/Tembo-PostgreSQL%20Platform-orange?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAMAAAC6V+0/AAABS2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDAgNzkuMTYwNDUxLCAyMDE3LzA1LzA2LTAxOjA4OjIxICAgICAgICAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIi8+CiA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgo8P3hwYWNrZXQgZW5kPSJyIj8+LUNEtwAAAARnQU1BAACxjwv8YQUAAAABc1JHQgCuzhzpAAAAPFBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMzMzm5uYNzu0SAAAAFHRSTlMABAgMFBgcICQsMDQ8d4ePk5erhCSoDxEAAACbSURBVBjTfdBLEsQgCARQPgrGRPH+5x0kJlqxZvGavwQBBM8TbUQW0e/F2GMKqPFEUAA8KZhZ9KAQmFO4VQjMOaIoySmkKEkpvCgIKc6zuFEQUlDiRDtOVBQpBIGAoJhJbMXgIpCZdBZ2eCvM8kvpLEZyKTLRyQY8kaYaGPQKc3Qaj/RHjaTelzYkx7aZkZ6B5BL+rL8/Z+4LnVsI3WP3CnAAAAAASUVORK5CYII=)](https://tembo.io) | [![Rezon](https://img.shields.io/badge/Rezon-AI%20Solutions-blue?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJjNS41MiAwIDEwIDQuNDggMTAgMTBzLTQuNDggMTAtMTAgMTBTMiAxNy41MiAyIDEyIDYuNDggMiAxMiAyek0xMCAyMHYtNmgtMnYtNGgyVjZoNnY0aC00djJoNHY4aC02eiIgZmlsbD0id2hpdGUiLz48L3N2Zz4=)](https://rezon.ai) |
+| [![Gitar](https://img.shields.io/badge/Gitar-Code%20Collaboration-success?style=for-the-badge&logo=git)](https://gitar.co) | [![Have I Been Squatted](https://img.shields.io/badge/Have%20I%20Been%20Squatted-Security-red?style=for-the-badge&logo=shield)](https://haveibeensquatted.com) |
+
+</div>
+
+*Using clerk-rs in production? [Open a PR](https://github.com/DarrenBaldwin07/clerk-rs/pulls) to add your company here!*
+
+## 💪 Contributing
+
+Contributions are welcome and appreciated! Here's how you can help:
+
+1. **Fork the repository** and clone it locally
+2. **Create a new branch** for your feature or bugfix
+3. **Make your changes** and test thoroughly
+4. **Submit a pull request** with a clear description of the changes
+
+Please make sure your code follows the existing style and that all tests pass before submitting a PR.
+
+## 👏 Acknowledgements
+
+This project exists thanks to all the contributors who participate in this community-maintained effort.
+
+## 📜 License
+
+This project is MIT licensed. See the [LICENSE](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/LICENSE) file for details.
