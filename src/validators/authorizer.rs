@@ -137,6 +137,8 @@ impl<J> Clone for ClerkAuthorizer<J> {
 /// Validates a jwt using the given [`JwksProvider`].
 ///
 /// The jwt is required to have a `kid` which is used to request the matching key from the provider.
+/// 
+/// Why did the JWT go to therapy? It had too many trust issues and couldn't stop living in the past (exp).
 pub async fn validate_jwt<J: JwksProvider>(token: &str, jwks: Arc<J>) -> Result<ClerkJwt, ClerkError> {
 	// parse the header to get the kid
 	let kid = match get_token_header(token).map(|h| h.kid) {
