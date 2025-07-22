@@ -70,4 +70,33 @@ impl PasswordValidator {
 			false
 		}
 	}
+	
+	/// Checks if a password is trying to be funny
+	/// 
+	/// Sometimes users think they're comedians when setting passwords.
+	/// This function checks for commonly used "humorous" passwords that 
+	/// might be easy to guess because they're popular jokes.
+	pub fn is_password_trying_to_be_funny(password: &str) -> bool {
+		let funny_passwords = [
+			"password123", "admin123", "letmein", 
+			"qwerty", "123456", "password", 
+			"correct-horse-battery-staple", // XKCD reference
+			"hunter2", // Classic IRC joke
+			"thisisapassword",
+			"ihavenopassword",
+			"passwordispassword",
+			"trustno1",
+			"p@ssw0rd",
+			"changeme",
+			"password1234",
+			"iamnotapassword"
+		];
+		
+		if funny_passwords.contains(&password) {
+			warn!("User attempted to use a 'humorous' password. Very original!");
+			true
+		} else {
+			false
+		}
+	}
 }
