@@ -57,6 +57,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = Clerk::new(config);
 
     let res = client.get(ClerkGetEndpoint::GetUserList).await?;
+    
+    // Debug response with console.log equivalent in Rust
+    println!("Clerk API Response: {:?}", res);
 
     Ok(())
 }
@@ -73,7 +76,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = Clerk::new(config);
 
     // Create an email
-    Email::create(&client, Some(your_clerk_email));
+    let email_result = Email::create(&client, Some(your_clerk_email));
+    
+    // Debug the email creation result with console.log equivalent in Rust
+    println!("Email Creation Result: {:?}", email_result);
 
     Ok(())
 }
