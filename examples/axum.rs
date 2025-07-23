@@ -27,6 +27,7 @@ async fn main() -> std::io::Result<()> {
 	let clerk = Clerk::new(config);
 	
 	println!("🚀 Server starting up... Time for some authentication magic!");
+	println!("🔍 DEBUG: I'm a random console log message! Checking if everything works properly...");
 
 	let app = Router::new()
 		.route("/", get(index))
