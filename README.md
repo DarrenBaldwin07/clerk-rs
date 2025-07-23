@@ -1,21 +1,56 @@
 [![crates.io](https://img.shields.io/crates/v/clerk-rs?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![Downloads](https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![docs.rs](https://img.shields.io/docsrs/clerk-rs?style=flat-square)](https://docs.rs/clerk-rs)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # The official community-maintained Clerk SDK for Rust
 
-For more detailed documentation, please reference the below links:
+`clerk-rs` is a comprehensive Rust SDK for interacting with the [Clerk](https://clerk.dev) authentication API. It provides a type-safe interface to Clerk's backend API and includes middleware support for popular Rust web frameworks.
+
+## Documentation
+
+For more detailed documentation, please reference:
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
 - [Clerk-rs SDK API docs](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/docs.md)
 
-> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk api, please open an issue!
+> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk API, please open an issue!
+
+## Features
+
+- Complete Rust implementation of Clerk's Backend API
+- First-class middleware support for multiple web frameworks:
+  - Actix Web (via `actix` feature)
+  - Axum (via `axum` feature)
+  - Rocket (via `rocket` feature)
+  - Poem (via `poem` feature)
+- JWT validation for protected routes
+- Type-safe API client for all Clerk endpoints
+- Async/await based API
+- Session cookie authentication support
+
+## Installation
+
+Add `clerk-rs` to your Cargo.toml:
+
+```toml
+[dependencies]
+clerk-rs = "0.4.1"
+```
+
+If you're using a specific web framework, enable the corresponding feature:
+
+```toml
+[dependencies]
+clerk-rs = { version = "0.4.1", features = ["actix"] }
+# Available features: "actix", "axum", "rocket", "poem"
+```
 
 ## Examples
 
 > Check out examples in the `/examples` directory
 
-### Using a traditional http request to a valid clerk endpoint:
+### Using a traditional HTTP request to a valid Clerk endpoint:
 
 ```rust
 use tokio;
@@ -49,7 +84,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-### Protecting a actix-web endpoint with Clerk.dev:
+### Protecting an Actix-web endpoint with Clerk.dev:
 
 With the `actix` feature enabled:
 
@@ -81,20 +116,29 @@ async fn main() -> std::io::Result<()> {
 }
 ```
 
-### Protecting a axum endpoint with Clerk.dev:
+### Protecting an Axum endpoint with Clerk.dev:
 
 With the `axum` feature enabled:
 
 ```rust
-use axum::{routing::get, Router};
+use axum::{routing::get, Router, Extension};
 use clerk_rs::{
     clerk::Clerk,
-    validators::{axum::ClerkLayer, jwks::MemoryCacheJwksProvider},
+    validators::{authorizer::ClerkJwt, axum::ClerkLayer, jwks::MemoryCacheJwksProvider},
     ClerkConfiguration,
 };
 
+// Public route
 async fn index() -> &'static str {
-    "Hello world!"
+    "Hello world! This is a public route that requires no authentication."
+}
+
+// Protected route with authenticated user info
+async fn profile(Extension(clerk_jwt): Extension<ClerkJwt>) -> String {
+    format!(
+        "Hello, {}! This is a protected route.",
+        clerk_jwt.sub
+    )
 }
 
 #[tokio::main]
@@ -103,15 +147,20 @@ async fn main() -> std::io::Result<()> {
     let clerk = Clerk::new(config);
 
     let app = Router::new()
-        .route("/index", get(index))
-        .layer(ClerkLayer::new(MemoryCacheJwksProvider::new(clerk), None, true));
+        .route("/", get(index))
+        .route("/profile", get(profile))
+        .layer(ClerkLayer::new(
+            MemoryCacheJwksProvider::new(clerk), 
+            Some(vec![String::from("/profile")]), // Protected routes
+            true, // Enable middleware
+        ));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await?;
     axum::serve(listener, app).await
 }
 ```
 
-### Protecting a rocket endpoint with Clerk.dev:
+### Protecting a Rocket endpoint with Clerk.dev:
 
 With the `rocket` feature enabled:
 
@@ -141,7 +190,7 @@ fn index(jwt: ClerkGuard<MemoryCacheJwksProvider>) -> &'static str {
 
 #[launch]
 fn rocket() -> _ {
-	let config = ClerkConfiguration::new(None, None, Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_string()), None);
+	let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
 	let clerk = Clerk::new(config);
 	let clerk_config = ClerkGuardConfig::new(
 		MemoryCacheJwksProvider::new(clerk),
@@ -151,7 +200,6 @@ fn rocket() -> _ {
 
 	rocket::build().mount("/", routes![index]).manage(clerk_config)
 }
-
 ```
 
 ### Protecting a Poem endpoint with Clerk
@@ -175,7 +223,7 @@ async fn main() -> Result<(), std::io::Error> {
     let clerk = Clerk::new(ClerkConfiguration::new(
         None,
         None,
-        Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_owned()),
+        Some("your_secret_key".to_owned()),
         None,
     ));
     // Initialize middleware.
@@ -199,15 +247,27 @@ async fn main() -> Result<(), std::io::Error> {
 
 The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 
+## API Coverage
+
+This SDK is based on the official [Clerk OpenAPI specification](https://clerk.com/docs/reference/backend-api) and covers:
+
+- User management
+- Session handling
+- Organization management
+- Authentication methods
+- JWT and JWKS operations
+- Email and phone verification
+- And more
+
 ## Roadmap
 
 - [ ] Support other http clients along with the default reqwest client (like hyper)
 - [ ] Tokio and async-std async runtimes for hyper clients
 - [ ] Optional reqwest blocking client
 - [x] Support authorization via \_\_session cookie on same-origin
-- [ ] Add validator support for axum, rocket, warp
+- [x] Add validator support for axum, rocket, warp
 
-# Production users
+## Production users
 
 - [Tembo](https://tembo.io)
 - [Rezon](https://rezon.ai)
@@ -215,4 +275,10 @@ The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 - [Have I Been Squatted](https://haveibeensquatted.com)
 - Open a PR and add your company here :)
 
-</br>
+## License
+
+This project is licensed under the MIT License.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
