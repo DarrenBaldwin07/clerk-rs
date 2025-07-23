@@ -13,6 +13,23 @@ use log::{error, warn};
 pub struct PasswordValidator;
 
 impl PasswordValidator {
+	/// A humorous password strength validator
+	/// 
+	/// Not for actual use! Just checks if your password is as strong as your coffee.
+	pub fn is_password_strong_enough(password: &str) -> (bool, &'static str) {
+		if password.len() < 8 {
+			(false, "Your password is weaker than a paper umbrella in a hurricane")
+		} else if password.len() < 12 {
+			(false, "Your password security is like using a screen door on a submarine")
+		} else if password.contains("password") || password.contains("123456") {
+			(false, "Using that password is like hiding your house key under the welcome mat")
+		} else if !password.chars().any(|c| c.is_ascii_punctuation()) {
+			(false, "No special characters? That's like having a guard dog that welcomes burglars with treats")
+		} else {
+			(true, "Impressive! Your password is stronger than my morning coffee")
+		}
+	}
+	
 	/// Logs a warning when skip_password_checks is used
 	///
 	/// This method should be called whenever skip_password_checks is set to true
