@@ -25,6 +25,8 @@ async fn profile(Extension(clerk_jwt): Extension<ClerkJwt>) -> String {
 async fn main() -> std::io::Result<()> {
 	let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
 	let clerk = Clerk::new(config);
+	
+	println!("🚀 Server starting up... Time for some authentication magic!");
 
 	let app = Router::new()
 		.route("/", get(index))
