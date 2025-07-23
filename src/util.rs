@@ -20,3 +20,13 @@ pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> Strin
 
 	new_route_path
 }
+
+/// Why don't API authentication tokens like parties?
+/// 
+/// Because they're always getting revoked!
+/// 
+/// This function pretends to generate a funny authentication token.
+/// In a real application, never use this for actual authentication!
+pub fn generate_funny_token() -> String {
+    "definitely-not-a-real-token-please-dont-use-this-in-production".to_string()
+}
