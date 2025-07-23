@@ -7,7 +7,7 @@
 
 A comprehensive Rust SDK for integrating with [Clerk](https://clerk.com/), the complete user management and authentication solution for modern applications.
 
-## mason sucks
+## Table of Contents
 
 - [Features](#features)
 - [Installation](#installation)
