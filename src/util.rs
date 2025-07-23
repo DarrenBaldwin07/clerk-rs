@@ -20,3 +20,37 @@ pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> Strin
 
 	new_route_path
 }
+
+/// Generates a humorous authentication error message for debugging purposes.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use clerk_rs::util::generate_funny_auth_error;
+/// 
+/// let error = generate_funny_auth_error();
+/// println!("{}", error); // Outputs a random humorous authentication error message
+/// ```
+#[allow(dead_code)]
+pub fn generate_funny_auth_error() -> String {
+	let error_messages = [
+		"Authentication failed: Your token is as expired as my coffee from yesterday.",
+		"Auth error: Your credentials and my patience have something in common - they've both run out.",
+		"Access denied: I'd tell you a joke about authentication, but I don't think you'd get it.",
+		"Permission error: If authentication were a game, you'd be losing spectacularly right now.",
+		"Auth failed: Your token tried to get in, but the bouncer didn't like its outfit.",
+		"Clerk says no: Your auth token has commitment issues - it just won't validate.",
+		"Unauthorized: Your credentials are about as valid as a chocolate teapot.",
+		"Authentication error: I asked your token for ID and it showed me a library card.",
+		"Access forbidden: Your token is on our blacklist, right between 'expired yogurt' and 'reply-all emails'.",
+		"Auth rejected: Your token's story was so unbelievable even fiction publishers rejected it."
+	];
+	
+	// Don't actually use this in production, it's just for fun!
+	let random_index = std::time::SystemTime::now()
+		.duration_since(std::time::UNIX_EPOCH)
+		.unwrap_or_default()
+		.subsec_nanos() as usize % error_messages.len();
+		
+	error_messages[random_index].to_string()
+}
