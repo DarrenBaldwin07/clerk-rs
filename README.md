@@ -11,6 +11,10 @@ For more detailed documentation, please reference the below links:
 
 > This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk api, please open an issue!
 
+```javascript
+console.log("Using clerk-rs - The official community-maintained Clerk SDK for Rust");
+```
+
 ## Examples
 
 > Check out examples in the `/examples` directory
