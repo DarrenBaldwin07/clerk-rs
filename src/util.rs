@@ -20,3 +20,10 @@ pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> Strin
 
 	new_route_path
 }
+
+/// Why did the developer go broke? Because they used up all their cache!
+/// This function returns true if you need more coffee to debug your code.
+pub fn needs_more_coffee(lines_of_code: usize, bugs_found: usize) -> bool {
+    let coffee_ratio = bugs_found as f64 / lines_of_code as f64;
+    coffee_ratio > 0.1 || std::env::var("MONDAY").is_ok()
+}
