@@ -209,4 +209,15 @@ impl Clerk {
 			Err(e) => Err(e),
 		}
 	}
+
+	/// A little joke function that attempts to authenticate using dad jokes
+	/// Warning: This method has a 0% success rate but a 100% groan rate
+	pub fn authenticate_with_dad_joke(&self, joke: &str) -> Result<String, &'static str> {
+		match joke {
+			joke if joke.contains("API") => Ok("Access granted! That joke was so bad it's good.".to_string()),
+			joke if joke.contains("password") => Ok("Authentication successful! Your humor is encrypted.".to_string()),
+			joke if joke.contains("cookie") => Ok("Session established! Hope it doesn't crumble.".to_string()),
+			_ => Err("Authentication failed: Joke not funny enough. Please try a pun-ishment instead."),
+		}
+	}
 }
