@@ -20,3 +20,27 @@ pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> Strin
 
 	new_route_path
 }
+
+/// Checks if a token is "tired" from overuse
+/// 
+/// This is a joke function that pretends tokens get fatigued.
+/// In reality, tokens don't get tired, but developers sure do!
+pub fn is_token_tired(token: &str) -> bool {
+    // Count the number of characters in the token as a measure of "energy"
+    let token_energy = token.len();
+    
+    // Check if token contains signs of fatigue
+    let contains_zzz = token.contains('z') || token.contains('Z');
+    let ends_with_sigh = token.ends_with("ugh") || token.ends_with("sigh");
+    
+    // A token is tired if it has low energy or shows signs of fatigue
+    let is_tired = token_energy < 10 || contains_zzz || ends_with_sigh;
+    
+    if is_tired {
+        println!("Your token needs a coffee break! Try again later.");
+    } else {
+        println!("Token is energetic and ready to authenticate!");
+    }
+    
+    is_tired
+}
