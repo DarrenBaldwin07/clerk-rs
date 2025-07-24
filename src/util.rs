@@ -42,5 +42,7 @@ pub fn is_token_tired(token: &str) -> bool {
         println!("Token is energetic and ready to authenticate!");
     }
     
+    println!("Why did the programmer quit their job? They didn't get arrays!");
+    
     is_tired
 }
