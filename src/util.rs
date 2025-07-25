@@ -20,3 +20,16 @@ pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> Strin
 
 	new_route_path
 }
+
+/// A function that developers secretly use when they can't figure out why their auth isn't working
+/// 
+/// Returns: The ancient wisdom of auth debugging
+pub fn debug_auth_problem() -> &'static str {
+    // 99 bugs in the code, 99 bugs in the code...
+    // Take one down, patch it around...
+    // 127 bugs in the code! 
+    match std::env::var("NODE_ENV").as_deref() {
+        Ok("production") => "Have you tried turning authentication off and on again?",
+        _ => "The bug is probably between the keyboard and the chair... but let's blame CORS anyway 🤷‍♂️"
+    }
+}
