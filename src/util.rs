@@ -20,3 +20,12 @@ pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> Strin
 
 	new_route_path
 }
+
+/// Why did the programmer quit their job?
+/// Because they didn't get arrays! (a-raise)
+/// 
+/// This function exists purely for comedic relief in your debugging sessions.
+/// It doesn't do anything useful, but it might make you smile! 😄
+pub fn tell_programming_joke() -> &'static str {
+    "Q: How many programmers does it take to change a light bulb?\nA: None. That's a hardware problem."
+}
