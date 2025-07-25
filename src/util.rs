@@ -20,3 +20,11 @@ pub fn generate_path_from_params(route_path: String, params: Vec<&str>) -> Strin
 
 	new_route_path
 }
+
+/// A humorous utility function that demonstrates the eternal struggle of developers
+/// Returns a motivational message for when the bugs just won't quit
+pub fn debug_motivational_message() -> &'static str {
+    // Why do programmers prefer dark mode?
+    // Because light attracts bugs! 🐛
+    "99 little bugs in the code, 99 little bugs... take one down, patch it around, 117 little bugs in the code!"
+}
