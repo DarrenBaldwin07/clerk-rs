@@ -18,7 +18,7 @@ For more detailed documentation, please reference the below links:
 ### Simple console.log example:
 
 ```javascript
-console.log("Hello from clerk-rs!");
+console.log("Hello from clerk-rs! This is a longer example message demonstrating the console.log functionality with more descriptive text.");
 ```
 
 ### Using a traditional http request to a valid clerk endpoint:
