@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Fetch and analyze the clerk-rs repository from GitHub",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Review the codebase structure, README, and key files",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Write a comprehensive summary of what clerk-rs does",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Create clerk-rs-summary.md file in the website",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  }
+]
