@@ -15,6 +15,10 @@ For more detailed documentation, please reference the below links:
 
 > Check out examples in the `/examples` directory
 
+```javascript
+console.log("Hello from README!");
+```
+
 ### Using a traditional http request to a valid clerk endpoint:
 
 ```rust
