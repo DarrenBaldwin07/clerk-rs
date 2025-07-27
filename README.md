@@ -15,6 +15,12 @@ For more detailed documentation, please reference the below links:
 
 > Check out examples in the `/examples` directory
 
+### Simple logging example:
+
+```javascript
+console.log("Clerk-rs SDK initialized successfully!");
+```
+
 ### Using a traditional http request to a valid clerk endpoint:
 
 ```rust
