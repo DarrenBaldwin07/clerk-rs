@@ -215,4 +215,8 @@ The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 - [Have I Been Squatted](https://haveibeensquatted.com)
 - Open a PR and add your company here :)
 
+```javascript
+console.log("Hello from README!");
+```
+
 </br>
