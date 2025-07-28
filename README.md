@@ -4,6 +4,62 @@
 
 # The official community-maintained Clerk SDK for Rust
 
+## Overview
+
+**clerk-rs** is the official community-maintained Rust SDK for [Clerk](https://clerk.com), a modern authentication and user management platform. This SDK provides Rust developers with a comprehensive toolkit to integrate Clerk's powerful authentication services into their applications, supporting both API interactions and middleware-based route protection across popular Rust web frameworks.
+
+## What is Clerk-rs?
+
+clerk-rs serves as a bridge between Rust applications and Clerk's authentication infrastructure, offering:
+
+- **Complete API Coverage**: Full access to Clerk's Backend API for user management, organization handling, session control, and more
+- **Framework Integration**: Built-in middleware support for popular Rust web frameworks including Actix Web, Axum, Rocket, and Poem
+- **JWT Validation**: Robust JWT token validation with JWKS (JSON Web Key Set) support for secure authentication
+- **Session Management**: Support for both Bearer token and session cookie-based authentication
+- **Type Safety**: Comprehensive Rust types for all Clerk API models and responses
+
+## Core Features
+
+### 1. **HTTP Client Integration**
+- Direct HTTP requests to Clerk API endpoints with proper authentication
+- Support for GET, POST, PUT, PATCH, and DELETE operations
+- Automatic request/response serialization using serde
+
+### 2. **Authentication Middleware**
+- **Actix Web**: `ClerkMiddleware` for protecting routes
+- **Axum**: `ClerkLayer` for route-level authentication
+- **Rocket**: `ClerkGuard` for request guards
+- **Poem**: `ClerkPoemMiddleware` for endpoint protection
+
+### 3. **JWT Security**
+- RS256 algorithm support (Clerk's default)
+- Automatic JWKS key fetching and caching
+- Token validation with expiration and signature verification
+- Custom JWT template support
+
+### 4. **Organization Support**
+- Multi-tenant organization management
+- Role-based access control (RBAC)
+- Permission-based authorization
+- Organization membership management
+
+### 5. **User Management**
+- Complete user lifecycle management (create, read, update, delete)
+- Email and phone number verification
+- Multi-factor authentication (MFA) support
+- User metadata and profile management
+
+## Why Choose Clerk-rs?
+
+- **Type Safety**: Leverages Rust's type system for compile-time safety
+- **Performance**: Efficient async/await support with minimal overhead
+- **Security**: Built-in JWT validation and secure key management
+- **Flexibility**: Works with multiple web frameworks and authentication patterns
+- **Community Driven**: Actively maintained with regular updates and community contributions
+- **Production Tested**: Used by real-world applications in production environments
+
+clerk-rs makes it easy for Rust developers to integrate modern authentication into their applications while maintaining the performance and safety characteristics that make Rust an excellent choice for backend development.
+
 For more detailed documentation, please reference the below links:
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
