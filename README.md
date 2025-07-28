@@ -4,6 +4,40 @@
 
 # The official community-maintained Clerk SDK for Rust
 
+## Summary
+
+**clerk-rs** is a comprehensive Rust SDK that provides seamless integration with [Clerk](https://clerk.com), a popular authentication and user management platform. This community-maintained library enables Rust developers to easily implement authentication, user management, and session handling in their applications.
+
+### What clerk-rs Does
+
+clerk-rs serves as a bridge between Rust applications and Clerk's authentication services, offering:
+
+**Core Functionality:**
+- **Complete API Coverage**: Full access to Clerk's Backend API with support for all CRUD operations (GET, POST, PUT, DELETE, PATCH)
+- **User Management**: Create, update, delete, and manage users programmatically
+- **Session Handling**: Validate and manage user sessions with JWT token verification
+- **Organization Management**: Handle organizations, memberships, and invitations
+- **Authentication Flows**: Support for sign-up, sign-in, and various authentication methods
+
+**Web Framework Integration:**
+clerk-rs provides middleware and guards for popular Rust web frameworks:
+- **Actix Web**: Middleware for protecting routes with authentication
+- **Axum**: Layer-based authentication with JWT extraction
+- **Rocket**: Guard-based authentication system
+- **Poem**: Middleware support with route exclusion capabilities
+
+**Key Features:**
+- **JWT Validation**: Built-in JWT token verification using JWKS (JSON Web Key Set)
+- **Cookie Support**: Session cookie validation for same-origin requests
+- **Memory Caching**: Efficient JWKS caching with `MemoryCacheJwksProvider`
+- **Async/Await**: Full async support with Tokio runtime compatibility
+- **Type Safety**: Strongly typed models and request/response structures
+- **Error Handling**: Comprehensive error handling with proper Rust error types
+
+clerk-rs makes it easy for Rust developers to integrate robust authentication and user management into their applications without having to implement these complex features from scratch.
+
+## Documentation
+
 For more detailed documentation, please reference the below links:
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
