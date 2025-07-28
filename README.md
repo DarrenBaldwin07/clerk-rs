@@ -4,6 +4,28 @@
 
 # The official community-maintained Clerk SDK for Rust
 
+## Summary
+
+**clerk-rs** is the official community-maintained Rust SDK for the [Clerk](https://clerk.com) authentication and user management platform. This library provides a comprehensive interface to interact with Clerk's Backend API from Rust applications.
+
+### What is clerk-rs?
+
+clerk-rs is a powerful authentication SDK that enables Rust developers to integrate Clerk's authentication services into their applications. It offers both low-level API access and high-level middleware integrations for popular Rust web frameworks.
+
+### Key Features
+
+🔐 **Complete API Coverage** - Full support for Clerk's Backend API endpoints including user management, organizations, sessions, messaging, and webhooks
+
+🚀 **Framework Integration** - Seamless middleware for Actix Web, Axum, Rocket, and Poem frameworks
+
+🛡️ **Security Features** - JWT validation, JWKS caching, session cookie validation, and secure token handling
+
+⚡ **Developer Experience** - Async/await support, type-safe APIs, comprehensive error handling, and extensive documentation
+
+### Production Ready
+
+clerk-rs is actively used in production by companies including [Tembo](https://tembo.io), [Rezon](https://rezon.ai), [Gitar](https://gitar.co), and [Have I Been Squatted](https://haveibeensquatted.com). The SDK is regularly updated to maintain compatibility with Clerk's evolving API and follows Rust best practices for security and performance.
+
 For more detailed documentation, please reference the below links:
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
