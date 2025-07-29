@@ -4,6 +4,71 @@
 
 # The official community-maintained Clerk SDK for Rust
 
+## Overview
+
+**clerk-rs** is the official community-maintained Rust SDK for [Clerk](https://clerk.com), a comprehensive authentication and user management platform. This library provides Rust developers with a robust, type-safe interface to integrate Clerk's authentication services into their applications.
+
+## What is clerk-rs?
+
+clerk-rs is a comprehensive Rust client library that enables developers to:
+
+- **Authenticate users** through Clerk's authentication system
+- **Manage user accounts** programmatically via the Clerk Backend API
+- **Protect API endpoints** with JWT validation and session management
+- **Integrate seamlessly** with popular Rust web frameworks like Actix-web, Axum, Rocket, and Poem
+
+## Key Features
+
+### 🔐 Complete Authentication Solution
+- JWT token validation and verification
+- Session cookie validation for same-origin requests
+- JWKS (JSON Web Key Set) caching for performance
+- Support for multiple authentication methods
+
+### 🌐 Framework Integration
+The SDK provides middleware and guards for popular Rust web frameworks:
+- **Actix-web**: `ClerkMiddleware` for route protection
+- **Axum**: `ClerkLayer` for application-wide authentication
+- **Rocket**: `ClerkGuard` for request guards
+- **Poem**: `ClerkPoemMiddleware` for endpoint protection
+
+### 📡 Full API Coverage
+Complete bindings for the Clerk Backend API including:
+- User management (create, update, delete users)
+- Organization management
+- Session handling
+- Email and SMS operations
+- JWT template management
+- Webhook validation
+
+### 🔧 Developer Experience
+- **Type-safe**: All API responses and requests are strongly typed
+- **Async/await**: Built on modern async Rust patterns
+- **Comprehensive examples**: Ready-to-use examples for each supported framework
+- **Well-documented**: Extensive documentation and API reference
+
+## Use Cases
+
+clerk-rs is perfect for:
+
+- **Web APIs** that need user authentication and authorization
+- **Microservices** requiring centralized user management
+- **SaaS applications** with multi-tenant architecture
+- **Backend services** that integrate with Clerk-powered frontend applications
+- **Enterprise applications** requiring robust authentication flows
+
+## Architecture
+
+The library is structured into several key modules:
+
+- **`apis/`**: Generated API client bindings for all Clerk endpoints
+- **`models/`**: Strongly-typed data structures for API requests/responses
+- **`validators/`**: Framework-specific middleware for authentication
+- **`clerk.rs`**: Core client implementation with HTTP methods
+- **`endpoints.rs`**: Enum definitions for all available API endpoints
+
+---
+
 For more detailed documentation, please reference the below links:
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
