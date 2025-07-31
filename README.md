@@ -1,57 +1,98 @@
+# clerk-rs
+
 [![crates.io](https://img.shields.io/crates/v/clerk-rs?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![Downloads](https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![docs.rs](https://img.shields.io/docsrs/clerk-rs?style=flat-square)](https://docs.rs/clerk-rs)
 
-# The official community-maintained Clerk SDK for Rust
+The official community-maintained Clerk SDK for Rust. This SDK provides comprehensive support for Clerk's authentication and user management services, with built-in middleware for popular Rust web frameworks.
 
-For more detailed documentation, please reference the below links:
+## Features
+
+- ✅ Complete Clerk API coverage
+- ✅ Framework integrations (Actix, Axum, Rocket, Poem)
+- ✅ JWT validation and session management
+- ✅ Type-safe API client
+- ✅ Async/await support
+- ✅ Production-ready with caching
+
+## Quick Start
+
+Add clerk-rs to your `Cargo.toml`:
+
+```toml
+[dependencies]
+clerk-rs = "0.1"
+```
+
+## Documentation
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
 - [Clerk-rs SDK API docs](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/docs.md)
 
-> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk api, please open an issue!
+> **Note:** This SDK is actively maintained and updated to stay in sync with the official Clerk API. If you notice any discrepancies or need updates, please [open an issue](https://github.com/DarrenBaldwin07/clerk-rs/issues)!
 
-## Examples
+## Usage Examples
 
-> Check out examples in the `/examples` directory
+### Basic API Client
 
-### Using a traditional http request to a valid clerk endpoint:
+Create a Clerk client and make API requests:
 
 ```rust
-use tokio;
 use clerk_rs::{clerk::Clerk, ClerkConfiguration, endpoints::ClerkGetEndpoint};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+    // Initialize Clerk client with your secret key
+    let config = ClerkConfiguration::new(
+        None, 
+        None, 
+        Some("sk_test_your_secret_key".to_string()), 
+        None
+    );
     let client = Clerk::new(config);
 
-    let res = client.get(ClerkGetEndpoint::GetUserList).await?;
+    // Fetch user list
+    let users = client.get(ClerkGetEndpoint::GetUserList).await?;
+    println!("Retrieved {} users", users.len());
 
     Ok(())
 }
 ```
 
-### Using a clerk-rs method:
+### High-level API Methods
+
+Use convenient high-level methods for common operations:
 
 ```rust
-use tokio;
 use clerk_rs::{clerk::Clerk, ClerkConfiguration, apis::emails_api::Email};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
+    let config = ClerkConfiguration::new(
+        None, 
+        None, 
+        Some("sk_test_your_secret_key".to_string()), 
+        None
+    );
     let client = Clerk::new(config);
 
-    Email::create(&client, Some(your_clerk_email));
+    // Send an email
+    Email::create(&client, Some(your_email_request)).await?;
 
     Ok(())
 }
 ```
 
-### Protecting a actix-web endpoint with Clerk.dev:
+## Framework Integrations
 
-With the `actix` feature enabled:
+### Actix Web
+
+Enable the `actix` feature in your `Cargo.toml`:
+
+```toml
+[dependencies]
+clerk-rs = { version = "0.1", features = ["actix"] }
+```
 
 ```rust
 use actix_web::{web, App, HttpServer, Responder};
@@ -61,19 +102,28 @@ use clerk_rs::{
     ClerkConfiguration,
 };
 
-async fn index() -> impl Responder {
-    "Hello world!"
+async fn protected_handler() -> impl Responder {
+    "Hello, authenticated user!"
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
-        let clerk = Clerk::new(config);
+    let config = ClerkConfiguration::new(
+        None, 
+        None, 
+        Some("sk_test_your_secret_key".to_string()), 
+        None
+    );
+    let clerk = Clerk::new(config);
 
+    HttpServer::new(move || {
         App::new()
-            .wrap(ClerkMiddleware::new(MemoryCacheJwksProvider::new(clerk), None, true))
-            .route("/index", web::get().to(index))
+            .wrap(ClerkMiddleware::new(
+                MemoryCacheJwksProvider::new(clerk.clone()), 
+                None, 
+                true
+            ))
+            .route("/protected", web::get().to(protected_handler))
     })
     .bind(("127.0.0.1", 8080))?
     .run()
@@ -81,9 +131,12 @@ async fn main() -> std::io::Result<()> {
 }
 ```
 
-### Protecting a axum endpoint with Clerk.dev:
+### Axum
 
-With the `axum` feature enabled:
+```toml
+[dependencies]
+clerk-rs = { version = "0.1", features = ["axum"] }
+```
 
 ```rust
 use axum::{routing::get, Router};
@@ -93,70 +146,84 @@ use clerk_rs::{
     ClerkConfiguration,
 };
 
-async fn index() -> &'static str {
-    "Hello world!"
+async fn protected_handler() -> &'static str {
+    "Hello, authenticated user!"
 }
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+    let config = ClerkConfiguration::new(
+        None, 
+        None, 
+        Some("sk_test_your_secret_key".to_string()), 
+        None
+    );
     let clerk = Clerk::new(config);
 
     let app = Router::new()
-        .route("/index", get(index))
-        .layer(ClerkLayer::new(MemoryCacheJwksProvider::new(clerk), None, true));
+        .route("/protected", get(protected_handler))
+        .layer(ClerkLayer::new(
+            MemoryCacheJwksProvider::new(clerk), 
+            None, 
+            true
+        ));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await?;
     axum::serve(listener, app).await
 }
 ```
 
-### Protecting a rocket endpoint with Clerk.dev:
+### Rocket
 
-With the `rocket` feature enabled:
+```toml
+[dependencies]
+clerk-rs = { version = "0.1", features = ["rocket"] }
+```
 
 ```rust
 use clerk_rs::{
-	clerk::Clerk,
-	validators::{
-		jwks::MemoryCacheJwksProvider,
-		rocket::{ClerkGuard, ClerkGuardConfig},
-	},
-	ClerkConfiguration,
+    clerk::Clerk,
+    validators::{
+        jwks::MemoryCacheJwksProvider,
+        rocket::{ClerkGuard, ClerkGuardConfig},
+    },
+    ClerkConfiguration,
 };
-use rocket::{
-	get, launch, routes,
-	serde::{Deserialize, Serialize},
-};
-
-#[derive(Serialize, Deserialize)]
-struct Message {
-	content: String,
-}
+use rocket::{get, launch, routes};
 
 #[get("/")]
-fn index(jwt: ClerkGuard<MemoryCacheJwksProvider>) -> &'static str {
-	"Hello world!"
+fn protected_handler(_jwt: ClerkGuard<MemoryCacheJwksProvider>) -> &'static str {
+    "Hello, authenticated user!"
 }
 
 #[launch]
 fn rocket() -> _ {
-	let config = ClerkConfiguration::new(None, None, Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_string()), None);
-	let clerk = Clerk::new(config);
-	let clerk_config = ClerkGuardConfig::new(
-		MemoryCacheJwksProvider::new(clerk),
-		None,
-		true, // validate_session_cookie
-	);
+    let config = ClerkConfiguration::new(
+        None, 
+        None, 
+        Some("sk_test_your_secret_key".to_string()), 
+        None
+    );
+    let clerk = Clerk::new(config);
+    let clerk_config = ClerkGuardConfig::new(
+        MemoryCacheJwksProvider::new(clerk),
+        None,
+        true, // validate_session_cookie
+    );
 
-	rocket::build().mount("/", routes![index]).manage(clerk_config)
+    rocket::build()
+        .mount("/", routes![protected_handler])
+        .manage(clerk_config)
 }
-
 ```
 
-### Protecting a Poem endpoint with Clerk
+### Poem
 
-With the `poem` feature enabled and poem v3 installed:
+```toml
+[dependencies]
+clerk-rs = { version = "0.1", features = ["poem"] }
+poem = "3.0"
+```
 ```rust
 use clerk_rs::{
     clerk::Clerk,
@@ -166,30 +233,30 @@ use clerk_rs::{
 use poem::{get, handler, listener::TcpListener, web::Path, EndpointExt, Route, Server};
 
 #[handler]
-fn hello(Path(name): Path<String>) -> String {
-    format!("hello: {}", name)
+fn protected_handler(Path(name): Path<String>) -> String {
+    format!("Hello, authenticated user: {}", name)
 }
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    let clerk = Clerk::new(ClerkConfiguration::new(
+    let config = ClerkConfiguration::new(
         None,
         None,
-        Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_owned()),
+        Some("sk_test_your_secret_key".to_string()),
         None,
-    ));
-    // Initialize middleware.
-    let clerk_poem_middleware = ClerkPoemMiddleware::new(
-        MemoryCacheJwksProvider::new(clerk.clone()),
+    );
+    let clerk = Clerk::new(config);
+
+    let clerk_middleware = ClerkPoemMiddleware::new(
+        MemoryCacheJwksProvider::new(clerk),
         true,
-        // If you're using poem-openapi, you may need this to exclude some routes from auth
-        // verification.
-        Some(vec!["/some/route/to/exclude".to_owned()]),
+        // Optional: exclude routes from auth verification
+        Some(vec!["/health".to_string()]),
     );
 
     let app = Route::new()
-        .at("/hello/:name", get(hello))
-        .with(clerk_poem_middleware); // Add middleware here (EndpointExt needs to be in scope).
+        .at("/protected/:name", get(protected_handler))
+        .with(clerk_middleware);
 
     Server::new(TcpListener::bind("0.0.0.0:3000"))
         .run(app)
@@ -197,22 +264,33 @@ async fn main() -> Result<(), std::io::Error> {
 }
 ```
 
-The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
+> **Note:** The JWT can be accessed using `Data<&ClerkJwt>` or `req.data::<ClerkJwt>()`.
+
+## More Examples
+
+Check out complete examples in the [`/examples`](./examples) directory for detailed implementation guides.
 
 ## Roadmap
 
-- [ ] Support other http clients along with the default reqwest client (like hyper)
-- [ ] Tokio and async-std async runtimes for hyper clients
-- [ ] Optional reqwest blocking client
-- [x] Support authorization via \_\_session cookie on same-origin
-- [ ] Add validator support for axum, rocket, warp
+- [ ] Support additional HTTP clients (hyper, etc.)
+- [ ] Multiple async runtime support (tokio, async-std)
+- [ ] Optional blocking client support
+- [x] Session cookie validation
+- [ ] Additional framework integrations (warp, tide)
 
-# Production users
+## Production Users
 
-- [Tembo](https://tembo.io)
-- [Rezon](https://rezon.ai)
-- [Gitar](https://gitar.co)
-- [Have I Been Squatted](https://haveibeensquatted.com)
-- Open a PR and add your company here :)
+- [Tembo](https://tembo.io) - Cloud Postgres platform
+- [Rezon](https://rezon.ai) - AI-powered solutions
+- [Gitar](https://gitar.co) - Developer productivity tools
+- [Have I Been Squatted](https://haveibeensquatted.com) - Domain security checker
 
-</br>
+[Add your company here →](https://github.com/DarrenBaldwin07/clerk-rs/pulls)
+
+## Contributing
+
+We welcome contributions! Please see our [contributing guidelines](./CONTRIBUTING.md) for details.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
