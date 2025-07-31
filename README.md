@@ -1,21 +1,32 @@
+# clerk-rs
+
 [![crates.io](https://img.shields.io/crates/v/clerk-rs?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![Downloads](https://img.shields.io/crates/d/clerk-rs.svg?style=flat-square)](https://crates.io/crates/clerk-rs)
 [![docs.rs](https://img.shields.io/docsrs/clerk-rs?style=flat-square)](https://docs.rs/clerk-rs)
 
-# The official community-maintained Clerk SDK for Rust
+The official community-maintained [Clerk](https://clerk.com) SDK for Rust, providing authentication and user management for your Rust applications.
 
-For more detailed documentation, please reference the below links:
+## 📚 Documentation
 
-- [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
-- [Clerk-rs SDK API docs](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/docs.md)
+- **[Official Clerk Backend API](https://clerk.com/docs/reference/backend-api)** - Complete API reference
+- **[Clerk-rs SDK API](https://github.com/DarrenBaldwin07/clerk-rs/blob/main/docs.md)** - SDK-specific documentation
 
-> This SDK is updated frequently to keep up with any changes to the actual Clerk API. If you see anything that needs updating or is not inline with the official Clerk api, please open an issue!
+> **Note:** This SDK is actively maintained and updated to stay in sync with the official Clerk API. Found something that needs updating? Please [open an issue](https://github.com/DarrenBaldwin07/clerk-rs/issues)!
 
-## Examples
+## 🚀 Quick Start
 
-> Check out examples in the `/examples` directory
+Add `clerk-rs` to your `Cargo.toml`:
 
-### Using a traditional http request to a valid clerk endpoint:
+```toml
+[dependencies]
+clerk-rs = "0.4"
+```
+
+## 💡 Usage Examples
+
+> 📁 **More examples available in the [`/examples`](./examples) directory**
+
+### Basic API Usage
 
 ```rust
 use tokio;
@@ -32,7 +43,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-### Using a clerk-rs method:
+### Using SDK Methods
 
 ```rust
 use tokio;
@@ -49,9 +60,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-### Protecting a actix-web endpoint with Clerk.dev:
+## 🔒 Web Framework Integration
 
-With the `actix` feature enabled:
+### Actix Web
+
+Enable the `actix` feature in your `Cargo.toml`:
+
+```toml
+[dependencies]
+clerk-rs = { version = "0.4", features = ["actix"] }
+```
 
 ```rust
 use actix_web::{web, App, HttpServer, Responder};
@@ -81,9 +99,14 @@ async fn main() -> std::io::Result<()> {
 }
 ```
 
-### Protecting a axum endpoint with Clerk.dev:
+### Axum
 
-With the `axum` feature enabled:
+Enable the `axum` feature in your `Cargo.toml`:
+
+```toml
+[dependencies]
+clerk-rs = { version = "0.4", features = ["axum"] }
+```
 
 ```rust
 use axum::{routing::get, Router};
@@ -111,9 +134,14 @@ async fn main() -> std::io::Result<()> {
 }
 ```
 
-### Protecting a rocket endpoint with Clerk.dev:
+### Rocket
 
-With the `rocket` feature enabled:
+Enable the `rocket` feature in your `Cargo.toml`:
+
+```toml
+[dependencies]
+clerk-rs = { version = "0.4", features = ["rocket"] }
+```
 
 ```rust
 use clerk_rs::{
@@ -154,9 +182,15 @@ fn rocket() -> _ {
 
 ```
 
-### Protecting a Poem endpoint with Clerk
+### Poem
 
-With the `poem` feature enabled and poem v3 installed:
+Enable the `poem` feature in your `Cargo.toml`:
+
+```toml
+[dependencies]
+clerk-rs = { version = "0.4", features = ["poem"] }
+poem = "3"
+```
 ```rust
 use clerk_rs::{
     clerk::Clerk,
@@ -197,22 +231,29 @@ async fn main() -> Result<(), std::io::Error> {
 }
 ```
 
-The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
+> **Note:** The JWT can be accessed using `Data<&ClerkJwt>` (or `req.data::<ClerkJwt>()`).
 
-## Roadmap
+## 🗺️ Roadmap
 
 - [ ] Support other http clients along with the default reqwest client (like hyper)
 - [ ] Tokio and async-std async runtimes for hyper clients
 - [ ] Optional reqwest blocking client
 - [x] Support authorization via \_\_session cookie on same-origin
-- [ ] Add validator support for axum, rocket, warp
+- [x] Add validator support for axum, rocket, warp
 
-# Production users
+## 🏢 Production Users
 
 - [Tembo](https://tembo.io)
 - [Rezon](https://rezon.ai)
 - [Gitar](https://gitar.co)
 - [Have I Been Squatted](https://haveibeensquatted.com)
-- Open a PR and add your company here :)
 
-</br>
+> Using clerk-rs in production? [Open a PR](https://github.com/DarrenBaldwin07/clerk-rs/pulls) and add your company here!
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE.MD](LICENSE.MD) file for details.
