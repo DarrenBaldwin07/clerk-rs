@@ -15,6 +15,24 @@ For more detailed documentation, please reference the below links:
 
 > Check out examples in the `/examples` directory
 
+### Hello World - Getting Started
+
+```rust
+use tokio;
+use clerk_rs::{clerk::Clerk, ClerkConfiguration};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Initialize Clerk with your secret key
+    let config = ClerkConfiguration::new(None, None, Some("sk_test_your_key_here".to_string()), None);
+    let client = Clerk::new(config);
+    
+    println!("Hello World! 🎉 Clerk SDK is ready to use!");
+    
+    Ok(())
+}
+```
+
 ### Using a traditional http request to a valid clerk endpoint:
 
 ```rust
