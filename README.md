@@ -27,6 +27,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = Clerk::new(config);
 
     let res = client.get(ClerkGetEndpoint::GetUserList).await?;
+    
+    // Example: Log the response (JavaScript equivalent would be console.log)
+    println!("Response: {:?}", res);
 
     Ok(())
 }
