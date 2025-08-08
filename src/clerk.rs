@@ -3,6 +3,7 @@ use crate::{
 	endpoints::{ClerkDeleteEndpoint, ClerkDynamicGetEndpoint, ClerkGetEndpoint, ClerkPostEndpoint, ClerkPutEndpoint},
 	util::generate_path_from_params,
 };
+use log::info;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -35,6 +36,7 @@ pub struct Clerk {
 impl Clerk {
 	/// Creates a new Clerk SDK client for making requests out to the public Clerk api.
 	pub fn new(clerk_configuration: configuration::ClerkConfiguration) -> Self {
+		info!("Initializing Clerk SDK client with version: {}", env!("CARGO_PKG_VERSION"));
 		Self { config: clerk_configuration }
 	}
 
@@ -42,13 +44,24 @@ impl Clerk {
 	pub async fn get(&self, endpoint: ClerkGetEndpoint) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
+		
+		info!("Making GET request to Clerk API: {}", url);
 
 		match self.config.client.get(&url).send().await {
 			Ok(response) => match response.json::<Value>().await {
-				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+				Ok(user) => {
+					info!("Successfully received response from GET request to {}", url);
+					Ok(user)
+				},
+				Err(e) => {
+					info!("Error parsing JSON response from GET request to {}: {}", url, e);
+					Err(e)
+				},
 			},
-			Err(e) => Err(e),
+			Err(e) => {
+				info!("Error sending GET request to {}: {}", url, e);
+				Err(e)
+			},
 		}
 	}
 
@@ -60,13 +73,24 @@ impl Clerk {
 	) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
+		
+		info!("Making POST request to Clerk API: {}", url);
 
 		match self.config.client.post(&url).json(&body).send().await {
 			Ok(response) => match response.json::<Value>().await {
-				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+				Ok(user) => {
+					info!("Successfully received response from POST request to {}", url);
+					Ok(user)
+				},
+				Err(e) => {
+					info!("Error parsing JSON response from POST request to {}: {}", url, e);
+					Err(e)
+				},
 			},
-			Err(e) => Err(e),
+			Err(e) => {
+				info!("Error sending POST request to {}: {}", url, e);
+				Err(e)
+			},
 		}
 	}
 
@@ -125,13 +149,24 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
+		
+		info!("Making GET request with params to Clerk API: {}", url_with_params);
 
 		match self.config.client.get(&url_with_params).send().await {
 			Ok(response) => match response.json::<Value>().await {
-				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+				Ok(user) => {
+					info!("Successfully received response from GET request with params to {}", url_with_params);
+					Ok(user)
+				},
+				Err(e) => {
+					info!("Error parsing JSON response from GET request with params to {}: {}", url_with_params, e);
+					Err(e)
+				},
 			},
-			Err(e) => Err(e),
+			Err(e) => {
+				info!("Error sending GET request with params to {}: {}", url_with_params, e);
+				Err(e)
+			},
 		}
 	}
 
