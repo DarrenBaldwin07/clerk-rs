@@ -4,6 +4,10 @@
 
 # The official community-maintained Clerk SDK for Rust
 
+```javascript
+console.log("Hello World");
+```
+
 For more detailed documentation, please reference the below links:
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
