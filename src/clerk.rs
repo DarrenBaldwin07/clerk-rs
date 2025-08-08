@@ -3,6 +3,7 @@ use crate::{
 	endpoints::{ClerkDeleteEndpoint, ClerkDynamicGetEndpoint, ClerkGetEndpoint, ClerkPostEndpoint, ClerkPutEndpoint},
 	util::generate_path_from_params,
 };
+use log::{debug, info};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -42,13 +43,29 @@ impl Clerk {
 	pub async fn get(&self, endpoint: ClerkGetEndpoint) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
-
+		
+		info!("Making GET request to Clerk API: {}", url);
+		
 		match self.config.client.get(&url).send().await {
-			Ok(response) => match response.json::<Value>().await {
-				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+			Ok(response) => {
+				let status = response.status();
+				debug!("Received response from Clerk API with status: {}", status);
+				
+				match response.json::<Value>().await {
+					Ok(user) => {
+						info!("Successfully parsed response from Clerk API");
+						Ok(user)
+					},
+					Err(e) => {
+						info!("Failed to parse response from Clerk API: {}", e);
+						Err(e)
+					},
+				}
 			},
-			Err(e) => Err(e),
+			Err(e) => {
+				info!("Failed to send request to Clerk API: {}", e);
+				Err(e)
+			},
 		}
 	}
 
@@ -60,13 +77,29 @@ impl Clerk {
 	) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
-
+		
+		info!("Making POST request to Clerk API: {}", url);
+		
 		match self.config.client.post(&url).json(&body).send().await {
-			Ok(response) => match response.json::<Value>().await {
-				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+			Ok(response) => {
+				let status = response.status();
+				debug!("Received response from Clerk API with status: {}", status);
+				
+				match response.json::<Value>().await {
+					Ok(user) => {
+						info!("Successfully parsed response from Clerk API");
+						Ok(user)
+					},
+					Err(e) => {
+						info!("Failed to parse response from Clerk API: {}", e);
+						Err(e)
+					},
+				}
 			},
-			Err(e) => Err(e),
+			Err(e) => {
+				info!("Failed to send request to Clerk API: {}", e);
+				Err(e)
+			},
 		}
 	}
 
@@ -74,13 +107,29 @@ impl Clerk {
 	pub async fn delete(&self, endpoint: ClerkDeleteEndpoint) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
-
+		
+		info!("Making DELETE request to Clerk API: {}", url);
+		
 		match self.config.client.delete(&url).send().await {
-			Ok(response) => match response.json::<Value>().await {
-				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+			Ok(response) => {
+				let status = response.status();
+				debug!("Received response from Clerk API with status: {}", status);
+				
+				match response.json::<Value>().await {
+					Ok(user) => {
+						info!("Successfully parsed response from Clerk API");
+						Ok(user)
+					},
+					Err(e) => {
+						info!("Failed to parse response from Clerk API: {}", e);
+						Err(e)
+					},
+				}
 			},
-			Err(e) => Err(e),
+			Err(e) => {
+				info!("Failed to send request to Clerk API: {}", e);
+				Err(e)
+			},
 		}
 	}
 
@@ -92,13 +141,29 @@ impl Clerk {
 	) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
-
+		
+		info!("Making PUT request to Clerk API: {}", url);
+		
 		match self.config.client.put(&url).json(&body).send().await {
-			Ok(response) => match response.json::<Value>().await {
-				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+			Ok(response) => {
+				let status = response.status();
+				debug!("Received response from Clerk API with status: {}", status);
+				
+				match response.json::<Value>().await {
+					Ok(user) => {
+						info!("Successfully parsed response from Clerk API");
+						Ok(user)
+					},
+					Err(e) => {
+						info!("Failed to parse response from Clerk API: {}", e);
+						Err(e)
+					},
+				}
 			},
-			Err(e) => Err(e),
+			Err(e) => {
+				info!("Failed to send request to Clerk API: {}", e);
+				Err(e)
+			},
 		}
 	}
 
@@ -110,13 +175,29 @@ impl Clerk {
 	) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
-
+		
+		info!("Making PATCH request to Clerk API: {}", url);
+		
 		match self.config.client.patch(&url).json(&body).send().await {
-			Ok(response) => match response.json::<Value>().await {
-				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+			Ok(response) => {
+				let status = response.status();
+				debug!("Received response from Clerk API with status: {}", status);
+				
+				match response.json::<Value>().await {
+					Ok(user) => {
+						info!("Successfully parsed response from Clerk API");
+						Ok(user)
+					},
+					Err(e) => {
+						info!("Failed to parse response from Clerk API: {}", e);
+						Err(e)
+					},
+				}
 			},
-			Err(e) => Err(e),
+			Err(e) => {
+				info!("Failed to send request to Clerk API: {}", e);
+				Err(e)
+			},
 		}
 	}
 
@@ -125,13 +206,29 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
-
+		
+		info!("Making GET request with params to Clerk API: {}", url_with_params);
+		
 		match self.config.client.get(&url_with_params).send().await {
-			Ok(response) => match response.json::<Value>().await {
-				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+			Ok(response) => {
+				let status = response.status();
+				debug!("Received response from Clerk API with status: {}", status);
+				
+				match response.json::<Value>().await {
+					Ok(user) => {
+						info!("Successfully parsed response from Clerk API");
+						Ok(user)
+					},
+					Err(e) => {
+						info!("Failed to parse response from Clerk API: {}", e);
+						Err(e)
+					},
+				}
 			},
-			Err(e) => Err(e),
+			Err(e) => {
+				info!("Failed to send request to Clerk API: {}", e);
+				Err(e)
+			},
 		}
 	}
 
@@ -145,13 +242,29 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
-
+		
+		info!("Making POST request with params to Clerk API: {}", url_with_params);
+		
 		match self.config.client.post(&url_with_params).json(&body).send().await {
-			Ok(response) => match response.json::<Value>().await {
-				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+			Ok(response) => {
+				let status = response.status();
+				debug!("Received response from Clerk API with status: {}", status);
+				
+				match response.json::<Value>().await {
+					Ok(user) => {
+						info!("Successfully parsed response from Clerk API");
+						Ok(user)
+					},
+					Err(e) => {
+						info!("Failed to parse response from Clerk API: {}", e);
+						Err(e)
+					},
+				}
 			},
-			Err(e) => Err(e),
+			Err(e) => {
+				info!("Failed to send request to Clerk API: {}", e);
+				Err(e)
+			},
 		}
 	}
 
@@ -160,13 +273,29 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
-
+		
+		info!("Making DELETE request with params to Clerk API: {}", url_with_params);
+		
 		match self.config.client.delete(&url_with_params).send().await {
-			Ok(response) => match response.json::<Value>().await {
-				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+			Ok(response) => {
+				let status = response.status();
+				debug!("Received response from Clerk API with status: {}", status);
+				
+				match response.json::<Value>().await {
+					Ok(user) => {
+						info!("Successfully parsed response from Clerk API");
+						Ok(user)
+					},
+					Err(e) => {
+						info!("Failed to parse response from Clerk API: {}", e);
+						Err(e)
+					},
+				}
 			},
-			Err(e) => Err(e),
+			Err(e) => {
+				info!("Failed to send request to Clerk API: {}", e);
+				Err(e)
+			},
 		}
 	}
 
@@ -180,13 +309,29 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
-
+		
+		info!("Making PUT request with params to Clerk API: {}", url_with_params);
+		
 		match self.config.client.put(&url_with_params).json(&body).send().await {
-			Ok(response) => match response.json::<Value>().await {
-				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+			Ok(response) => {
+				let status = response.status();
+				debug!("Received response from Clerk API with status: {}", status);
+				
+				match response.json::<Value>().await {
+					Ok(user) => {
+						info!("Successfully parsed response from Clerk API");
+						Ok(user)
+					},
+					Err(e) => {
+						info!("Failed to parse response from Clerk API: {}", e);
+						Err(e)
+					},
+				}
 			},
-			Err(e) => Err(e),
+			Err(e) => {
+				info!("Failed to send request to Clerk API: {}", e);
+				Err(e)
+			},
 		}
 	}
 
@@ -200,13 +345,29 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
-
+		
+		info!("Making PATCH request with params to Clerk API: {}", url_with_params);
+		
 		match self.config.client.patch(&url_with_params).json(&body).send().await {
-			Ok(response) => match response.json::<Value>().await {
-				Ok(user) => Ok(user),
-				Err(e) => Err(e),
+			Ok(response) => {
+				let status = response.status();
+				debug!("Received response from Clerk API with status: {}", status);
+				
+				match response.json::<Value>().await {
+					Ok(user) => {
+						info!("Successfully parsed response from Clerk API");
+						Ok(user)
+					},
+					Err(e) => {
+						info!("Failed to parse response from Clerk API: {}", e);
+						Err(e)
+					},
+				}
 			},
-			Err(e) => Err(e),
+			Err(e) => {
+				info!("Failed to send request to Clerk API: {}", e);
+				Err(e)
+			},
 		}
 	}
 }
