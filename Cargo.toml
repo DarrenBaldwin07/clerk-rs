@@ -63,7 +63,6 @@ features = ["json", "multipart"]
 
 [dev-dependencies]
 base64 = "0.22.1"
-clerk-rs = { path = "../clerk-rs" }
 mockito = "1.4.0"
 rand = "0.8.5"
 rsa = "0.9.6"

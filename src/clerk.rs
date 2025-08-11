@@ -43,6 +43,8 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
+		log::info!("Making GET request to: {}", url);
+
 		match self.config.client.get(&url).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
@@ -61,6 +63,8 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
+		log::info!("Making POST request to: {}", url);
+
 		match self.config.client.post(&url).json(&body).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
@@ -74,6 +78,8 @@ impl Clerk {
 	pub async fn delete(&self, endpoint: ClerkDeleteEndpoint) -> Result<serde_json::value::Value, reqwest::Error> {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
+
+		log::info!("Making DELETE request to: {}", url);
 
 		match self.config.client.delete(&url).send().await {
 			Ok(response) => match response.json::<Value>().await {
@@ -93,6 +99,8 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
+		log::info!("Making PUT request to: {}", url);
+
 		match self.config.client.put(&url).json(&body).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
@@ -111,6 +119,8 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 
+		log::info!("Making PATCH request to: {}", url);
+
 		match self.config.client.patch(&url).json(&body).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
@@ -125,6 +135,8 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
+
+		log::info!("Making GET request with params to: {}", url_with_params);
 
 		match self.config.client.get(&url_with_params).send().await {
 			Ok(response) => match response.json::<Value>().await {
@@ -146,6 +158,8 @@ impl Clerk {
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
 
+		log::info!("Making POST request with params to: {}", url_with_params);
+
 		match self.config.client.post(&url_with_params).json(&body).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
@@ -160,6 +174,8 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
+
+		log::info!("Making DELETE request with params to: {}", url_with_params);
 
 		match self.config.client.delete(&url_with_params).send().await {
 			Ok(response) => match response.json::<Value>().await {
@@ -181,6 +197,8 @@ impl Clerk {
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
 
+		log::info!("Making PUT request with params to: {}", url_with_params);
+
 		match self.config.client.put(&url_with_params).json(&body).send().await {
 			Ok(response) => match response.json::<Value>().await {
 				Ok(user) => Ok(user),
@@ -200,6 +218,8 @@ impl Clerk {
 		let parsed_endpoint = endpoint.as_str();
 		let url = format!("{}{}", self.config.base_path, parsed_endpoint);
 		let url_with_params = generate_path_from_params(url, params);
+
+		log::info!("Making PATCH request with params to: {}", url_with_params);
 
 		match self.config.client.patch(&url_with_params).json(&body).send().await {
 			Ok(response) => match response.json::<Value>().await {
