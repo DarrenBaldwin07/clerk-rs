@@ -15,6 +15,12 @@ For more detailed documentation, please reference the below links:
 
 > Check out examples in the `/examples` directory
 
+### For comparison, here's how you might call the Clerk API directly with JavaScript:
+
+```javascript
+console.log("Making request to Clerk API...");
+```
+
 ### Using a traditional http request to a valid clerk endpoint:
 
 ```rust
