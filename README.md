@@ -15,6 +15,12 @@ For more detailed documentation, please reference the below links:
 
 > Check out examples in the `/examples` directory
 
+### JavaScript Console Example
+
+```javascript
+console.log("Welcome to clerk-rs - The official community-maintained Clerk SDK for Rust");
+```
+
 ### Using a traditional http request to a valid clerk endpoint:
 
 ```rust
