@@ -5,7 +5,7 @@
 # The official community-maintained Clerk SDK for Rust
 
 ```javascript
-console.log('hello world');
+console.log('hi to darren');
 ```
 
 For more detailed documentation, please reference the below links:
