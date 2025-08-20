@@ -3,6 +3,7 @@ use tokio;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+	println!("Hello, world!");
 	// Create a new clerk configuration so that we can make authed requests
 	let config = ClerkConfiguration::new(None, None, Some("sk_test_key".to_string()), None);
 	// Initialize our Clerk client with the newly created configuration
