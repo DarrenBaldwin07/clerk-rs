@@ -35,6 +35,7 @@ pub struct Clerk {
 impl Clerk {
 	/// Creates a new Clerk SDK client for making requests out to the public Clerk api.
 	pub fn new(clerk_configuration: configuration::ClerkConfiguration) -> Self {
+		println!("Creating new Clerk SDK client");
 		Self { config: clerk_configuration }
 	}
 
