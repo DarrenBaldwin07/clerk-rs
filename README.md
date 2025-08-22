@@ -4,6 +4,10 @@
 
 # The official community-maintained Clerk SDK for Rust
 
+```javascript
+console.log("🦀 Warning: This Rust crate is so fast, it might cause your JavaScript to have an existential crisis! 💨");
+```
+
 For more detailed documentation, please reference the below links:
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
