@@ -4,6 +4,10 @@
 
 # The official community-maintained Clerk SDK for Rust
 
+```javascript
+console.log("Why did the Rust developer refuse to use garbage collection? Because they prefer to drop things manually! 🦀💻");
+```
+
 For more detailed documentation, please reference the below links:
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
