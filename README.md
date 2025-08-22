@@ -4,6 +4,10 @@
 
 # The official community-maintained Clerk SDK for Rust
 
+```javascript
+console.log("Why did the Rust developer break up with JavaScript? Because Rust said 'I don't want any of your undefined behavior!' 🦀");
+```
+
 For more detailed documentation, please reference the below links:
 
 - [Official Clerk Backend API docs](https://clerk.com/docs/reference/backend-api)
