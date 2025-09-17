@@ -31,6 +31,7 @@ pub enum ClerkDynamicGetEndpoint {
 	GetRedirectUrl,
 	GetSession,
 	GetOAuthAccessToken,
+	GetSignUp,
 	GetUser,
 	UsersGetOrganizationMemberships,
 }
@@ -231,6 +232,7 @@ impl ClerkDynamicGetEndpoint {
 			ClerkDynamicGetEndpoint::GetPhoneNumber => "/phone_numbers/{phone_number_id}",
 			ClerkDynamicGetEndpoint::GetRedirectUrl => "/redirect_urls/{id}",
 			ClerkDynamicGetEndpoint::GetSession => "/sessions/{session_id}",
+			ClerkDynamicGetEndpoint::GetSignUp => "/sign_ups/{id}",
 			ClerkDynamicGetEndpoint::GetUser => "/users/{user_id}",
 			ClerkDynamicGetEndpoint::GetClient => "/clients/{client_id}",
 			ClerkDynamicGetEndpoint::GetJwks => "/jwks",
