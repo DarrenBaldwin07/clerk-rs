@@ -36,6 +36,8 @@ impl EmailAddressVerification {
 pub enum Status {
 	#[serde(rename = "verified")]
 	Verified,
+	#[serde(rename = "unverified")]
+	Unverified,
 	#[serde(rename = "expired")]
 	Expired,
 	#[serde(rename = "failed")]
