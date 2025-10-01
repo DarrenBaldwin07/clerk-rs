@@ -3,6 +3,7 @@
 [![docs.rs](https://img.shields.io/docsrs/clerk-rs?style=flat-square)](https://docs.rs/clerk-rs)
 
 # The official community-maintained Clerk SDK for Rust
+sonnet 3.7
 
 For more detailed documentation, please reference the below links:
 
