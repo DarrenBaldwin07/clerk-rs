@@ -32,7 +32,7 @@ impl ActiveOrganization {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Actor {
-	pub iss: String,
+	pub iss: Option<String>,
 	pub sid: Option<String>,
 	pub sub: String,
 }
@@ -258,7 +258,7 @@ mod tests {
 				org_role: "org_role".to_string(),
 				org_permissions: vec!["org_permission".to_string()],
 				act: Actor {
-					iss: "actor_iss".to_string(),
+					iss: Some("actor_iss".to_string()),
 					sid: Some("actor_sid".to_string()),
 					sub: "actor_sub".to_string(),
 				},
@@ -314,7 +314,7 @@ mod tests {
 			nbf: current_time as i32,
 			sid: Some("session_id".to_string()),
 			act: Some(Actor {
-				iss: "actor_iss".to_string(),
+				iss: Some("actor_iss".to_string()),
 				sid: Some("actor_sid".to_string()),
 				sub: "actor_sub".to_string(),
 			}),
@@ -467,7 +467,7 @@ mod tests {
 			nbf: current_time as i32,
 			sid: Some("session_id".to_string()),
 			act: Some(Actor {
-				iss: "actor_iss".to_string(),
+				iss: Some("actor_iss".to_string()),
 				sid: Some("actor_sid".to_string()),
 				sub: "actor_sub".to_string(),
 			}),
