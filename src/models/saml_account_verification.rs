@@ -14,24 +14,14 @@ pub struct SamlAccountVerification {
 	pub status: Status,
 	#[serde(rename = "strategy")]
 	pub strategy: Strategy,
-	#[serde(rename = "external_verification_redirect_url", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "external_verification_redirect_url")]
 	pub external_verification_redirect_url: Option<String>,
-	#[serde(
-		rename = "error",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub error: Option<Option<Box<crate::models::SamlError>>>,
+	#[serde(rename = "error", skip_serializing_if = "Option::is_none")]
+	pub error: Option<Box<crate::models::SamlError>>,
 	#[serde(rename = "expire_at")]
 	pub expire_at: i64,
-	#[serde(
-		rename = "attempts",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub attempts: Option<Option<i64>>,
+	#[serde(rename = "attempts", skip_serializing_if = "Option::is_none")]
+	pub attempts: Option<i64>,
 }
 
 impl SamlAccountVerification {

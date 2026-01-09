@@ -17,29 +17,14 @@ pub struct CreateSamlConnectionRequest {
 	#[serde(rename = "domain")]
 	pub domain: String,
 	/// The Entity ID as provided by the IdP
-	#[serde(
-		rename = "idp_entity_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub idp_entity_id: Option<Option<String>>,
+	#[serde(rename = "idp_entity_id", skip_serializing_if = "Option::is_none")]
+	pub idp_entity_id: Option<String>,
 	/// The Single-Sign On URL as provided by the IdP
-	#[serde(
-		rename = "idp_sso_url",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub idp_sso_url: Option<Option<String>>,
+	#[serde(rename = "idp_sso_url", skip_serializing_if = "Option::is_none")]
+	pub idp_sso_url: Option<String>,
 	/// The X.509 certificate as provided by the IdP
-	#[serde(
-		rename = "idp_certificate",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub idp_certificate: Option<Option<String>>,
+	#[serde(rename = "idp_certificate", skip_serializing_if = "Option::is_none")]
+	pub idp_certificate: Option<String>,
 }
 
 impl CreateSamlConnectionRequest {

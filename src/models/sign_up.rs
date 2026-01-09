@@ -26,77 +26,32 @@ pub struct SignUp {
 	pub unverified_fields: Option<Vec<String>>,
 	#[serde(rename = "verifications", skip_serializing_if = "Option::is_none")]
 	pub verifications: Option<serde_json::Value>,
-	#[serde(
-		rename = "username",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub username: Option<Option<String>>,
-	#[serde(
-		rename = "email_address",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub email_address: Option<Option<String>>,
-	#[serde(
-		rename = "phone_number",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub phone_number: Option<Option<String>>,
-	#[serde(
-		rename = "web3_wallet",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub web3_wallet: Option<Option<String>>,
+	#[serde(rename = "username", skip_serializing_if = "Option::is_none")]
+	pub username: Option<String>,
+	#[serde(rename = "email_address", skip_serializing_if = "Option::is_none")]
+	pub email_address: Option<String>,
+	#[serde(rename = "phone_number", skip_serializing_if = "Option::is_none")]
+	pub phone_number: Option<String>,
+	#[serde(rename = "web3_wallet", skip_serializing_if = "Option::is_none")]
+	pub web3_wallet: Option<String>,
 	#[serde(rename = "password_enabled")]
 	pub password_enabled: bool,
-	#[serde(
-		rename = "first_name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub first_name: Option<Option<String>>,
-	#[serde(
-		rename = "last_name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub last_name: Option<Option<String>>,
+	#[serde(rename = "first_name", skip_serializing_if = "Option::is_none")]
+	pub first_name: Option<String>,
+	#[serde(rename = "last_name", skip_serializing_if = "Option::is_none")]
+	pub last_name: Option<String>,
 	#[serde(rename = "unsafe_metadata", skip_serializing_if = "Option::is_none")]
 	pub unsafe_metadata: Option<serde_json::Value>,
 	#[serde(rename = "public_metadata", skip_serializing_if = "Option::is_none")]
 	pub public_metadata: Option<serde_json::Value>,
 	#[serde(rename = "custom_action")]
 	pub custom_action: bool,
-	#[serde(
-		rename = "external_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub external_id: Option<Option<String>>,
-	#[serde(
-		rename = "created_session_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub created_session_id: Option<Option<String>>,
-	#[serde(
-		rename = "created_user_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub created_user_id: Option<Option<String>>,
+	#[serde(rename = "external_id", skip_serializing_if = "Option::is_none")]
+	pub external_id: Option<String>,
+	#[serde(rename = "created_session_id", skip_serializing_if = "Option::is_none")]
+	pub created_session_id: Option<String>,
+	#[serde(rename = "created_user_id", skip_serializing_if = "Option::is_none")]
+	pub created_user_id: Option<String>,
 	#[serde(rename = "abandon_at")]
 	pub abandon_at: i64,
 	#[serde(rename = "external_account", skip_serializing_if = "Option::is_none")]

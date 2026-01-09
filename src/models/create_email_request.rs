@@ -20,13 +20,8 @@ pub struct CreateEmailRequest {
 	#[serde(rename = "body", skip_serializing_if = "Option::is_none")]
 	pub body: Option<String>,
 	/// The ID of the email address to send to.
-	#[serde(
-		rename = "email_address_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub email_address_id: Option<Option<String>>,
+	#[serde(rename = "email_address_id", skip_serializing_if = "Option::is_none")]
+	pub email_address_id: Option<String>,
 }
 
 impl CreateEmailRequest {

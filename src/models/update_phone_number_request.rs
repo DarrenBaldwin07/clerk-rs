@@ -11,21 +11,11 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UpdatePhoneNumberRequest {
 	/// The phone number will be marked as verified.
-	#[serde(
-		rename = "verified",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub verified: Option<Option<bool>>,
+	#[serde(rename = "verified", skip_serializing_if = "Option::is_none")]
+	pub verified: Option<bool>,
 	/// Set this phone number as the primary phone number for the user.
-	#[serde(
-		rename = "primary",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub primary: Option<Option<bool>>,
+	#[serde(rename = "primary", skip_serializing_if = "Option::is_none")]
+	pub primary: Option<bool>,
 }
 
 impl UpdatePhoneNumberRequest {

@@ -11,50 +11,20 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UpdateInstanceRequest {
 	/// Toggles test mode for this instance, allowing the use of test email addresses and phone numbers. Defaults to true for development instances.
-	#[serde(
-		rename = "test_mode",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub test_mode: Option<Option<bool>>,
+	#[serde(rename = "test_mode", skip_serializing_if = "Option::is_none")]
+	pub test_mode: Option<bool>,
 	/// Whether the instance should be using the HIBP service to check passwords for breaches
-	#[serde(
-		rename = "hibp",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub hibp: Option<Option<bool>>,
+	#[serde(rename = "hibp", skip_serializing_if = "Option::is_none")]
+	pub hibp: Option<bool>,
 	/// The \"enhanced_email_deliverability\" feature will send emails from \"verifications@clerk.dev\" instead of your domain. This can be helpful if you do not have a high domain reputation.
-	#[serde(
-		rename = "enhanced_email_deliverability",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub enhanced_email_deliverability: Option<Option<bool>>,
-	#[serde(
-		rename = "support_email",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub support_email: Option<Option<String>>,
-	#[serde(
-		rename = "clerk_js_version",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub clerk_js_version: Option<Option<String>>,
-	#[serde(
-		rename = "development_origin",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub development_origin: Option<Option<String>>,
+	#[serde(rename = "enhanced_email_deliverability", skip_serializing_if = "Option::is_none")]
+	pub enhanced_email_deliverability: Option<bool>,
+	#[serde(rename = "support_email", skip_serializing_if = "Option::is_none")]
+	pub support_email: Option<String>,
+	#[serde(rename = "clerk_js_version", skip_serializing_if = "Option::is_none")]
+	pub clerk_js_version: Option<String>,
+	#[serde(rename = "development_origin", skip_serializing_if = "Option::is_none")]
+	pub development_origin: Option<String>,
 	/// For browser-like stacks such as browser extensions, Electron, or Capacitor.js the instance allowed origins need to be updated with the request origin value. For Chrome extensions popup, background, or service worker pages the origin is chrome-extension://extension_uiid. For Electron apps the default origin is http://localhost:3000. For Capacitor, the origin is capacitor://localhost.
 	#[serde(rename = "allowed_origins", skip_serializing_if = "Option::is_none")]
 	pub allowed_origins: Option<Vec<String>>,

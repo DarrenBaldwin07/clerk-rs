@@ -11,13 +11,8 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ToggleTemplateDeliveryRequest {
 	/// Whether Clerk should deliver emails or SMS messages based on the current template
-	#[serde(
-		rename = "delivered_by_clerk",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub delivered_by_clerk: Option<Option<bool>>,
+	#[serde(rename = "delivered_by_clerk", skip_serializing_if = "Option::is_none")]
+	pub delivered_by_clerk: Option<bool>,
 }
 
 impl ToggleTemplateDeliveryRequest {

@@ -11,21 +11,11 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UpdateDomainRequest {
 	/// The new domain name. For development instances, can contain the port, i.e `myhostname:3000`. For production instances, must be a valid FQDN, i.e `mysite.com`. Cannot contain protocol scheme.
-	#[serde(
-		rename = "name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub name: Option<Option<String>>,
+	#[serde(rename = "name", skip_serializing_if = "Option::is_none")]
+	pub name: Option<String>,
 	/// The full URL of the proxy that will forward requests to Clerk's Frontend API. Can only be updated for production instances.
-	#[serde(
-		rename = "proxy_url",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub proxy_url: Option<Option<String>>,
+	#[serde(rename = "proxy_url", skip_serializing_if = "Option::is_none")]
+	pub proxy_url: Option<String>,
 }
 
 impl UpdateDomainRequest {

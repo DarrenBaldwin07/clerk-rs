@@ -19,22 +19,12 @@ pub struct Session {
 	pub user_id: String,
 	#[serde(rename = "client_id")]
 	pub client_id: String,
-	#[serde(
-		rename = "actor",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub actor: Option<Option<serde_json::Value>>,
+	#[serde(rename = "actor", skip_serializing_if = "Option::is_none")]
+	pub actor: Option<serde_json::Value>,
 	#[serde(rename = "status")]
 	pub status: Status,
-	#[serde(
-		rename = "last_active_organization_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub last_active_organization_id: Option<Option<String>>,
+	#[serde(rename = "last_active_organization_id", skip_serializing_if = "Option::is_none")]
+	pub last_active_organization_id: Option<String>,
 	#[serde(rename = "last_active_at")]
 	pub last_active_at: i64,
 	#[serde(rename = "expire_at")]

@@ -15,55 +15,20 @@ pub struct User {
 	/// String representing the object's type. Objects of the same type share the same value.
 	#[serde(rename = "object", skip_serializing_if = "Option::is_none")]
 	pub object: Option<Object>,
-	#[serde(
-		rename = "external_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub external_id: Option<Option<String>>,
-	#[serde(
-		rename = "primary_email_address_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub primary_email_address_id: Option<Option<String>>,
-	#[serde(
-		rename = "primary_phone_number_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub primary_phone_number_id: Option<Option<String>>,
-	#[serde(
-		rename = "primary_web3_wallet_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub primary_web3_wallet_id: Option<Option<String>>,
-	#[serde(
-		rename = "username",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub username: Option<Option<String>>,
-	#[serde(
-		rename = "first_name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub first_name: Option<Option<String>>,
-	#[serde(
-		rename = "last_name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub last_name: Option<Option<String>>,
+	#[serde(rename = "external_id", skip_serializing_if = "Option::is_none")]
+	pub external_id: Option<String>,
+	#[serde(rename = "primary_email_address_id", skip_serializing_if = "Option::is_none")]
+	pub primary_email_address_id: Option<String>,
+	#[serde(rename = "primary_phone_number_id", skip_serializing_if = "Option::is_none")]
+	pub primary_phone_number_id: Option<String>,
+	#[serde(rename = "primary_web3_wallet_id", skip_serializing_if = "Option::is_none")]
+	pub primary_web3_wallet_id: Option<String>,
+	#[serde(rename = "username", skip_serializing_if = "Option::is_none")]
+	pub username: Option<String>,
+	#[serde(rename = "first_name", skip_serializing_if = "Option::is_none")]
+	pub first_name: Option<String>,
+	#[serde(rename = "last_name", skip_serializing_if = "Option::is_none")]
+	pub last_name: Option<String>,
 	#[serde(rename = "profile_image_url", skip_serializing_if = "Option::is_none")]
 	pub profile_image_url: Option<String>,
 	#[serde(rename = "image_url", skip_serializing_if = "Option::is_none")]
@@ -72,29 +37,14 @@ pub struct User {
 	pub has_image: Option<bool>,
 	#[serde(rename = "public_metadata", skip_serializing_if = "Option::is_none")]
 	pub public_metadata: Option<serde_json::Value>,
-	#[serde(
-		rename = "private_metadata",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub private_metadata: Option<Option<serde_json::Value>>,
+	#[serde(rename = "private_metadata", skip_serializing_if = "Option::is_none")]
+	pub private_metadata: Option<serde_json::Value>,
 	#[serde(rename = "unsafe_metadata", skip_serializing_if = "Option::is_none")]
 	pub unsafe_metadata: Option<serde_json::Value>,
-	#[serde(
-		rename = "gender",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub gender: Option<Option<String>>,
-	#[serde(
-		rename = "birthday",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub birthday: Option<Option<String>>,
+	#[serde(rename = "gender", skip_serializing_if = "Option::is_none")]
+	pub gender: Option<String>,
+	#[serde(rename = "birthday", skip_serializing_if = "Option::is_none")]
+	pub birthday: Option<String>,
 	#[serde(rename = "email_addresses", skip_serializing_if = "Option::is_none")]
 	pub email_addresses: Option<Vec<crate::models::EmailAddress>>,
 	#[serde(rename = "phone_numbers", skip_serializing_if = "Option::is_none")]
@@ -114,13 +64,8 @@ pub struct User {
 	#[serde(rename = "saml_accounts", skip_serializing_if = "Option::is_none")]
 	pub saml_accounts: Option<Vec<crate::models::SamlAccount>>,
 	/// Unix timestamp of last sign-in.
-	#[serde(
-		rename = "last_sign_in_at",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub last_sign_in_at: Option<Option<i64>>,
+	#[serde(rename = "last_sign_in_at", skip_serializing_if = "Option::is_none")]
+	pub last_sign_in_at: Option<i64>,
 	/// Flag to denote whether user is banned or not.
 	#[serde(rename = "banned", skip_serializing_if = "Option::is_none")]
 	pub banned: Option<bool>,
@@ -128,21 +73,11 @@ pub struct User {
 	#[serde(rename = "locked", skip_serializing_if = "Option::is_none")]
 	pub locked: Option<bool>,
 	/// The number of seconds remaining until the lockout period expires for a locked user. A null value for a locked user indicates that lockout never expires.
-	#[serde(
-		rename = "lockout_expires_in_seconds",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub lockout_expires_in_seconds: Option<Option<i64>>,
+	#[serde(rename = "lockout_expires_in_seconds", skip_serializing_if = "Option::is_none")]
+	pub lockout_expires_in_seconds: Option<i64>,
 	/// The number of verification attempts remaining until the user is locked. Null if account lockout is not enabled. Note: if a user is locked explicitly via the Backend API, they may still have verification attempts remaining.
-	#[serde(
-		rename = "verification_attempts_remaining",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub verification_attempts_remaining: Option<Option<i64>>,
+	#[serde(rename = "verification_attempts_remaining", skip_serializing_if = "Option::is_none")]
+	pub verification_attempts_remaining: Option<i64>,
 	/// Unix timestamp of last update.
 	#[serde(rename = "updated_at", skip_serializing_if = "Option::is_none")]
 	pub updated_at: Option<i64>,
@@ -156,13 +91,8 @@ pub struct User {
 	#[serde(rename = "create_organization_enabled", skip_serializing_if = "Option::is_none")]
 	pub create_organization_enabled: Option<bool>,
 	/// Unix timestamp of the latest session activity, with day precision.
-	#[serde(
-		rename = "last_active_at",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub last_active_at: Option<Option<i64>>,
+	#[serde(rename = "last_active_at", skip_serializing_if = "Option::is_none")]
+	pub last_active_at: Option<i64>,
 }
 
 impl User {

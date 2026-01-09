@@ -14,9 +14,9 @@ pub struct EmailAddressVerification {
 	pub status: Status,
 	#[serde(rename = "strategy")]
 	pub strategy: Strategy,
-	#[serde(rename = "attempts", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "attempts")]
 	pub attempts: Option<i64>,
-	#[serde(rename = "expire_at", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "expire_at")]
 	pub expire_at: Option<i64>,
 }
 

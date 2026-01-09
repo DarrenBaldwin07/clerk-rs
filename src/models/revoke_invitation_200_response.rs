@@ -22,13 +22,8 @@ pub struct RevokeInvitation200Response {
 	pub revoked: Option<bool>,
 	#[serde(rename = "status")]
 	pub status: Status,
-	#[serde(
-		rename = "url",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub url: Option<Option<String>>,
+	#[serde(rename = "url", skip_serializing_if = "Option::is_none")]
+	pub url: Option<String>,
 	/// Unix timestamp of creation.
 	#[serde(rename = "created_at")]
 	pub created_at: i64,
