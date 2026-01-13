@@ -11,53 +11,23 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UpdateInstanceAuthConfigRequest {
 	/// Whether sign up is restricted to email addresses, phone numbers and usernames that are on the allowlist.
-	#[serde(
-		rename = "restricted_to_allowlist",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub restricted_to_allowlist: Option<Option<bool>>,
+	#[serde(rename = "restricted_to_allowlist", skip_serializing_if = "Option::is_none")]
+	pub restricted_to_allowlist: Option<bool>,
 	/// The local part of the email address from which authentication-related emails (e.g. OTP code, magic links) will be sent. Only alphanumeric values are allowed. Note that this value should contain only the local part of the address (e.g. `foo` for `foo@example.com`).
-	#[serde(
-		rename = "from_email_address",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub from_email_address: Option<Option<String>>,
+	#[serde(rename = "from_email_address", skip_serializing_if = "Option::is_none")]
+	pub from_email_address: Option<String>,
 	/// Enable the Progressive Sign Up algorithm. Refer to the [docs](https://clerk.com/docs/upgrade-guides/progressive-sign-up) for more info.
-	#[serde(
-		rename = "progressive_sign_up",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub progressive_sign_up: Option<Option<bool>>,
+	#[serde(rename = "progressive_sign_up", skip_serializing_if = "Option::is_none")]
+	pub progressive_sign_up: Option<bool>,
 	/// The name of the JWT Template used to augment your session tokens. To disable this, pass an empty string.
-	#[serde(
-		rename = "session_token_template",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub session_token_template: Option<Option<String>>,
+	#[serde(rename = "session_token_template", skip_serializing_if = "Option::is_none")]
+	pub session_token_template: Option<String>,
 	/// The \"enhanced_email_deliverability\" feature will send emails from \"verifications@clerk.dev\" instead of your domain. This can be helpful if you do not have a high domain reputation.
-	#[serde(
-		rename = "enhanced_email_deliverability",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub enhanced_email_deliverability: Option<Option<bool>>,
+	#[serde(rename = "enhanced_email_deliverability", skip_serializing_if = "Option::is_none")]
+	pub enhanced_email_deliverability: Option<bool>,
 	/// Toggles test mode for this instance, allowing the use of test email addresses and phone numbers. Defaults to true for development instances.
-	#[serde(
-		rename = "test_mode",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub test_mode: Option<Option<bool>>,
+	#[serde(rename = "test_mode", skip_serializing_if = "Option::is_none")]
+	pub test_mode: Option<bool>,
 }
 
 impl UpdateInstanceAuthConfigRequest {

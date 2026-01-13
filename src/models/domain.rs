@@ -21,29 +21,14 @@ pub struct Domain {
 	#[serde(rename = "frontend_api_url")]
 	pub frontend_api_url: String,
 	/// Null for satellite domains.
-	#[serde(
-		rename = "accounts_portal_url",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub accounts_portal_url: Option<Option<String>>,
-	#[serde(
-		rename = "proxy_url",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub proxy_url: Option<Option<String>>,
+	#[serde(rename = "accounts_portal_url", skip_serializing_if = "Option::is_none")]
+	pub accounts_portal_url: Option<String>,
+	#[serde(rename = "proxy_url", skip_serializing_if = "Option::is_none")]
+	pub proxy_url: Option<String>,
 	#[serde(rename = "development_origin")]
 	pub development_origin: String,
-	#[serde(
-		rename = "cname_targets",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub cname_targets: Option<Option<Vec<crate::models::CNameTarget>>>,
+	#[serde(rename = "cname_targets", skip_serializing_if = "Option::is_none")]
+	pub cname_targets: Option<Vec<crate::models::CNameTarget>>,
 }
 
 impl Domain {

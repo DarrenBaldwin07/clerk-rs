@@ -16,13 +16,8 @@ pub struct Template {
 	#[serde(rename = "object", skip_serializing_if = "Option::is_none")]
 	pub object: Option<Object>,
 	/// the id of the instance the template belongs to
-	#[serde(
-		rename = "instance_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub instance_id: Option<Option<String>>,
+	#[serde(rename = "instance_id", skip_serializing_if = "Option::is_none")]
+	pub instance_id: Option<String>,
 	/// whether this is a system (default) or user overridden) template
 	#[serde(rename = "resource_type", skip_serializing_if = "Option::is_none")]
 	pub resource_type: Option<String>,
@@ -45,13 +40,8 @@ pub struct Template {
 	#[serde(rename = "can_delete", skip_serializing_if = "Option::is_none")]
 	pub can_delete: Option<bool>,
 	/// email subject
-	#[serde(
-		rename = "subject",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub subject: Option<Option<String>>,
+	#[serde(rename = "subject", skip_serializing_if = "Option::is_none")]
+	pub subject: Option<String>,
 	/// the editor markup used to generate the body of the template
 	#[serde(rename = "markup", skip_serializing_if = "Option::is_none")]
 	pub markup: Option<String>,

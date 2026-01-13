@@ -18,11 +18,11 @@ pub struct SamlConnection {
 	pub name: String,
 	#[serde(rename = "domain")]
 	pub domain: String,
-	#[serde(rename = "idp_entity_id", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "idp_entity_id")]
 	pub idp_entity_id: Option<String>,
-	#[serde(rename = "idp_sso_url", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "idp_sso_url")]
 	pub idp_sso_url: Option<String>,
-	#[serde(rename = "idp_certificate", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "idp_certificate")]
 	pub idp_certificate: Option<String>,
 	#[serde(rename = "acs_url")]
 	pub acs_url: String,

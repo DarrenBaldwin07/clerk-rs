@@ -20,12 +20,12 @@ pub struct Client {
 	pub session_ids: Vec<String>,
 	#[serde(rename = "sessions")]
 	pub sessions: Vec<crate::models::Session>,
-	#[serde(rename = "sign_in_id", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "sign_in_id")]
 	pub sign_in_id: Option<String>,
-	#[serde(rename = "sign_up_id", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "sign_up_id")]
 	pub sign_up_id: Option<String>,
 	/// Last active session_id.
-	#[serde(rename = "last_active_session_id", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "last_active_session_id")]
 	pub last_active_session_id: Option<String>,
 	/// Unix timestamp of last update.
 	#[serde(rename = "updated_at")]

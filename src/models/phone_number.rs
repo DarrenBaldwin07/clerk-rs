@@ -23,17 +23,12 @@ pub struct PhoneNumber {
 	pub default_second_factor: Option<bool>,
 	#[serde(rename = "reserved")]
 	pub reserved: bool,
-	#[serde(rename = "verification", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "verification")]
 	pub verification: Option<Box<crate::models::EmailAddressVerification>>,
 	#[serde(rename = "linked_to")]
 	pub linked_to: Vec<crate::models::IdentificationLink>,
-	#[serde(
-		rename = "backup_codes",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub backup_codes: Option<Option<Vec<String>>>,
+	#[serde(rename = "backup_codes", skip_serializing_if = "Option::is_none")]
+	pub backup_codes: Option<Vec<String>>,
 }
 
 impl PhoneNumber {

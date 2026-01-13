@@ -21,28 +21,13 @@ pub struct SamlAccount {
 	pub active: bool,
 	#[serde(rename = "email_address")]
 	pub email_address: String,
-	#[serde(
-		rename = "first_name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub first_name: Option<Option<String>>,
-	#[serde(
-		rename = "last_name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub last_name: Option<Option<String>>,
-	#[serde(
-		rename = "provider_user_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub provider_user_id: Option<Option<String>>,
-	#[serde(rename = "verification", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "first_name", skip_serializing_if = "Option::is_none")]
+	pub first_name: Option<String>,
+	#[serde(rename = "last_name", skip_serializing_if = "Option::is_none")]
+	pub last_name: Option<String>,
+	#[serde(rename = "provider_user_id", skip_serializing_if = "Option::is_none")]
+	pub provider_user_id: Option<String>,
+	#[serde(rename = "verification")]
 	pub verification: Option<Box<crate::models::SamlAccountVerification>>,
 }
 

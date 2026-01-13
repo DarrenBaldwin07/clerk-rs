@@ -11,29 +11,14 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CreateUserRequest {
 	/// The ID of the user as used in your external systems or your previous authentication solution. Must be unique across your instance.
-	#[serde(
-		rename = "external_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub external_id: Option<Option<String>>,
+	#[serde(rename = "external_id", skip_serializing_if = "Option::is_none")]
+	pub external_id: Option<String>,
 	/// The first name to assign to the user
-	#[serde(
-		rename = "first_name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub first_name: Option<Option<String>>,
+	#[serde(rename = "first_name", skip_serializing_if = "Option::is_none")]
+	pub first_name: Option<String>,
 	/// The last name to assign to the user
-	#[serde(
-		rename = "last_name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub last_name: Option<Option<String>>,
+	#[serde(rename = "last_name", skip_serializing_if = "Option::is_none")]
+	pub last_name: Option<String>,
 	/// Email addresses to add to the user. Must be unique across your instance. The first email address will be set as the user's primary email address.
 	#[serde(rename = "email_address", skip_serializing_if = "Option::is_none")]
 	pub email_address: Option<Vec<String>>,
@@ -44,21 +29,11 @@ pub struct CreateUserRequest {
 	#[serde(rename = "web3_wallet", skip_serializing_if = "Option::is_none")]
 	pub web3_wallet: Option<Vec<String>>,
 	/// The username to give to the user. It must be unique across your instance.
-	#[serde(
-		rename = "username",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub username: Option<Option<String>>,
+	#[serde(rename = "username", skip_serializing_if = "Option::is_none")]
+	pub username: Option<String>,
 	/// The plaintext password to give the user. Must be at least 8 characters long, and can not be in any list of hacked passwords.
-	#[serde(
-		rename = "password",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub password: Option<Option<String>>,
+	#[serde(rename = "password", skip_serializing_if = "Option::is_none")]
+	pub password: Option<String>,
 	/// In case you already have the password digests and not the passwords, you can use them for the newly created user via this property. The digests should be generated with one of the supported algorithms. The hashing algorithm can be specified using the `password_hasher` property.
 	#[serde(rename = "password_digest", skip_serializing_if = "Option::is_none")]
 	pub password_digest: Option<String>,

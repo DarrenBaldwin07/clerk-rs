@@ -11,13 +11,8 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PreviewTemplateRequest {
 	/// The email subject. Applicable only to email templates.
-	#[serde(
-		rename = "subject",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub subject: Option<Option<String>>,
+	#[serde(rename = "subject", skip_serializing_if = "Option::is_none")]
+	pub subject: Option<String>,
 	/// The template body before variable interpolation
 	#[serde(rename = "body", skip_serializing_if = "Option::is_none")]
 	pub body: Option<String>,

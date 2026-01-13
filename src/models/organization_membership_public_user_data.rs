@@ -12,38 +12,18 @@
 pub struct OrganizationMembershipPublicUserData {
 	#[serde(rename = "user_id", skip_serializing_if = "Option::is_none")]
 	pub user_id: Option<String>,
-	#[serde(
-		rename = "first_name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub first_name: Option<Option<String>>,
-	#[serde(
-		rename = "last_name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub last_name: Option<Option<String>>,
-	#[serde(
-		rename = "profile_image_url",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub profile_image_url: Option<Option<String>>,
+	#[serde(rename = "first_name", skip_serializing_if = "Option::is_none")]
+	pub first_name: Option<String>,
+	#[serde(rename = "last_name", skip_serializing_if = "Option::is_none")]
+	pub last_name: Option<String>,
+	#[serde(rename = "profile_image_url", skip_serializing_if = "Option::is_none")]
+	pub profile_image_url: Option<String>,
 	#[serde(rename = "image_url", skip_serializing_if = "Option::is_none")]
 	pub image_url: Option<String>,
 	#[serde(rename = "has_image", skip_serializing_if = "Option::is_none")]
 	pub has_image: Option<bool>,
-	#[serde(
-		rename = "identifier",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub identifier: Option<Option<String>>,
+	#[serde(rename = "identifier", skip_serializing_if = "Option::is_none")]
+	pub identifier: Option<String>,
 }
 
 impl OrganizationMembershipPublicUserData {
