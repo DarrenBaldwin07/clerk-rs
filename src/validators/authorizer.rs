@@ -1,5 +1,7 @@
 use crate::{apis::jwks_api::JwksKey, validators::jwks::JwksProvider};
 use jsonwebtoken::{decode, decode_header, errors::Error as jwtError, Algorithm, DecodingKey, Header, Validation};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde_aux::prelude::*;
 use serde_json::{Map, Value};
 use std::{error::Error, fmt, sync::Arc};
 
@@ -31,28 +33,150 @@ impl ActiveOrganization {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct ActiveOrganizationV2 {
+	/// The ID of the Organization.
+	pub id: String,
+
+	/// The slug of the Organization.
+	pub slg: String,
+
+	/// The Role of the user in the Organization, without the org: prefix.
+	pub rol: String,
+
+	/// The Permissions of the user in the Organization.
+	#[serde(deserialize_with = "deserialize_vec_from_string_or_vec")]
+	pub per: Vec<String>,
+
+	/// feature-permission map
+	#[serde(deserialize_with = "deserialize_vec_from_string_or_vec")]
+	pub fpm: Vec<u16>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Actor {
 	pub iss: Option<String>,
 	pub sid: Option<String>,
 	pub sub: String,
 }
 
+/// A union of Clerk JWTs, either v1 or v2.
+///
+/// Use this type if you need to handle both v1 and v2 JWTs in the same code path.
+///
+/// This relies on the `v` field as the descriminant for which JWT version is being used.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
-pub struct ClerkJwt {
+#[serde(tag = "v")]
+pub enum ClerkJwt {
+	#[serde(rename = "2")]
+	V2(ClerkJwtV2),
+	#[serde(untagged)]
+	V1(ClerkJwtV1),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct ClerkJwtV1 {
 	pub azp: Option<String>,
-	pub exp: i32,
-	pub iat: i32,
+	pub exp: i64,
+	pub iat: i64,
 	pub iss: String,
-	pub nbf: i32,
+	pub nbf: i64,
 	pub sid: Option<String>,
 	pub sub: String,
 	pub act: Option<Actor>,
 	#[serde(flatten)]
 	pub org: Option<ActiveOrganization>,
 	/// Catch-all for any other attributes that may be present in the JWT. This
-	/// is useful for custom templates that may have additional fields
+	/// is useful for custom templates that may have additional fields.
 	#[serde(flatten)]
 	pub other: Map<String, Value>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct ClerkJwtV2 {
+	/// The Origin header that was included in the original Frontend API request made from the user.
+	/// Most commonly, it will be the URL of the application. This claim could be omitted if,
+	/// for privacy-related reasons, `Origin` is empty or null.
+	pub azp: Option<String>,
+
+	/// The time after which the token will expire, as a Unix timestamp.
+	/// Determined using the Token lifetime JWT template setting in the [Clerk Dashboard].
+	///
+	/// [Clerk Dashboard]: https://dashboard.clerk.com/~/jwt-templates
+	pub exp: i64,
+
+	/// Each item represents the minutes that have passed since the last time a first factor or
+	/// second factor, respectively, was verified.
+	pub fva: [i64; 2],
+
+	/// The time at which the token was issued as a Unix timestamp.
+	pub iat: i64,
+
+	/// The Frontend API URL of your instance.
+	pub iss: String,
+
+	/// The unique identifier of the token.
+	pub jti: String,
+
+	/// The time before which the token is considered invalid, as a Unix timestamp.
+	/// Determined using the Allowed Clock Skew JWT template setting in the [Clerk Dashboard].
+	///
+	/// [Clerk Dashboard]: https://dashboard.clerk.com/~/jwt-templates
+	pub nbf: i64,
+
+	/// The ID of the current session.
+	pub sid: Option<String>,
+
+	/// The ID of the current user of the session.
+	pub sub: String,
+
+	/// The Plan that is active. The value is in the format `scope:planslug`, where scope can be `u`
+	/// or `o` representing user or Organization-level Plans, respectively.
+	///
+	/// The `u:` prefix is used if no Organization is active, and the `o:` prefix appears if an
+	/// Organization is active.
+	pub pla: String,
+
+	/// A list of enabled Features and their scope.
+	///
+	/// The scope can either be `o` for Organization-level Features if there is an Active
+	/// Organization, or `u` for user-level Features or if there is no active Organization.
+	#[serde(deserialize_with = "deserialize_vec_from_string_or_vec")]
+	pub fea: Vec<String>,
+
+	/// The status of the current session.
+	pub sts: Option<String>,
+
+	/// The active Organization claim.
+	pub o: Option<ActiveOrganizationV2>,
+
+	/// Catch-all for any other attributes that may be present in the JWT. This
+	/// is useful for custom templates that may have additional fields.
+	#[serde(flatten)]
+	pub other: Map<String, Value>,
+}
+
+impl ClerkJwtV2 {
+	/// Returns an iterator over the features and their permissions.
+	///
+	/// The tuple is in the form of `(feature, Iterator<permissions>)`.
+	///
+	/// If no Organization is active, this will be an empty iterator.
+	pub fn permissions_iter(&self) -> impl Iterator<Item = (&str, impl Iterator<Item = &str>)> {
+		self.fea
+			.iter()
+			.zip(self.o.as_ref().map(|org| org.fpm.iter()).unwrap_or_default())
+			.map(|(feature, mask)| {
+				let perms = self
+					.o
+					.as_ref()
+					.map(|org| org.per.iter())
+					.unwrap_or_default()
+					.enumerate()
+					.filter_map(move |(i, perm)| if mask & (1 << i) != 0 { Some(perm.as_str()) } else { None });
+
+				(feature.as_str(), perms)
+			})
+	}
 }
 
 pub trait ClerkRequest {
@@ -97,9 +221,10 @@ impl<J: JwksProvider> ClerkAuthorizer<J> {
 	}
 
 	/// Authorizes a service request against the Clerk auth provider
-	pub async fn authorize<T>(&self, request: &T) -> Result<ClerkJwt, ClerkError>
+	pub async fn authorize<T, Jwt>(&self, request: &T) -> Result<Jwt, ClerkError>
 	where
 		T: ClerkRequest,
+		Jwt: DeserializeOwned,
 	{
 		// get the jwt from header or cookies
 		let access_token: String = match request.get_header("Authorization") {
@@ -137,7 +262,7 @@ impl<J> Clone for ClerkAuthorizer<J> {
 /// Validates a jwt using the given [`JwksProvider`].
 ///
 /// The jwt is required to have a `kid` which is used to request the matching key from the provider.
-pub async fn validate_jwt<J: JwksProvider>(token: &str, jwks: Arc<J>) -> Result<ClerkJwt, ClerkError> {
+pub async fn validate_jwt<J: JwksProvider, Jwt: DeserializeOwned>(token: &str, jwks: Arc<J>) -> Result<Jwt, ClerkError> {
 	// parse the header to get the kid
 	let kid = match get_token_header(token).map(|h| h.kid) {
 		Ok(Some(kid)) => kid,
@@ -159,7 +284,7 @@ pub async fn validate_jwt<J: JwksProvider>(token: &str, jwks: Arc<J>) -> Result<
 /// Validates a jwt using the given jwk.
 ///
 /// This function does not check that the token's kid matches the key's.
-pub fn validate_jwt_with_key(token: &str, key: &JwksKey) -> Result<ClerkJwt, ClerkError> {
+pub fn validate_jwt_with_key<Jwt: DeserializeOwned>(token: &str, key: &JwksKey) -> Result<Jwt, ClerkError> {
 	match key.alg.as_str() {
 		// Currently, clerk only supports Rs256 by default
 		"RS256" => {
@@ -170,7 +295,7 @@ pub fn validate_jwt_with_key(token: &str, key: &JwksKey) -> Result<ClerkJwt, Cle
 			validation.validate_exp = true;
 			validation.validate_nbf = true;
 
-			match decode::<ClerkJwt>(token, &decoding_key, &validation) {
+			match decode::<Jwt>(token, &decoding_key, &validation) {
 				Ok(token) => Ok(token.claims),
 				Err(err) => Err(ClerkError::Unauthorized(format!("Error: Invalid JWT! cause: {}", err))),
 			}
@@ -201,7 +326,7 @@ mod tests {
 	}
 
 	#[derive(Debug, serde::Serialize)]
-	struct Claims {
+	struct ClaimsV1 {
 		sub: String,
 		iat: usize,
 		nbf: usize,
@@ -245,7 +370,7 @@ mod tests {
 			// expire after 1000 secs
 			let expiration = current_time + 1000;
 
-			let claims = Claims {
+			let claims = ClaimsV1 {
 				azp: "client_id".to_string(),
 				sub: "user".to_string(),
 				iat: current_time,
@@ -305,13 +430,13 @@ mod tests {
 		let current_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as usize;
 		let token = helper.generate_jwt_token(Some(kid), Some(current_time), false);
 
-		let expected = ClerkJwt {
+		let expected = ClerkJwtV1 {
 			azp: Some("client_id".to_string()),
 			sub: "user".to_string(),
-			iat: current_time as i32,
-			exp: (current_time + 1000) as i32,
+			iat: current_time as i64,
+			exp: (current_time + 1000) as i64,
 			iss: "issuer".to_string(),
-			nbf: current_time as i32,
+			nbf: current_time as i64,
 			sid: Some("session_id".to_string()),
 			act: Some(Actor {
 				iss: Some("actor_iss".to_string()),
@@ -339,7 +464,10 @@ mod tests {
 			},
 		};
 
-		assert_eq!(validate_jwt_with_key(token.as_str(), &jwks_key).expect("should be valid"), expected);
+		assert_eq!(
+			validate_jwt_with_key::<ClerkJwtV1>(token.as_str(), &jwks_key).expect("should be valid"),
+			expected
+		);
 	}
 
 	#[test]
@@ -362,7 +490,7 @@ mod tests {
 		let token = helper.generate_jwt_token(Some(kid), None, false);
 
 		assert!(matches!(
-			validate_jwt_with_key(&token, &jwks_key),
+			validate_jwt_with_key::<ClerkJwtV1>(&token, &jwks_key),
 			Err(ClerkError::InternalServerError(_))
 		))
 	}
@@ -385,7 +513,7 @@ mod tests {
 		let token = helper.generate_jwt_token(Some(kid), None, false);
 
 		assert!(matches!(
-			validate_jwt_with_key(&token, &jwks_key),
+			validate_jwt_with_key::<ClerkJwtV1>(&token, &jwks_key),
 			Err(ClerkError::InternalServerError(_))
 		))
 	}
@@ -410,7 +538,7 @@ mod tests {
 
 		let token = helper2.generate_jwt_token(None, None, false);
 
-		let res = validate_jwt_with_key(&token, &jwks_key);
+		let res = validate_jwt_with_key::<ClerkJwtV1>(&token, &jwks_key);
 		assert!(matches!(res, Err(ClerkError::Unauthorized(_))));
 	}
 
@@ -433,7 +561,7 @@ mod tests {
 
 		let token = helper.generate_jwt_token(Some(kid), None, true);
 
-		let res = validate_jwt_with_key(&token, &jwks_key);
+		let res = validate_jwt_with_key::<ClerkJwtV1>(&token, &jwks_key);
 		assert!(matches!(res, Err(ClerkError::Unauthorized(_))))
 	}
 
@@ -458,13 +586,13 @@ mod tests {
 		let current_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as usize;
 		let token = helper.generate_jwt_token(Some(kid), Some(current_time), false);
 
-		let expected = ClerkJwt {
+		let expected = ClerkJwtV1 {
 			azp: Some("client_id".to_string()),
 			sub: "user".to_string(),
-			iat: current_time as i32,
-			exp: (current_time + 1000) as i32,
+			iat: current_time as i64,
+			exp: (current_time + 1000) as i64,
 			iss: "issuer".to_string(),
-			nbf: current_time as i32,
+			nbf: current_time as i64,
 			sid: Some("session_id".to_string()),
 			act: Some(Actor {
 				iss: Some("actor_iss".to_string()),
@@ -492,7 +620,10 @@ mod tests {
 			},
 		};
 
-		assert_eq!(validate_jwt(token.as_str(), jwks).await.expect("should be valid"), expected);
+		assert_eq!(
+			validate_jwt::<_, ClerkJwtV1>(token.as_str(), jwks).await.expect("should be valid"),
+			expected
+		);
 	}
 
 	#[tokio::test]
@@ -513,7 +644,10 @@ mod tests {
 		};
 		let jwks = Arc::new(StaticJwksProvider::from_key(jwks_key));
 
-		assert!(matches!(validate_jwt("invalid_token", jwks).await, Err(ClerkError::Unauthorized(_))))
+		assert!(matches!(
+			validate_jwt::<_, ClerkJwtV1>("invalid_token", jwks).await,
+			Err(ClerkError::Unauthorized(_))
+		))
 	}
 
 	#[tokio::test]
@@ -536,7 +670,10 @@ mod tests {
 
 		let token = helper.generate_jwt_token(None, None, false);
 
-		assert!(matches!(validate_jwt(&token, jwks).await, Err(ClerkError::Unauthorized(_))))
+		assert!(matches!(
+			validate_jwt::<_, ClerkJwtV1>(&token, jwks).await,
+			Err(ClerkError::Unauthorized(_))
+		))
 	}
 
 	#[tokio::test]
@@ -557,7 +694,10 @@ mod tests {
 
 		let token = helper.generate_jwt_token(Some("bc63c2e9-5d1c-4e32-9b62-178f60409abd"), None, false);
 
-		assert!(matches!(validate_jwt(&token, jwks).await, Err(ClerkError::Unauthorized(_))))
+		assert!(matches!(
+			validate_jwt::<_, ClerkJwtV1>(&token, jwks).await,
+			Err(ClerkError::Unauthorized(_))
+		))
 	}
 
 	#[test]
