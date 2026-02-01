@@ -11,61 +11,26 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UpdateSamlConnectionRequest {
 	/// The name of the new SAML Connection
-	#[serde(
-		rename = "name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub name: Option<Option<String>>,
+	#[serde(rename = "name", skip_serializing_if = "Option::is_none")]
+	pub name: Option<String>,
 	/// The domain to use for the new SAML Connection
-	#[serde(
-		rename = "domain",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub domain: Option<Option<String>>,
+	#[serde(rename = "domain", skip_serializing_if = "Option::is_none")]
+	pub domain: Option<String>,
 	/// The entity id as provided by the IdP
-	#[serde(
-		rename = "idp_entity_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub idp_entity_id: Option<Option<String>>,
+	#[serde(rename = "idp_entity_id", skip_serializing_if = "Option::is_none")]
+	pub idp_entity_id: Option<String>,
 	/// The SSO url as provided by the IdP
-	#[serde(
-		rename = "idp_sso_url",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub idp_sso_url: Option<Option<String>>,
+	#[serde(rename = "idp_sso_url", skip_serializing_if = "Option::is_none")]
+	pub idp_sso_url: Option<String>,
 	/// The x509 certificated as provided by the IdP
-	#[serde(
-		rename = "idp_certificate",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub idp_certificate: Option<Option<String>>,
+	#[serde(rename = "idp_certificate", skip_serializing_if = "Option::is_none")]
+	pub idp_certificate: Option<String>,
 	/// Activate or de-activate the SAML Connection
-	#[serde(
-		rename = "active",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub active: Option<Option<bool>>,
+	#[serde(rename = "active", skip_serializing_if = "Option::is_none")]
+	pub active: Option<bool>,
 	/// Controls whether to update the user's attributes in each sign-in
-	#[serde(
-		rename = "sync_user_attributes",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub sync_user_attributes: Option<Option<bool>>,
+	#[serde(rename = "sync_user_attributes", skip_serializing_if = "Option::is_none")]
+	pub sync_user_attributes: Option<bool>,
 }
 
 impl UpdateSamlConnectionRequest {

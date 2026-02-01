@@ -14,13 +14,8 @@ pub struct UpdateSignUpRequest {
 	#[serde(rename = "custom_action", skip_serializing_if = "Option::is_none")]
 	pub custom_action: Option<bool>,
 	/// The ID of the guest attempting to sign up as used in your external systems or your previous authentication solution. This will be copied to the resulting user when the sign-up is completed.
-	#[serde(
-		rename = "external_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub external_id: Option<Option<String>>,
+	#[serde(rename = "external_id", skip_serializing_if = "Option::is_none")]
+	pub external_id: Option<String>,
 }
 
 impl UpdateSignUpRequest {

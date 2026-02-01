@@ -14,46 +14,26 @@ pub struct Email {
 	pub object: Object,
 	#[serde(rename = "id")]
 	pub id: String,
-	#[serde(
-		rename = "slug",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub slug: Option<Option<String>>,
+	#[serde(rename = "slug", skip_serializing_if = "Option::is_none")]
+	pub slug: Option<String>,
 	#[serde(rename = "from_email_name")]
 	pub from_email_name: String,
-	#[serde(rename = "email_address_id", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "email_address_id")]
 	pub email_address_id: Option<String>,
 	#[serde(rename = "to_email_address")]
 	pub to_email_address: String,
-	#[serde(
-		rename = "user_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub user_id: Option<Option<String>>,
+	#[serde(rename = "user_id", skip_serializing_if = "Option::is_none")]
+	pub user_id: Option<String>,
 	#[serde(rename = "subject")]
 	pub subject: String,
 	#[serde(rename = "body")]
 	pub body: String,
-	#[serde(
-		rename = "body_plain",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub body_plain: Option<Option<String>>,
+	#[serde(rename = "body_plain", skip_serializing_if = "Option::is_none")]
+	pub body_plain: Option<String>,
 	#[serde(rename = "status")]
 	pub status: String,
-	#[serde(
-		rename = "data",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub data: Option<Option<serde_json::Value>>,
+	#[serde(rename = "data", skip_serializing_if = "Option::is_none")]
+	pub data: Option<serde_json::Value>,
 	#[serde(rename = "delivered_by_clerk")]
 	pub delivered_by_clerk: bool,
 }

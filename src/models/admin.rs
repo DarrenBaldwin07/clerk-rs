@@ -14,20 +14,10 @@ pub struct Admin {
 	pub status: Status,
 	#[serde(rename = "strategy")]
 	pub strategy: Strategy,
-	#[serde(
-		rename = "attempts",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub attempts: Option<Option<i64>>,
-	#[serde(
-		rename = "expire_at",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub expire_at: Option<Option<i64>>,
+	#[serde(rename = "attempts", skip_serializing_if = "Option::is_none")]
+	pub attempts: Option<i64>,
+	#[serde(rename = "expire_at", skip_serializing_if = "Option::is_none")]
+	pub expire_at: Option<i64>,
 }
 
 impl Admin {

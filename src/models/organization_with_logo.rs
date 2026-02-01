@@ -18,13 +18,8 @@ pub struct OrganizationWithLogo {
 	pub name: String,
 	#[serde(rename = "slug")]
 	pub slug: String,
-	#[serde(
-		rename = "members_count",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub members_count: Option<Option<i64>>,
+	#[serde(rename = "members_count", skip_serializing_if = "Option::is_none")]
+	pub members_count: Option<i64>,
 	#[serde(rename = "max_allowed_memberships")]
 	pub max_allowed_memberships: i64,
 	#[serde(rename = "admin_delete_enabled", skip_serializing_if = "Option::is_none")]

@@ -17,7 +17,7 @@ pub struct Web3Wallet {
 	pub object: Object,
 	#[serde(rename = "web3_wallet")]
 	pub web3_wallet: String,
-	#[serde(rename = "verification", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "verification")]
 	pub verification: Option<Box<crate::models::Web3WalletVerification>>,
 }
 

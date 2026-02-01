@@ -19,7 +19,7 @@ pub struct EmailAddress {
 	pub email_address: String,
 	#[serde(rename = "reserved")]
 	pub reserved: bool,
-	#[serde(rename = "verification", deserialize_with = "Option::deserialize")]
+	#[serde(rename = "verification")]
 	pub verification: Option<Box<crate::models::EmailAddressVerification>>,
 	#[serde(rename = "linked_to")]
 	pub linked_to: Vec<crate::models::IdentificationLink>,

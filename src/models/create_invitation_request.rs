@@ -20,21 +20,11 @@ pub struct CreateInvitationRequest {
 	#[serde(rename = "redirect_url", skip_serializing_if = "Option::is_none")]
 	pub redirect_url: Option<String>,
 	/// Optional flag which denotes whether an email invitation should be sent to the given email address. Defaults to true.
-	#[serde(
-		rename = "notify",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub notify: Option<Option<bool>>,
+	#[serde(rename = "notify", skip_serializing_if = "Option::is_none")]
+	pub notify: Option<bool>,
 	/// Whether an invitation should be created if there is already an existing invitation for this email address, or it's claimed by another user.
-	#[serde(
-		rename = "ignore_existing",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub ignore_existing: Option<Option<bool>>,
+	#[serde(rename = "ignore_existing", skip_serializing_if = "Option::is_none")]
+	pub ignore_existing: Option<bool>,
 }
 
 impl CreateInvitationRequest {

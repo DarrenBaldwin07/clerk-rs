@@ -14,32 +14,17 @@ pub struct UpsertTemplateRequest {
 	#[serde(rename = "name", skip_serializing_if = "Option::is_none")]
 	pub name: Option<String>,
 	/// The email subject. Applicable only to email templates.
-	#[serde(
-		rename = "subject",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub subject: Option<Option<String>>,
+	#[serde(rename = "subject", skip_serializing_if = "Option::is_none")]
+	pub subject: Option<String>,
 	/// The editor markup used to generate the body of the template
-	#[serde(
-		rename = "markup",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub markup: Option<Option<String>>,
+	#[serde(rename = "markup", skip_serializing_if = "Option::is_none")]
+	pub markup: Option<String>,
 	/// The template body before variable interpolation
 	#[serde(rename = "body", skip_serializing_if = "Option::is_none")]
 	pub body: Option<String>,
 	/// Whether Clerk should deliver emails or SMS messages based on the current template
-	#[serde(
-		rename = "delivered_by_clerk",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub delivered_by_clerk: Option<Option<bool>>,
+	#[serde(rename = "delivered_by_clerk", skip_serializing_if = "Option::is_none")]
+	pub delivered_by_clerk: Option<bool>,
 	/// The local part of the From email address that will be used for emails. For example, in the address 'hello@example.com', the local part is 'hello'. Applicable only to email templates.
 	#[serde(rename = "from_email_name", skip_serializing_if = "Option::is_none")]
 	pub from_email_name: Option<String>,

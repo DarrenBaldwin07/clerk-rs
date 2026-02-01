@@ -11,29 +11,14 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UpdateUserRequest {
 	/// The ID of the user as used in your external systems or your previous authentication solution. Must be unique across your instance.
-	#[serde(
-		rename = "external_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub external_id: Option<Option<String>>,
+	#[serde(rename = "external_id", skip_serializing_if = "Option::is_none")]
+	pub external_id: Option<String>,
 	/// The first name to assign to the user
-	#[serde(
-		rename = "first_name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub first_name: Option<Option<String>>,
+	#[serde(rename = "first_name", skip_serializing_if = "Option::is_none")]
+	pub first_name: Option<String>,
 	/// The last name to assign to the user
-	#[serde(
-		rename = "last_name",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub last_name: Option<Option<String>>,
+	#[serde(rename = "last_name", skip_serializing_if = "Option::is_none")]
+	pub last_name: Option<String>,
 	/// The ID of the email address to set as primary. It must be verified, and present on the current user.
 	#[serde(rename = "primary_email_address_id", skip_serializing_if = "Option::is_none")]
 	pub primary_email_address_id: Option<String>,
@@ -47,45 +32,20 @@ pub struct UpdateUserRequest {
 	#[serde(rename = "primary_web3_wallet_id", skip_serializing_if = "Option::is_none")]
 	pub primary_web3_wallet_id: Option<String>,
 	/// The username to give to the user. It must be unique across your instance.
-	#[serde(
-		rename = "username",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub username: Option<Option<String>>,
+	#[serde(rename = "username", skip_serializing_if = "Option::is_none")]
+	pub username: Option<String>,
 	/// The ID of the image to set as the user's profile image
-	#[serde(
-		rename = "profile_image_id",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub profile_image_id: Option<Option<String>>,
+	#[serde(rename = "profile_image_id", skip_serializing_if = "Option::is_none")]
+	pub profile_image_id: Option<String>,
 	/// The plaintext password to give the user. Must be at least 8 characters long, and can not be in any list of hacked passwords.
-	#[serde(
-		rename = "password",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub password: Option<Option<String>>,
+	#[serde(rename = "password", skip_serializing_if = "Option::is_none")]
+	pub password: Option<String>,
 	/// Set it to `true` if you're updating the user's password and want to skip any password policy settings check. This parameter can only be used when providing a `password`.
-	#[serde(
-		rename = "skip_password_checks",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub skip_password_checks: Option<Option<bool>>,
+	#[serde(rename = "skip_password_checks", default, skip_serializing_if = "Option::is_none")]
+	pub skip_password_checks: Option<bool>,
 	/// Set to `true` to sign out the user from all their active sessions once their password is updated. This parameter can only be used when providing a `password`.
-	#[serde(
-		rename = "sign_out_of_other_sessions",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub sign_out_of_other_sessions: Option<Option<bool>>,
+	#[serde(rename = "sign_out_of_other_sessions", skip_serializing_if = "Option::is_none")]
+	pub sign_out_of_other_sessions: Option<bool>,
 	/// In case TOTP is configured on the instance, you can provide the secret to enable it on the specific user without the need to reset it. Please note that currently the supported options are: * Period: 30 seconds * Code length: 6 digits * Algorithm: SHA1
 	#[serde(rename = "totp_secret", skip_serializing_if = "Option::is_none")]
 	pub totp_secret: Option<String>,
@@ -102,21 +62,11 @@ pub struct UpdateUserRequest {
 	#[serde(rename = "unsafe_metadata", skip_serializing_if = "Option::is_none")]
 	pub unsafe_metadata: Option<serde_json::Value>,
 	/// If true, the user can delete themselves with the Frontend API.
-	#[serde(
-		rename = "delete_self_enabled",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub delete_self_enabled: Option<Option<bool>>,
+	#[serde(rename = "delete_self_enabled", skip_serializing_if = "Option::is_none")]
+	pub delete_self_enabled: Option<bool>,
 	/// If true, the user can create organizations with the Frontend API.
-	#[serde(
-		rename = "create_organization_enabled",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub create_organization_enabled: Option<Option<bool>>,
+	#[serde(rename = "create_organization_enabled", skip_serializing_if = "Option::is_none")]
+	pub create_organization_enabled: Option<bool>,
 	/// A custom date/time denoting _when_ the user signed up to the application, specified in RFC3339 format (e.g. `2012-10-20T07:15:20.902Z`).
 	#[serde(rename = "created_at", skip_serializing_if = "Option::is_none")]
 	pub created_at: Option<String>,

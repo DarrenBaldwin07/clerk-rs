@@ -20,13 +20,8 @@ pub struct GetOAuthAccessToken200ResponseInner {
 	pub provider: Option<String>,
 	#[serde(rename = "public_metadata", skip_serializing_if = "Option::is_none")]
 	pub public_metadata: Option<serde_json::Value>,
-	#[serde(
-		rename = "label",
-		default,
-		with = "::serde_with::rust::double_option",
-		skip_serializing_if = "Option::is_none"
-	)]
-	pub label: Option<Option<String>>,
+	#[serde(rename = "label", skip_serializing_if = "Option::is_none")]
+	pub label: Option<String>,
 	/// The list of scopes that the token is valid for. Only present for OAuth 2.0 tokens.
 	#[serde(rename = "scopes", skip_serializing_if = "Option::is_none")]
 	pub scopes: Option<Vec<String>>,

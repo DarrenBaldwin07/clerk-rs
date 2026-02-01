@@ -1,6 +1,6 @@
 [package]
 name = "clerk-rs"
-version = "0.4.1"
+version = "0.4.2"
 authors = ["DarrenBaldwin07"]
 description = "The official community Rust SDK for the Clerk API"
 repository = "https://github.com/DarrenBaldwin07/clerk-rs"
@@ -39,7 +39,6 @@ doctest = false
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_derive = "^1.0"
-serde_with = "^2.0"
 serde_json = "^1.0"
 serde-aux = { version= "4.7.0", default-features = false }
 url = "^2.2"
