@@ -73,6 +73,81 @@ pub enum ClerkJwt {
 	V1(ClerkJwtV1),
 }
 
+impl ClerkJwt {
+	/// The Origin header that was included in the original Frontend API request made from the user.
+	/// Most commonly, it will be the URL of the application. This claim could be omitted if,
+	/// for privacy-related reasons, `Origin` is empty or null.
+	pub fn azp(&self) -> Option<&str> {
+		match self {
+			ClerkJwt::V2(jwt) => jwt.azp.as_deref(),
+			ClerkJwt::V1(jwt) => jwt.azp.as_deref(),
+		}
+	}
+
+	/// The time after which the token will expire, as a Unix timestamp.
+	/// Determined using the Token lifetime JWT template setting in the [Clerk Dashboard].
+	///
+	/// [Clerk Dashboard]: https://dashboard.clerk.com/~/jwt-templates
+	pub fn exp(&self) -> i64 {
+		match self {
+			ClerkJwt::V2(jwt) => jwt.exp,
+			ClerkJwt::V1(jwt) => jwt.exp,
+		}
+	}
+
+	/// The time at which the token was issued as a Unix timestamp.
+	pub fn iat(&self) -> i64 {
+		match self {
+			ClerkJwt::V2(jwt) => jwt.iat,
+			ClerkJwt::V1(jwt) => jwt.iat,
+		}
+	}
+
+	/// The Frontend API URL of your instance.
+	pub fn iss(&self) -> &str {
+		match self {
+			ClerkJwt::V2(jwt) => &jwt.iss,
+			ClerkJwt::V1(jwt) => &jwt.iss,
+		}
+	}
+
+	/// The time before which the token is considered invalid, as a Unix timestamp.
+	/// Determined using the Allowed Clock Skew JWT template setting in the [Clerk Dashboard].
+	///
+	/// [Clerk Dashboard]: https://dashboard.clerk.com/~/jwt-templates
+	pub fn nbf(&self) -> i64 {
+		match self {
+			ClerkJwt::V2(jwt) => jwt.nbf,
+			ClerkJwt::V1(jwt) => jwt.nbf,
+		}
+	}
+
+	/// The ID of the current session.
+	pub fn sid(&self) -> Option<&str> {
+		match self {
+			ClerkJwt::V2(jwt) => jwt.sid.as_deref(),
+			ClerkJwt::V1(jwt) => jwt.sid.as_deref(),
+		}
+	}
+
+	/// The ID of the current user of the session.
+	pub fn sub(&self) -> &str {
+		match self {
+			ClerkJwt::V2(jwt) => &jwt.sub,
+			ClerkJwt::V1(jwt) => &jwt.sub,
+		}
+	}
+
+	/// Catch-all for any other attributes that may be present in the JWT. This
+	/// is useful for custom templates that may have additional fields.
+	pub fn other(&self) -> &Map<String, Value> {
+		match self {
+			ClerkJwt::V2(jwt) => &jwt.other,
+			ClerkJwt::V1(jwt) => &jwt.other,
+		}
+	}
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ClerkJwtV1 {
 	pub azp: Option<String>,
@@ -229,10 +304,10 @@ impl<J: JwksProvider> ClerkAuthorizer<J> {
 		// get the jwt from header or cookies
 		let access_token: String = match request.get_header("Authorization") {
 			Some(val) => val.to_string().replace("Bearer ", ""),
-			None => match self.validate_session_cookie {
+			_ => match self.validate_session_cookie {
 				true => match request.get_cookie("__session") {
 					Some(cookie) => cookie.to_string(),
-					None => {
+					_ => {
 						return Err(ClerkError::Unauthorized(String::from(
 							"Error: No Authorization header or session cookie found on the request payload!",
 						)))
