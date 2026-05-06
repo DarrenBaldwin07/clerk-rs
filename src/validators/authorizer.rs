@@ -43,7 +43,7 @@ pub struct ClerkJwt {
 	pub exp: i32,
 	pub iat: i32,
 	pub iss: String,
-	pub nbf: i32,
+	pub nbf: Option<i32>,
 	pub sid: Option<String>,
 	pub sub: String,
 	pub act: Option<Actor>,
@@ -311,7 +311,7 @@ mod tests {
 			iat: current_time as i32,
 			exp: (current_time + 1000) as i32,
 			iss: "issuer".to_string(),
-			nbf: current_time as i32,
+			nbf: Some(current_time as i32),
 			sid: Some("session_id".to_string()),
 			act: Some(Actor {
 				iss: Some("actor_iss".to_string()),
@@ -464,7 +464,7 @@ mod tests {
 			iat: current_time as i32,
 			exp: (current_time + 1000) as i32,
 			iss: "issuer".to_string(),
-			nbf: current_time as i32,
+			nbf: Some(current_time as i32),
 			sid: Some("session_id".to_string()),
 			act: Some(Actor {
 				iss: Some("actor_iss".to_string()),
