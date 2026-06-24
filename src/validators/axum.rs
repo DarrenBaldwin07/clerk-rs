@@ -1,5 +1,5 @@
 use crate::validators::{
-	authorizer::{ClerkAuthorizer, ClerkError, ClerkRequest},
+	authorizer::{ClerkAuthorizer, ClerkError, ClerkJwt, ClerkRequest},
 	jwks::JwksProvider,
 };
 use axum::{
@@ -146,7 +146,7 @@ where
 
 		Box::pin(async move {
 			// Check if the request is authenticated
-			match authorizer.authorize(&req).await {
+			match authorizer.authorize::<_, ClerkJwt>(&req).await {
 				// We have authed request and can pass the user onto the next body
 				Ok(jwt) => {
 					request.extensions_mut().insert(jwt);

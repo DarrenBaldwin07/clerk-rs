@@ -1,7 +1,7 @@
 use axum::{routing::get, Extension, Router};
 use clerk_rs::{
 	clerk::Clerk,
-	validators::{authorizer::ClerkJwtV1, axum::ClerkLayer, jwks::MemoryCacheJwksProvider},
+	validators::{authorizer::ClerkJwt, axum::ClerkLayer, jwks::MemoryCacheJwksProvider},
 	ClerkConfiguration,
 };
 
@@ -14,8 +14,8 @@ async fn index() -> &'static str {
 /// ClerkJwt using an Extension extractor like so. Make sure you only
 /// use this extractor on protected routes, or else you will get a
 /// runtime error.
-async fn profile(Extension(clerk_jwt): Extension<ClerkJwtV1>) -> String {
-	format!("Hello, {}! This is an example of a protected route.", clerk_jwt.sub)
+async fn profile(Extension(clerk_jwt): Extension<ClerkJwt>) -> String {
+	format!("Hello, {}! This is an example of a protected route.", clerk_jwt.sub())
 }
 
 #[tokio::main]
