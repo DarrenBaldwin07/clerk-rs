@@ -72,6 +72,8 @@ pub mod get_o_auth_access_token_200_response_inner;
 pub use self::get_o_auth_access_token_200_response_inner::GetOAuthAccessToken200ResponseInner;
 pub mod identification_link;
 pub use self::identification_link::IdentificationLink;
+pub mod identification_status;
+pub use self::identification_status::IdentificationStatus;
 pub mod instance_restrictions;
 pub use self::instance_restrictions::InstanceRestrictions;
 pub mod invitation;
