@@ -8,7 +8,7 @@ use rocket::{
 	Request,
 };
 
-use super::authorizer::ClerkJwt;
+use super::authorizer::ClerkJwtV1;
 
 // Implement ClerkRequest for Rocket's Request
 impl<'r> ClerkRequest for &'r Request<'_> {
@@ -34,7 +34,7 @@ impl<J: JwksProvider> ClerkGuardConfig<J> {
 }
 
 pub struct ClerkGuard<J: JwksProvider + Send + Sync> {
-	pub jwt: Option<ClerkJwt>,
+	pub jwt: Option<ClerkJwtV1>,
 	_marker: std::marker::PhantomData<J>,
 }
 
