@@ -6,24 +6,16 @@ use clerk_rs::{
 	},
 	ClerkConfiguration,
 };
-use rocket::{
-	get, launch, routes,
-	serde::{Deserialize, Serialize},
-};
-
-#[derive(Serialize, Deserialize)]
-struct Message {
-	content: String,
-}
+use rocket::{get, launch, routes};
 
 #[get("/")]
-fn index(jwt: ClerkGuard<MemoryCacheJwksProvider>) -> &'static str {
+fn index(_jwt: ClerkGuard<MemoryCacheJwksProvider>) -> &'static str {
 	"Hello world!"
 }
 
 #[launch]
 fn rocket() -> _ {
-	let config = ClerkConfiguration::new(None, None, Some("sk_test_F9HM5l3WMTDMdBB0ygcMMAiL37QA6BvXYV1v18Noit".to_string()), None);
+	let config = ClerkConfiguration::new("your_secret_key");
 	let clerk = Clerk::new(config);
 	let clerk_config = ClerkGuardConfig::new(
 		MemoryCacheJwksProvider::new(clerk),

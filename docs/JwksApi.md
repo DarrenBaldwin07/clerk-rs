@@ -1,6 +1,6 @@
 # \JwksApi
 
-All URIs are relative to *https://api.clerk.dev/v1*
+All URIs are relative to *https://api.clerk.com/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -10,7 +10,7 @@ Method | HTTP request | Description
 
 ## get_jwks
 
-> get_jwks()
+> models::Jwks get_jwks()
 Retrieve the JSON Web Key Set of the instance
 
 Retrieve the JSON Web Key Set of the instance
@@ -21,7 +21,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
- (empty response body)
+[**models::Jwks**](JWKS.md)
 
 ### Authorization
 
@@ -30,7 +30,7 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

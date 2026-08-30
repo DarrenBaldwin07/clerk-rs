@@ -1,6 +1,6 @@
 # \ActorTokensApi
 
-All URIs are relative to *https://api.clerk.dev/v1*
+All URIs are relative to *https://api.clerk.com/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -11,10 +11,10 @@ Method | HTTP request | Description
 
 ## create_actor_token
 
-> crate::models::ActorToken create_actor_token(create_actor_token_request)
+> models::ActorToken create_actor_token(create_actor_token_request)
 Create actor token
 
-Create an actor token that can be used to impersonate the given user.
+Create an actor token that can be used to impersonate the given user. The `actor` parameter needs to include at least a \"sub\" key whose value is the ID of the actor (impersonating) user.
 
 ### Parameters
 
@@ -25,7 +25,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::ActorToken**](ActorToken.md)
+[**models::ActorToken**](ActorToken.md)
 
 ### Authorization
 
@@ -41,7 +41,7 @@ Name | Type | Description  | Required | Notes
 
 ## revoke_actor_token
 
-> crate::models::ActorToken revoke_actor_token(actor_token_id)
+> models::ActorToken revoke_actor_token(actor_token_id)
 Revoke actor token
 
 Revokes a pending actor token.
@@ -55,7 +55,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::ActorToken**](ActorToken.md)
+[**models::ActorToken**](ActorToken.md)
 
 ### Authorization
 

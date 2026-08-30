@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**object** | Option<**String**> | String representing the object's type. Objects of the same type share the same value.  | [optional]
+**object** | Option<**Object**> | String representing the object's type. Objects of the same type share the same value.  (enum: allowlist_identifier) | [optional]
 **id** | Option<**String**> |  | [optional]
 **invitation_id** | Option<**String**> |  | [optional]
 **identifier** | Option<**String**> | An email address or a phone number.  | [optional]
-**identifier_type** | Option<**String**> |  | [optional]
+**identifier_type** | Option<**IdentifierType**> |  (enum: email_address, phone_number, web3_wallet) | [optional]
 **instance_id** | Option<**String**> |  | [optional]
 **created_at** | Option<**i64**> | Unix timestamp of creation  | [optional]
 **updated_at** | Option<**i64**> | Unix timestamp of last update.  | [optional]

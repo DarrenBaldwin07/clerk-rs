@@ -1,8 +1,4 @@
-use crate::{
-	apis::jwks_api::{Jwks, JwksKey},
-	clerk::Clerk,
-	validators::authorizer::ClerkError,
-};
+use crate::{apis::jwks_api, clerk::Clerk, models::JwksKeysInner, validators::authorizer::ClerkError};
 use arc_swap::{ArcSwap, Guard};
 use async_trait::async_trait;
 use std::{
@@ -11,9 +7,35 @@ use std::{
 	time::{Duration, SystemTime},
 };
 
+/// RSA JSON Web Key used to validate Clerk session tokens.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct JwksKey {
+	#[serde(rename = "use")]
+	pub use_key: String,
+	pub kty: String,
+	pub kid: String,
+	pub alg: String,
+	pub n: String,
+	pub e: String,
+}
+
+fn rsa_keys(jwks: crate::models::Jwks) -> impl Iterator<Item = JwksKey> {
+	jwks.keys.into_iter().flatten().filter_map(|key| match key {
+		JwksKeysInner::JwksRsaPublicKey(key) => Some(JwksKey {
+			use_key: key.r#use,
+			kty: "RSA".to_owned(),
+			kid: key.kid,
+			alg: key.alg,
+			n: key.n,
+			e: key.e,
+		}),
+		_ => None,
+	})
+}
+
 /// Trait that implements a provider for the JWKS keys, to be used when validating a JWT.
 ///
-/// This crate provides two basic implementations of this trait, [`MemoryCacheJwksProvider`] and [`SimpleJwksProvider`].
+/// This crate provides two basic implementations of this trait, [`MemoryCacheJwksProvider`] and [`JwksProviderNoCache`].
 /// By implementing `get_key` for your own struct you can customize how the validator fetches keys.
 #[async_trait]
 pub trait JwksProvider {
@@ -22,7 +44,7 @@ pub trait JwksProvider {
 	async fn get_key(&self, kid: &str) -> Result<JwksKey, Self::Error>;
 }
 
-/// Error type used by [`MemoryCacheJwksProvider`] and [`SimpleJwksProvider`].
+/// Error type used by [`MemoryCacheJwksProvider`] and [`JwksProviderNoCache`].
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum JwksProviderError {
 	UnknownKey,
@@ -56,9 +78,11 @@ impl JwksProvider for JwksProviderNoCache {
 	type Error = JwksProviderError;
 
 	async fn get_key(&self, kid: &str) -> Result<JwksKey, JwksProviderError> {
-		let jwks = Jwks::get_jwks(&self.clerk_client).await.map_err(|_| JwksProviderError::JwksApi)?;
+		let jwks = jwks_api::get_jwks(&self.clerk_client.config)
+			.await
+			.map_err(|_| JwksProviderError::JwksApi)?;
 
-		jwks.keys.into_iter().find(|k| k.kid == kid).ok_or(JwksProviderError::UnknownKey)
+		rsa_keys(jwks).find(|key| key.kid == kid).ok_or(JwksProviderError::UnknownKey)
 	}
 }
 
@@ -154,10 +178,12 @@ impl MemoryCacheJwksProvider {
 
 	async fn refresh(&self) -> Result<Arc<MemoryCacheJwksProviderState>, JwksProviderError> {
 		// fetch jwks from clerk api
-		let jwks_model = Jwks::get_jwks(&self.clerk_client).await.map_err(|_| JwksProviderError::JwksApi)?;
+		let jwks_model = jwks_api::get_jwks(&self.clerk_client.config)
+			.await
+			.map_err(|_| JwksProviderError::JwksApi)?;
 
 		// construct new state
-		let keys = jwks_model.keys.into_iter().map(|k| (k.kid.clone(), k)).collect();
+		let keys = rsa_keys(jwks_model).map(|key| (key.kid.clone(), key)).collect();
 		let state = MemoryCacheJwksProviderState {
 			keys,
 			last_updated: SystemTime::now(),
@@ -225,7 +251,7 @@ impl JwksProvider for MemoryCacheJwksProvider {
 #[cfg(test)]
 pub(crate) mod tests {
 	use super::*;
-	use crate::{apis::jwks_api::JwksKey, ClerkConfiguration};
+	use crate::ClerkConfiguration;
 	use std::collections::HashMap;
 
 	pub struct StaticJwksProvider {
@@ -262,10 +288,27 @@ pub(crate) mod tests {
 	}"#;
 	const MOCK_KID: &str = "bc63c2e9-5d1c-4e32-9b62-178f60409abd";
 
+	#[test]
+	fn generated_jwks_model_extracts_rsa_keys() {
+		let jwks = serde_json::from_str(MOCK_JWKS_BODY).expect("the official JWKS schema should deserialize");
+		let keys = rsa_keys(jwks).collect::<Vec<_>>();
+
+		assert_eq!(keys.len(), 1);
+		assert_eq!(keys[0].kid, MOCK_KID);
+		assert_eq!(keys[0].kty, "RSA");
+	}
+
 	#[tokio::test]
 	async fn test_simple_jwks_provider_success() {
 		let mut server = mockito::Server::new_async().await;
-		let mock = server.mock("GET", "/v1/jwks").expect(1).with_body(MOCK_JWKS_BODY).create_async().await;
+		let mock = server
+			.mock("GET", "/v1/jwks")
+			.match_header("clerk-api-version", crate::clerk::CLERK_API_VERSION)
+			.expect(1)
+			.with_header("content-type", "application/json")
+			.with_body(MOCK_JWKS_BODY)
+			.create_async()
+			.await;
 
 		let config = ClerkConfiguration {
 			base_path: format!("{}/v1", server.url()),
@@ -285,7 +328,13 @@ pub(crate) mod tests {
 	#[tokio::test]
 	async fn test_simple_jwks_provider_repeat() {
 		let mut server = mockito::Server::new_async().await;
-		let mock = server.mock("GET", "/v1/jwks").expect(3).with_body(MOCK_JWKS_BODY).create_async().await;
+		let mock = server
+			.mock("GET", "/v1/jwks")
+			.expect(3)
+			.with_header("content-type", "application/json")
+			.with_body(MOCK_JWKS_BODY)
+			.create_async()
+			.await;
 
 		let config = ClerkConfiguration {
 			base_path: format!("{}/v1", server.url()),
@@ -306,7 +355,12 @@ pub(crate) mod tests {
 	#[tokio::test]
 	async fn test_simple_jwks_provider_unknown_key() {
 		let mut server = mockito::Server::new_async().await;
-		server.mock("GET", "/v1/jwks").with_body(MOCK_JWKS_BODY).create_async().await;
+		server
+			.mock("GET", "/v1/jwks")
+			.with_header("content-type", "application/json")
+			.with_body(MOCK_JWKS_BODY)
+			.create_async()
+			.await;
 
 		let config = ClerkConfiguration {
 			base_path: format!("{}/v1", server.url()),
@@ -324,7 +378,13 @@ pub(crate) mod tests {
 	#[tokio::test]
 	async fn test_memory_cache_jwks_provider_success() {
 		let mut server = mockito::Server::new_async().await;
-		let mock = server.mock("GET", "/v1/jwks").expect(1).with_body(MOCK_JWKS_BODY).create_async().await;
+		let mock = server
+			.mock("GET", "/v1/jwks")
+			.expect(1)
+			.with_header("content-type", "application/json")
+			.with_body(MOCK_JWKS_BODY)
+			.create_async()
+			.await;
 
 		let config = ClerkConfiguration {
 			base_path: format!("{}/v1", server.url()),
@@ -344,7 +404,13 @@ pub(crate) mod tests {
 	#[tokio::test]
 	async fn test_memory_cache_jwks_provider_caching() {
 		let mut server = mockito::Server::new_async().await;
-		let mock = server.mock("GET", "/v1/jwks").expect(1).with_body(MOCK_JWKS_BODY).create_async().await;
+		let mock = server
+			.mock("GET", "/v1/jwks")
+			.expect(1)
+			.with_header("content-type", "application/json")
+			.with_body(MOCK_JWKS_BODY)
+			.create_async()
+			.await;
 
 		let config = ClerkConfiguration {
 			base_path: format!("{}/v1", server.url()),
@@ -365,7 +431,13 @@ pub(crate) mod tests {
 	#[tokio::test]
 	async fn test_memory_cache_jwks_provider_unknown_never() {
 		let mut server = mockito::Server::new_async().await;
-		let mock = server.mock("GET", "/v1/jwks").expect(1).with_body(MOCK_JWKS_BODY).create_async().await;
+		let mock = server
+			.mock("GET", "/v1/jwks")
+			.expect(1)
+			.with_header("content-type", "application/json")
+			.with_body(MOCK_JWKS_BODY)
+			.create_async()
+			.await;
 
 		let config = ClerkConfiguration {
 			base_path: format!("{}/v1", server.url()),
@@ -394,7 +466,13 @@ pub(crate) mod tests {
 	#[tokio::test]
 	async fn test_memory_cache_jwks_provider_unknown_refresh() {
 		let mut server = mockito::Server::new_async().await;
-		let mock = server.mock("GET", "/v1/jwks").expect(3).with_body(MOCK_JWKS_BODY).create_async().await;
+		let mock = server
+			.mock("GET", "/v1/jwks")
+			.expect(3)
+			.with_header("content-type", "application/json")
+			.with_body(MOCK_JWKS_BODY)
+			.create_async()
+			.await;
 
 		let config = ClerkConfiguration {
 			base_path: format!("{}/v1", server.url()),
@@ -424,7 +502,13 @@ pub(crate) mod tests {
 	#[tokio::test]
 	async fn test_memory_cache_jwks_provider_unknown_ratelimit() {
 		let mut server = mockito::Server::new_async().await;
-		let mock = server.mock("GET", "/v1/jwks").expect(3).with_body(MOCK_JWKS_BODY).create_async().await;
+		let mock = server
+			.mock("GET", "/v1/jwks")
+			.expect(3)
+			.with_header("content-type", "application/json")
+			.with_body(MOCK_JWKS_BODY)
+			.create_async()
+			.await;
 
 		let config = ClerkConfiguration {
 			base_path: format!("{}/v1", server.url()),
@@ -466,7 +550,13 @@ pub(crate) mod tests {
 	#[tokio::test]
 	async fn test_memory_cache_jwks_provider_expires() {
 		let mut server = mockito::Server::new_async().await;
-		let mock = server.mock("GET", "/v1/jwks").expect(2).with_body(MOCK_JWKS_BODY).create_async().await;
+		let mock = server
+			.mock("GET", "/v1/jwks")
+			.expect(2)
+			.with_header("content-type", "application/json")
+			.with_body(MOCK_JWKS_BODY)
+			.create_async()
+			.await;
 
 		let config = ClerkConfiguration {
 			base_path: format!("{}/v1", server.url()),

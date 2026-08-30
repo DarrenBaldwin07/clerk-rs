@@ -1,0 +1,9 @@
+diff --git a/src/apis/miscellaneous_api.rs b/src/apis/miscellaneous_api.rs
+--- a/src/apis/miscellaneous_api.rs
++++ b/src/apis/miscellaneous_api.rs
+@@ -31 +31 @@
+-    let p_query_frontend_api = frontend_api;
++    let p_query_frontend_api_legacy = frontend_api;
+@@ -42 +42 @@
+-    if let Some(ref param_value) = p_query_frontend_api {
++    if let Some(ref param_value) = p_query_frontend_api_legacy {

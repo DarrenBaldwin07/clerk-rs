@@ -1,6 +1,6 @@
 # \JwtTemplatesApi
 
-All URIs are relative to *https://api.clerk.dev/v1*
+All URIs are relative to *https://api.clerk.com/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -14,7 +14,7 @@ Method | HTTP request | Description
 
 ## create_jwt_template
 
-> crate::models::JwtTemplate create_jwt_template(create_jwt_template_request)
+> models::JwtTemplate create_jwt_template(create_jwt_template_request)
 Create a JWT template
 
 Create a new JWT template
@@ -28,7 +28,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::JwtTemplate**](JWTTemplate.md)
+[**models::JwtTemplate**](JWTTemplate.md)
 
 ### Authorization
 
@@ -44,7 +44,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_jwt_template
 
-> crate::models::DeletedObject delete_jwt_template(template_id)
+> models::DeletedObject delete_jwt_template(template_id)
 Delete a Template
 
 
@@ -58,7 +58,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::DeletedObject**](DeletedObject.md)
+[**models::DeletedObject**](DeletedObject.md)
 
 ### Authorization
 
@@ -74,7 +74,7 @@ Name | Type | Description  | Required | Notes
 
 ## get_jwt_template
 
-> crate::models::JwtTemplate get_jwt_template(template_id)
+> models::JwtTemplate get_jwt_template(template_id)
 Retrieve a template
 
 Retrieve the details of a given JWT template
@@ -88,7 +88,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::JwtTemplate**](JWTTemplate.md)
+[**models::JwtTemplate**](JWTTemplate.md)
 
 ### Authorization
 
@@ -104,16 +104,21 @@ Name | Type | Description  | Required | Notes
 
 ## list_jwt_templates
 
-> Vec<crate::models::JwtTemplate> list_jwt_templates()
+> Vec<models::JwtTemplate> list_jwt_templates(paginated, limit, offset)
 List all templates
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**paginated** | Option<**bool**> | Whether to paginate the results. If true, the results will be paginated. If false, the results will not be paginated. |  |
+**limit** | Option<**u32**> | Applies a limit to the number of results returned. Can be used for paginating the results together with `offset`. |  |[default to 10]
+**offset** | Option<**u32**> | Skip the first `offset` results when paginating. Needs to be an integer greater or equal to zero. To be used in conjunction with `limit`. |  |[default to 0]
 
 ### Return type
 
-[**Vec<crate::models::JwtTemplate>**](JWTTemplate.md)
+[**Vec<models::JwtTemplate>**](JWTTemplate.md)
 
 ### Authorization
 
@@ -129,7 +134,7 @@ This endpoint does not need any parameter.
 
 ## update_jwt_template
 
-> crate::models::JwtTemplate update_jwt_template(template_id, create_jwt_template_request)
+> models::JwtTemplate update_jwt_template(template_id, create_jwt_template_request)
 Update a JWT template
 
 Updates an existing JWT template
@@ -144,7 +149,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::JwtTemplate**](JWTTemplate.md)
+[**models::JwtTemplate**](JWTTemplate.md)
 
 ### Authorization
 
