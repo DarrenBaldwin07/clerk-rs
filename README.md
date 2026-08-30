@@ -51,7 +51,150 @@ Enable the integration for your web framework:
 clerk-rs = { version = "0.5", features = ["axum"] }
 ```
 
-Complete examples are available for [Actix Web](examples/actix.rs), [Axum](examples/axum.rs), and [Rocket](examples/rocket.rs). Poem support is available with the `poem` feature.
+### Protecting an Actix Web endpoint
+
+Enable the `actix` feature, then wrap the application with `ClerkMiddleware`:
+
+```rust,no_run
+use actix_web::{web, App, HttpServer, Responder};
+use clerk_rs::{
+    validators::{actix::ClerkMiddleware, jwks::MemoryCacheJwksProvider},
+    Clerk,
+};
+
+async fn index() -> impl Responder {
+    "Hello world!"
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        let clerk = Clerk::from_secret_key("your_secret_key");
+
+        App::new()
+            .wrap(ClerkMiddleware::new(
+                MemoryCacheJwksProvider::new(clerk),
+                None,
+                true,
+            ))
+            .route("/index", web::get().to(index))
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
+}
+```
+
+See the complete [Actix Web example](examples/actix.rs).
+
+### Protecting an Axum endpoint
+
+Enable the `axum` feature, then add `ClerkLayer` to the router. The authenticated JWT is available through Axum's `Extension` extractor on protected routes:
+
+```rust,no_run
+use axum::{routing::get, Extension, Router};
+use clerk_rs::{
+    validators::{
+        authorizer::ClerkJwt,
+        axum::ClerkLayer,
+        jwks::MemoryCacheJwksProvider,
+    },
+    Clerk,
+};
+
+async fn profile(Extension(jwt): Extension<ClerkJwt>) -> String {
+    format!("Hello, {}!", jwt.sub)
+}
+
+#[tokio::main]
+async fn main() -> std::io::Result<()> {
+    let clerk = Clerk::from_secret_key("your_secret_key");
+
+    let app = Router::new()
+        .route("/profile", get(profile))
+        .layer(ClerkLayer::new(
+            MemoryCacheJwksProvider::new(clerk),
+            Some(vec!["/profile".to_owned()]),
+            true,
+        ));
+
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await?;
+    axum::serve(listener, app).await
+}
+```
+
+The route list passed to `ClerkLayer::new` selects protected routes. Passing `None` protects every route. See the complete [Axum example](examples/axum.rs).
+
+### Protecting a Rocket endpoint
+
+Enable the `rocket` feature, register `ClerkGuardConfig`, and add `ClerkGuard` to protected route handlers:
+
+```rust,no_run
+use clerk_rs::{
+    validators::{
+        jwks::MemoryCacheJwksProvider,
+        rocket::{ClerkGuard, ClerkGuardConfig},
+    },
+    Clerk,
+};
+use rocket::{get, launch, routes};
+
+#[get("/")]
+fn index(_jwt: ClerkGuard<MemoryCacheJwksProvider>) -> &'static str {
+    "Hello world!"
+}
+
+#[launch]
+fn rocket() -> _ {
+    let clerk = Clerk::from_secret_key("your_secret_key");
+    let guard_config = ClerkGuardConfig::new(
+        MemoryCacheJwksProvider::new(clerk),
+        None,
+        true,
+    );
+
+    rocket::build()
+        .mount("/", routes![index])
+        .manage(guard_config)
+}
+```
+
+See the complete [Rocket example](examples/rocket.rs).
+
+### Protecting a Poem endpoint
+
+Enable the `poem` feature, then apply `ClerkPoemMiddleware` to the route:
+
+```rust,no_run
+use clerk_rs::{
+    validators::{jwks::MemoryCacheJwksProvider, poem::ClerkPoemMiddleware},
+    Clerk,
+};
+use poem::{get, handler, listener::TcpListener, EndpointExt, Route, Server};
+
+#[handler]
+fn hello() -> &'static str {
+    "Hello world!"
+}
+
+#[tokio::main]
+async fn main() -> Result<(), std::io::Error> {
+    let clerk = Clerk::from_secret_key("your_secret_key");
+    let middleware = ClerkPoemMiddleware::new(
+        MemoryCacheJwksProvider::new(clerk),
+        true,
+        None,
+    );
+
+    let app = Route::new().at("/", get(hello)).with(middleware);
+
+    Server::new(TcpListener::bind("0.0.0.0:3000"))
+        .run(app)
+        .await
+}
+```
+
+The authenticated JWT is available as `Data<&ClerkJwt>` or through `req.data::<ClerkJwt>()`. The final constructor argument optionally lists routes excluded from authentication.
 
 ## API versioning
 
