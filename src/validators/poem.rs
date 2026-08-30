@@ -1,5 +1,7 @@
 use poem::{
 	error::{InternalServerError, Unauthorized},
+	http::header,
+	web::cookie::Cookie,
 	Endpoint, Middleware, Request, Response, Result,
 };
 
@@ -14,8 +16,22 @@ impl ClerkRequest for Request {
 	}
 
 	fn get_cookie(&self, key: &str) -> Option<String> {
-		let jar = self.cookie();
-		jar.get(key).map(|c| c.value_str().to_string())
+		for value in self.headers().get_all(header::COOKIE) {
+			let Ok(value) = value.to_str() else {
+				continue;
+			};
+
+			for value in value.split(';').map(str::trim) {
+				let Ok(cookie) = Cookie::parse(value) else {
+					continue;
+				};
+				if cookie.name() == key {
+					return Some(cookie.value_str().to_owned());
+				}
+			}
+		}
+
+		None
 	}
 }
 
@@ -86,5 +102,17 @@ where
 				ClerkError::InternalServerError(_) => Err(InternalServerError(error)),
 			},
 		}
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn reads_session_cookie_without_cookie_jar_manager() {
+		let request = Request::builder().header(header::COOKIE, "other=value; __session=session-token").finish();
+
+		assert_eq!(request.get_cookie("__session").as_deref(), Some("session-token"));
 	}
 }

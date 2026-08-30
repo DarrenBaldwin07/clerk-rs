@@ -140,9 +140,11 @@ pub async fn attempt_phone_number_verification(
 					"Received `text/plain` content type response that cannot be converted to `models::PrepareEmailAddressVerification200Response`",
 				)))
 			}
-			ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!(
+			ContentType::Unsupported(unknown_type) => {
+				return Err(Error::from(serde_json::Error::custom(format!(
 				"Received `{unknown_type}` content type response that cannot be converted to `models::PrepareEmailAddressVerification200Response`"
-			)))),
+			))))
+			}
 		}
 	} else {
 		let content = resp.text().await?;
@@ -355,9 +357,11 @@ pub async fn prepare_phone_number_verification(
 					"Received `text/plain` content type response that cannot be converted to `models::PrepareEmailAddressVerification200Response`",
 				)))
 			}
-			ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!(
+			ContentType::Unsupported(unknown_type) => {
+				return Err(Error::from(serde_json::Error::custom(format!(
 				"Received `{unknown_type}` content type response that cannot be converted to `models::PrepareEmailAddressVerification200Response`"
-			)))),
+			))))
+			}
 		}
 	} else {
 		let content = resp.text().await?;

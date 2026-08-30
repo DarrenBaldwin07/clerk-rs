@@ -196,6 +196,8 @@ async fn main() -> Result<(), std::io::Error> {
 
 The authenticated JWT is available as `Data<&ClerkJwt>` or through `req.data::<ClerkJwt>()`. The final constructor argument optionally lists routes excluded from authentication.
 
+Live validator integration tests for all four frameworks are documented in [`tests/README.md`](tests/README.md). They are ignored during normal test runs and require credentials for a development Clerk instance.
+
 ## API versioning
 
 `ClerkConfiguration::default()` and `ClerkConfiguration::new()` send:

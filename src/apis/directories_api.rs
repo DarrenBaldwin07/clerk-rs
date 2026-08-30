@@ -330,9 +330,11 @@ pub async fn delete_directory_group_role_mapping(
 					"Received `text/plain` content type response that cannot be converted to `models::DeleteDirectoryGroupRoleMapping200Response`",
 				)))
 			}
-			ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!(
+			ContentType::Unsupported(unknown_type) => {
+				return Err(Error::from(serde_json::Error::custom(format!(
 				"Received `{unknown_type}` content type response that cannot be converted to `models::DeleteDirectoryGroupRoleMapping200Response`"
-			)))),
+			))))
+			}
 		}
 	} else {
 		let content = resp.text().await?;
