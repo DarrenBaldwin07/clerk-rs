@@ -93,6 +93,14 @@ The script verifies the specification checksum, regenerates `src/apis`, `src/mod
 - `rocket`
 - `poem`
 
+## Production users
+
+- [Tembo](https://tembo.io)
+- [Rezon](https://rezon.ai)
+- [Gitar](https://gitar.co)
+- [Have I Been Squatted](https://haveibeensquatted.com)
+- Open a PR and add your company here :)
+
 ## License
 
 MIT
