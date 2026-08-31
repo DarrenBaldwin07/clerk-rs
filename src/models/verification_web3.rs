@@ -36,7 +36,7 @@ pub struct VerificationWeb3 {
 	#[serde(rename = "attempts", deserialize_with = "Option::deserialize")]
 	pub attempts: Option<i32>,
 	#[serde(rename = "expire_at", deserialize_with = "Option::deserialize")]
-	pub expire_at: Option<i32>,
+	pub expire_at: Option<i64>,
 	#[serde(
 		rename = "verified_at_client",
 		default,
@@ -47,7 +47,7 @@ pub struct VerificationWeb3 {
 }
 
 impl VerificationWeb3 {
-	pub fn new(status: Status, strategy: Strategy, attempts: Option<i32>, expire_at: Option<i32>) -> VerificationWeb3 {
+	pub fn new(status: Status, strategy: Strategy, attempts: Option<i32>, expire_at: Option<i64>) -> VerificationWeb3 {
 		VerificationWeb3 {
 			object: None,
 			status,

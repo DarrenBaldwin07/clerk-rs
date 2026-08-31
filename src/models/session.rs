@@ -39,7 +39,7 @@ pub struct Session {
 	)]
 	pub last_active_organization_id: Option<Option<String>>,
 	#[serde(rename = "last_active_at")]
-	pub last_active_at: i32,
+	pub last_active_at: i64,
 	#[serde(
 		rename = "latest_activity",
 		default,
@@ -75,7 +75,7 @@ impl Session {
 		user_id: String,
 		client_id: String,
 		status: Status,
-		last_active_at: i32,
+		last_active_at: i64,
 		expire_at: i64,
 		abandon_at: i64,
 		updated_at: i64,

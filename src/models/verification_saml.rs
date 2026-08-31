@@ -39,7 +39,7 @@ pub struct VerificationSaml {
 		with = "::serde_with::rust::double_option",
 		skip_serializing_if = "Option::is_none"
 	)]
-	pub expire_at: Option<Option<i32>>,
+	pub expire_at: Option<Option<i64>>,
 	#[serde(rename = "attempts", deserialize_with = "Option::deserialize")]
 	pub attempts: Option<i32>,
 	#[serde(

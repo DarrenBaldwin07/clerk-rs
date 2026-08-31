@@ -5,6 +5,8 @@ root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 spec="$root_dir/openapi/clerk-bapi-2026-05-12.yml"
 generator_version="7.24.0"
 output_dir="$(mktemp -d "${TMPDIR:-/tmp}/clerk-rs-openapi.XXXXXX")"
+generated_dir="$output_dir/generated"
+codegen_spec="$output_dir/clerk-bapi-2026-05-12.codegen.yml"
 
 cleanup() {
 	rm -rf -- "$output_dir"
@@ -22,12 +24,14 @@ fi
 	shasum -a 256 -c SHA256SUMS
 )
 
+node "$root_dir/scripts/prepare-openapi.mjs" "$spec" "$codegen_spec"
+
 generator_log="$output_dir/generator.log"
 if ! openapi-generator-cli generate \
 	-q \
-	-i "$spec" \
+	-i "$codegen_spec" \
 	-g rust \
-	-o "$output_dir" \
+	-o "$generated_dir" \
 	--additional-properties=packageName=clerk-rs,packageVersion=0.5.0,useChrono=false,preferUnsignedInt=true,reqwestDefaultFeatures= \
 	--global-property=apiTests=false,modelTests=false \
 	>"$generator_log" 2>&1; then
@@ -37,10 +41,10 @@ fi
 
 # Configuration is intentionally hand-written so the generated functions use
 # clerk-rs's user agent, canonical API host, and pinned Clerk-API-Version header.
-rsync -a --delete --exclude configuration.rs "$output_dir/src/apis/" "$root_dir/src/apis/"
-rsync -a --delete "$output_dir/src/models/" "$root_dir/src/models/"
-rsync -a --delete "$output_dir/docs/" "$root_dir/docs/"
-cp "$output_dir/.openapi-generator/VERSION" "$root_dir/.openapi-generator/VERSION"
+rsync -a --delete --exclude configuration.rs "$generated_dir/src/apis/" "$root_dir/src/apis/"
+rsync -a --delete "$generated_dir/src/models/" "$root_dir/src/models/"
+rsync -a --delete "$generated_dir/docs/" "$root_dir/docs/"
+cp "$generated_dir/.openapi-generator/VERSION" "$root_dir/.openapi-generator/VERSION"
 
 # The Markdown templates currently emit trailing spaces in table rows.
 perl -pi -e 's/[ \t]+$//' "$root_dir"/docs/*.md
@@ -49,4 +53,6 @@ perl -pi -e 's/[ \t]+$//' "$root_dir"/docs/*.md
 # local identifier. Apply the small reviewed correction for that collision.
 patch -d "$root_dir" -p1 --forward --silent < "$root_dir/openapi/generated.patch"
 
-cargo fmt --manifest-path "$root_dir/Cargo.toml"
+# Format generated modules directly. Cargo fmt's module discovery can skip
+# freshly replaced generated files while this script's temporary crate exists.
+rustfmt --edition 2021 "$root_dir"/src/apis/*.rs "$root_dir"/src/models/*.rs

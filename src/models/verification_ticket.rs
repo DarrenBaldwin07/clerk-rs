@@ -22,7 +22,7 @@ pub struct VerificationTicket {
 	#[serde(rename = "attempts", deserialize_with = "Option::deserialize")]
 	pub attempts: Option<i32>,
 	#[serde(rename = "expire_at", deserialize_with = "Option::deserialize")]
-	pub expire_at: Option<i32>,
+	pub expire_at: Option<i64>,
 	#[serde(
 		rename = "verified_at_client",
 		default,
@@ -33,7 +33,7 @@ pub struct VerificationTicket {
 }
 
 impl VerificationTicket {
-	pub fn new(status: Status, strategy: Strategy, attempts: Option<i32>, expire_at: Option<i32>) -> VerificationTicket {
+	pub fn new(status: Status, strategy: Strategy, attempts: Option<i32>, expire_at: Option<i64>) -> VerificationTicket {
 		VerificationTicket {
 			object: None,
 			status,

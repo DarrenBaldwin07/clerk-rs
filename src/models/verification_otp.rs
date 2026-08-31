@@ -22,7 +22,7 @@ pub struct VerificationOtp {
 	#[serde(rename = "attempts", deserialize_with = "Option::deserialize")]
 	pub attempts: Option<i32>,
 	#[serde(rename = "expire_at", deserialize_with = "Option::deserialize")]
-	pub expire_at: Option<i32>,
+	pub expire_at: Option<i64>,
 	/// The delivery channel of the code (phone codes only).
 	#[serde(
 		rename = "channel",
@@ -41,7 +41,7 @@ pub struct VerificationOtp {
 }
 
 impl VerificationOtp {
-	pub fn new(status: Status, strategy: Strategy, attempts: Option<i32>, expire_at: Option<i32>) -> VerificationOtp {
+	pub fn new(status: Status, strategy: Strategy, attempts: Option<i32>, expire_at: Option<i64>) -> VerificationOtp {
 		VerificationOtp {
 			object: None,
 			status,

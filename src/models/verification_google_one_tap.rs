@@ -20,7 +20,7 @@ pub struct VerificationGoogleOneTap {
 	#[serde(rename = "strategy")]
 	pub strategy: Strategy,
 	#[serde(rename = "expire_at", deserialize_with = "Option::deserialize")]
-	pub expire_at: Option<i32>,
+	pub expire_at: Option<i64>,
 	#[serde(rename = "attempts", deserialize_with = "Option::deserialize")]
 	pub attempts: Option<i32>,
 	#[serde(
@@ -40,7 +40,7 @@ pub struct VerificationGoogleOneTap {
 }
 
 impl VerificationGoogleOneTap {
-	pub fn new(status: Status, strategy: Strategy, expire_at: Option<i32>, attempts: Option<i32>) -> VerificationGoogleOneTap {
+	pub fn new(status: Status, strategy: Strategy, expire_at: Option<i64>, attempts: Option<i32>) -> VerificationGoogleOneTap {
 		VerificationGoogleOneTap {
 			object: None,
 			status,

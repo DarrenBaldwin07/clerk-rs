@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **strategy** | **String** |  |
 **external_verification_redirect_url** | Option<**String**> |  | [optional]
 **error** | Option<[**models::ClerkError**](ClerkError.md)> |  | [optional]
-**expire_at** | **i32** |  |
+**expire_at** | **i64** |  |
 **attempts** | Option<**i32**> |  |
 **verified_at_client** | Option<**String**> |  | [optional]
 

@@ -11,7 +11,7 @@ Name | Type | Description | Notes
 **actor** | Option<**serde_json::Value**> |  | [optional]
 **status** | **Status** |  (enum: active, revoked, ended, expired, removed, abandoned, replaced, pending) |
 **last_active_organization_id** | Option<**String**> |  | [optional]
-**last_active_at** | **i32** |  |
+**last_active_at** | **i64** |  |
 **latest_activity** | Option<[**models::SessionActivityResponse**](SessionActivityResponse.md)> |  | [optional]
 **expire_at** | **i64** | Unix timestamp of expiration.  |
 **abandon_at** | **i64** | Unix timestamp of abandonment.  |

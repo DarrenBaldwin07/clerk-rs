@@ -227,7 +227,7 @@ Install `@openapitools/openapi-generator-cli`, then run:
 ./scripts/generate-openapi.sh
 ```
 
-The script verifies the specification checksum, regenerates `src/apis`, `src/models`, and `docs`, preserves the hand-written Clerk configuration, and formats the result.
+The script verifies the specification checksum, applies the narrowly scoped `int64` normalization documented in [`scripts/prepare-openapi.mjs`](scripts/prepare-openapi.mjs), regenerates `src/apis`, `src/models`, and `docs`, preserves the hand-written Clerk configuration, and formats the result.
 
 ## TLS and framework features
 

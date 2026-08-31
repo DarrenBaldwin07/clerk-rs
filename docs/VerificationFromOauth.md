@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **status** | **Status** |  (enum: unverified, verified) |
 **strategy** | **String** |  |
 **error** | Option<[**models::ClerkError**](ClerkError.md)> |  | [optional]
-**expire_at** | Option<**i32**> |  |
+**expire_at** | Option<**i64**> |  |
 **attempts** | Option<**i32**> |  |
 **verified_at_client** | Option<**String**> |  | [optional]
 

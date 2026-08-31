@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **strategy** | **Strategy** |  (enum: saml) |
 **external_verification_redirect_url** | Option<**String**> |  | [optional]
 **error** | Option<[**models::ClerkError**](ClerkError.md)> |  | [optional]
-**expire_at** | Option<**i32**> |  | [optional]
+**expire_at** | Option<**i64**> |  | [optional]
 **attempts** | Option<**i32**> |  |
 **verified_at_client** | Option<**String**> |  | [optional]
 

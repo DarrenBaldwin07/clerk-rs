@@ -132,10 +132,10 @@ Name | Type | Description  | Required | Notes
 **phone_number_query** | Option<**String**> | Returns users with phone numbers that match the given query, via case-insensitive partial match. For example, `phone_number_query=555` will match a user with the phone number `+1555xxxxxxx`. |  |
 **username_query** | Option<**String**> | Returns users with usernames that match the given query, via case-insensitive partial match. For example, `username_query=CoolUser` will match a user with the username `SomeCoolUser`. |  |
 **name_query** | Option<**String**> | Returns users with names that match the given query, via case-insensitive partial match. |  |
-**last_active_at_before** | Option<**i32**> | Returns users whose last session activity was before the given date (with millisecond precision). Example: use 1700690400000 to retrieve users whose last session activity was before 2023-11-23. |  |
-**last_active_at_after** | Option<**i32**> | Returns users whose last session activity was after the given date (with millisecond precision). Example: use 1700690400000 to retrieve users whose last session activity was after 2023-11-23. |  |
-**created_at_before** | Option<**i32**> | Returns users who have been created before the given date (with millisecond precision). Example: use 1730160000000 to retrieve users who have been created before 2024-10-29. |  |
-**created_at_after** | Option<**i32**> | Returns users who have been created after the given date (with millisecond precision). Example: use 1730160000000 to retrieve users who have been created after 2024-10-29. |  |
+**last_active_at_before** | Option<**i64**> | Returns users whose last session activity was before the given date (with millisecond precision). Example: use 1700690400000 to retrieve users whose last session activity was before 2023-11-23. |  |
+**last_active_at_after** | Option<**i64**> | Returns users whose last session activity was after the given date (with millisecond precision). Example: use 1700690400000 to retrieve users whose last session activity was after 2023-11-23. |  |
+**created_at_before** | Option<**i64**> | Returns users who have been created before the given date (with millisecond precision). Example: use 1730160000000 to retrieve users who have been created before 2024-10-29. |  |
+**created_at_after** | Option<**i64**> | Returns users who have been created after the given date (with millisecond precision). Example: use 1730160000000 to retrieve users who have been created after 2024-10-29. |  |
 **limit** | Option<**u32**> | Applies a limit to the number of results returned. Can be used for paginating the results together with `offset`. |  |[default to 10]
 **offset** | Option<**u32**> | Skip the first `offset` results when paginating. Needs to be an integer greater or equal to zero. To be used in conjunction with `limit`. |  |[default to 0]
 

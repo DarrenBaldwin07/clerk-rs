@@ -22,7 +22,7 @@ pub struct VerificationEmailLink {
 	#[serde(rename = "attempts", deserialize_with = "Option::deserialize")]
 	pub attempts: Option<i32>,
 	#[serde(rename = "expire_at", deserialize_with = "Option::deserialize")]
-	pub expire_at: Option<i32>,
+	pub expire_at: Option<i64>,
 	#[serde(
 		rename = "verified_at_client",
 		default,
@@ -33,7 +33,7 @@ pub struct VerificationEmailLink {
 }
 
 impl VerificationEmailLink {
-	pub fn new(status: Status, strategy: Strategy, attempts: Option<i32>, expire_at: Option<i32>) -> VerificationEmailLink {
+	pub fn new(status: Status, strategy: Strategy, attempts: Option<i32>, expire_at: Option<i64>) -> VerificationEmailLink {
 		VerificationEmailLink {
 			object: None,
 			status,

@@ -22,11 +22,11 @@ pub struct VerificationScim {
 	#[serde(rename = "attempts", deserialize_with = "Option::deserialize")]
 	pub attempts: Option<i32>,
 	#[serde(rename = "expire_at", deserialize_with = "Option::deserialize")]
-	pub expire_at: Option<i32>,
+	pub expire_at: Option<i64>,
 }
 
 impl VerificationScim {
-	pub fn new(status: Status, strategy: Strategy, attempts: Option<i32>, expire_at: Option<i32>) -> VerificationScim {
+	pub fn new(status: Status, strategy: Strategy, attempts: Option<i32>, expire_at: Option<i64>) -> VerificationScim {
 		VerificationScim {
 			object: None,
 			status,
