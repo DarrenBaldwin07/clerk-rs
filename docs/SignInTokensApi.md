@@ -1,6 +1,6 @@
 # \SignInTokensApi
 
-All URIs are relative to *https://api.clerk.dev/v1*
+All URIs are relative to *https://api.clerk.com/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -11,7 +11,7 @@ Method | HTTP request | Description
 
 ## create_sign_in_token
 
-> crate::models::SignInToken create_sign_in_token(create_sign_in_token_request)
+> models::SignInToken create_sign_in_token(create_sign_in_token_request)
 Create sign-in token
 
 Creates a new sign-in token and associates it with the given user. By default, sign-in tokens expire in 30 days. You can optionally supply a different duration in seconds using the `expires_in_seconds` property.
@@ -25,7 +25,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::SignInToken**](SignInToken.md)
+[**models::SignInToken**](SignInToken.md)
 
 ### Authorization
 
@@ -41,7 +41,7 @@ Name | Type | Description  | Required | Notes
 
 ## revoke_sign_in_token
 
-> crate::models::SignInToken revoke_sign_in_token(sign_in_token_id)
+> models::SignInToken revoke_sign_in_token(sign_in_token_id)
 Revoke the given sign-in token
 
 Revokes a pending sign-in token
@@ -55,7 +55,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::SignInToken**](SignInToken.md)
+[**models::SignInToken**](SignInToken.md)
 
 ### Authorization
 

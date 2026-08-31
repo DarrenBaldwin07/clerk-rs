@@ -1,16 +1,11 @@
-#[macro_use]
-extern crate serde_derive;
-
-extern crate reqwest;
-extern crate serde;
-extern crate serde_json;
-extern crate url;
+#![allow(clippy::too_many_arguments)]
+#![allow(unused_imports)]
+#![allow(rustdoc::bare_urls)]
 
 pub mod apis;
 pub mod clerk;
-pub mod endpoints;
 pub mod models;
-pub(crate) mod util;
 pub mod validators;
-pub use apis::configuration::ClerkConfiguration;
+pub use apis::configuration::Configuration as ClerkConfiguration;
+pub use clerk::Clerk;
 pub use models as ClerkModels;

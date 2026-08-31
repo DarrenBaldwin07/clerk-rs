@@ -1,6 +1,6 @@
 [package]
 name = "clerk-rs"
-version = "0.4.2"
+version = "0.5.0"
 authors = ["DarrenBaldwin07"]
 description = "The official community Rust SDK for the Clerk API"
 repository = "https://github.com/DarrenBaldwin07/clerk-rs"
@@ -38,40 +38,42 @@ doctest = false
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
-serde_derive = "^1.0"
 serde_json = "^1.0"
-url = "^2.2"
+serde_repr = "^0.1"
+serde_with = { version = "^3.8", default-features = false, features = ["base64", "std", "macros"] }
+url = "^2.5"
 regex = "1.10.6"
 jsonwebtoken = "9.3.0"
 futures-util = "0.3.28"
+tokio = { version = "^1.46", features = ["fs"] }
+tokio-util = { version = "^0.7", features = ["codec"] }
 actix-rt = { version = "2.10.0", optional = true }
 actix-web = { version = "4.9.0", optional = true }
 axum = { version = "^0.8", optional = true }
 rocket = { version = "0.5.0", optional = true }
 axum-extra = { version = "^0.10", features = ["cookie"], optional = true }
-tower = { version = "0.5.0", optional = true }
+tower = { version = "0.5.0", features = ["util"], optional = true }
 async-trait = "0.1.81"
 arc-swap = "1.7.1"
 poem = { version = "3", features = ["cookie"], optional = true }
 log = "0.4.27"
 
 [dependencies.reqwest]
-version = "^0.12"
+version = "^0.13"
 default-features = false
-features = ["json", "multipart"]
+features = ["json", "multipart", "stream", "query", "form"]
 
 [dev-dependencies]
 base64 = "0.22.1"
-clerk-rs = { path = "../clerk-rs" }
 mockito = "1.4.0"
 rand = "0.8.5"
 rsa = "0.9.6"
-tokio = { version = "1.39.3", features = ["full"] }
+tokio = { version = "1.46", features = ["full"] }
 
 [features]
 default = ["rustls-tls"]
 native-tls = ["reqwest/native-tls"]
-rustls-tls = ["reqwest/rustls-tls"]
+rustls-tls = ["reqwest/rustls"]
 actix = ["dep:actix-rt", "dep:actix-web"]
 axum = ["dep:axum", "dep:axum-extra", "dep:tower"]
 rocket = ["dep:rocket"]

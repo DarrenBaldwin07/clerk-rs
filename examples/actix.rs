@@ -12,7 +12,7 @@ async fn index() -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 	HttpServer::new(|| {
-		let config = ClerkConfiguration::new(None, None, Some("your_secret_key".to_string()), None);
+		let config = ClerkConfiguration::new("your_secret_key");
 		let clerk = Clerk::new(config);
 
 		App::new()

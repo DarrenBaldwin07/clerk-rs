@@ -1,35 +1,36 @@
 # \SessionsApi
 
-All URIs are relative to *https://api.clerk.dev/v1*
+All URIs are relative to *https://api.clerk.com/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**create_session_token_from_template**](SessionsApi.md#create_session_token_from_template) | **POST** /sessions/{session_id}/tokens/{template_name} | Create a session token from a jwt template
+[**create_session**](SessionsApi.md#create_session) | **POST** /sessions | Create a new active session
+[**create_session_token**](SessionsApi.md#create_session_token) | **POST** /sessions/{session_id}/tokens | Create a session token
+[**create_session_token_from_template**](SessionsApi.md#create_session_token_from_template) | **POST** /sessions/{session_id}/tokens/{template_name} | Create a session token from a JWT template
 [**get_session**](SessionsApi.md#get_session) | **GET** /sessions/{session_id} | Retrieve a session
 [**get_session_list**](SessionsApi.md#get_session_list) | **GET** /sessions | List all sessions
+[**refresh_session**](SessionsApi.md#refresh_session) | **POST** /sessions/{session_id}/refresh | Refresh a session
 [**revoke_session**](SessionsApi.md#revoke_session) | **POST** /sessions/{session_id}/revoke | Revoke a session
-[**verify_session**](SessionsApi.md#verify_session) | **POST** /sessions/{session_id}/verify | Verify a session
 
 
 
-## create_session_token_from_template
+## create_session
 
-> crate::models::CreateSessionTokenFromTemplate200Response create_session_token_from_template(session_id, template_name)
-Create a session token from a jwt template
+> models::Session create_session(create_session_request)
+Create a new active session
 
-Creates a JSON Web Token(JWT) based on a session and a JWT Template name defined for your instance
+Create a new active session for the provided user ID.  **This operation is intended only for use in testing, and is not available for production instances.** If you are looking to generate a user session from the backend, we recommend using the [Sign-in Tokens](https://clerk.com/docs/reference/backend-api/tag/Sign-in-Tokens#operation/CreateSignInToken) resource instead.
 
 ### Parameters
 
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**session_id** | **String** | The ID of the session | [required] |
-**template_name** | **String** | The name of the JWT Template defined in your instance (e.g. `custom_hasura`). | [required] |
+**create_session_request** | Option<[**CreateSessionRequest**](CreateSessionRequest.md)> |  |  |
 
 ### Return type
 
-[**crate::models::CreateSessionTokenFromTemplate200Response**](CreateSessionTokenFromTemplate_200_response.md)
+[**models::Session**](Session.md)
 
 ### Authorization
 
@@ -37,7 +38,70 @@ Name | Type | Description  | Required | Notes
 
 ### HTTP request headers
 
-- **Content-Type**: Not defined
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## create_session_token
+
+> models::CreateSessionToken200Response create_session_token(session_id, create_session_token_request)
+Create a session token
+
+Creates a session JSON Web Token (JWT) based on a session.
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**session_id** | **String** | The ID of the session | [required] |
+**create_session_token_request** | Option<[**CreateSessionTokenRequest**](CreateSessionTokenRequest.md)> |  |  |
+
+### Return type
+
+[**models::CreateSessionToken200Response**](CreateSessionToken_200_response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## create_session_token_from_template
+
+> models::CreateSessionToken200Response create_session_token_from_template(session_id, template_name, create_session_token_from_template_request)
+Create a session token from a JWT template
+
+Creates a JSON Web Token (JWT) based on a session and a JWT Template name defined for your instance
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**session_id** | **String** | The ID of the session | [required] |
+**template_name** | **String** | The name of the JWT template defined in your instance (e.g. `custom_hasura`). | [required] |
+**create_session_token_from_template_request** | Option<[**CreateSessionTokenFromTemplateRequest**](CreateSessionTokenFromTemplateRequest.md)> |  |  |
+
+### Return type
+
+[**models::CreateSessionToken200Response**](CreateSessionToken_200_response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -45,7 +109,7 @@ Name | Type | Description  | Required | Notes
 
 ## get_session
 
-> crate::models::Session get_session(session_id)
+> models::Session get_session(session_id)
 Retrieve a session
 
 Retrieve the details of a session
@@ -59,7 +123,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::Session**](Session.md)
+[**models::Session**](Session.md)
 
 ### Authorization
 
@@ -75,10 +139,10 @@ Name | Type | Description  | Required | Notes
 
 ## get_session_list
 
-> Vec<crate::models::Session> get_session_list(client_id, user_id, status, limit, offset)
+> Vec<models::Session> get_session_list(client_id, user_id, status, paginated, limit, offset)
 List all sessions
 
-Returns a list of all sessions. The sessions are returned sorted by creation date, with the newest sessions appearing first.
+Returns a list of sessions matching the provided criteria. The sessions are returned sorted by creation date, with the newest sessions appearing first.  Note: This endpoint does not return all sessions that have ever existed. Old and inactive sessions are periodically cleaned up and will not be included in the results.  **Deprecation Notice (2024-01-01):** All parameters were initially considered optional, however moving forward at least one of `client_id` or `user_id` parameters should be provided.
 
 ### Parameters
 
@@ -88,12 +152,13 @@ Name | Type | Description  | Required | Notes
 **client_id** | Option<**String**> | List sessions for the given client |  |
 **user_id** | Option<**String**> | List sessions for the given user |  |
 **status** | Option<**String**> | Filter sessions by the provided status |  |
-**limit** | Option<**f32**> | Applies a limit to the number of results returned. Can be used for paginating the results together with `offset`. Must be an integer greater than zero and less than 500. By default, if not supplied, a limit of 10 is used. |  |[default to 10]
-**offset** | Option<**f32**> | Skip the first `offset` results when paginating. Needs to be an integer greater or equal to zero. To be used in conjunction with `limit`. |  |[default to 0]
+**paginated** | Option<**bool**> | Whether to paginate the results. If true, the results will be paginated. If false, the results will not be paginated. |  |
+**limit** | Option<**u32**> | Applies a limit to the number of results returned. Can be used for paginating the results together with `offset`. |  |[default to 10]
+**offset** | Option<**u32**> | Skip the first `offset` results when paginating. Needs to be an integer greater or equal to zero. To be used in conjunction with `limit`. |  |[default to 0]
 
 ### Return type
 
-[**Vec<crate::models::Session>**](Session.md)
+[**Vec<models::Session>**](Session.md)
 
 ### Authorization
 
@@ -107,9 +172,40 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
+## refresh_session
+
+> models::SessionRefresh refresh_session(session_id, refresh_session_request)
+Refresh a session
+
+Refreshes a session by creating a new session token. A 401 is returned when there are validation errors, which signals the SDKs to fall back to the handshake flow.
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**session_id** | **String** | The ID of the session | [required] |
+**refresh_session_request** | Option<[**RefreshSessionRequest**](RefreshSessionRequest.md)> | Refresh session parameters |  |
+
+### Return type
+
+[**models::SessionRefresh**](SessionRefresh.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
 ## revoke_session
 
-> crate::models::Session revoke_session(session_id)
+> models::Session revoke_session(session_id)
 Revoke a session
 
 Sets the status of a session as \"revoked\", which is an unauthenticated state. In multi-session mode, a revoked session will still be returned along with its client object, however the user will need to sign in again.
@@ -123,7 +219,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::Session**](Session.md)
+[**models::Session**](Session.md)
 
 ### Authorization
 
@@ -132,37 +228,6 @@ Name | Type | Description  | Required | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## verify_session
-
-> crate::models::Session verify_session(session_id, verify_session_request)
-Verify a session
-
-Returns the session if it is authenticated, otherwise returns an error.
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**session_id** | **String** | The ID of the session | [required] |
-**verify_session_request** | Option<[**VerifySessionRequest**](VerifySessionRequest.md)> | Parameters. |  |
-
-### Return type
-
-[**crate::models::Session**](Session.md)
-
-### Authorization
-
-[bearerAuth](../README.md#bearerAuth)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

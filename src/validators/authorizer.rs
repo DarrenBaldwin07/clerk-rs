@@ -1,5 +1,6 @@
-use crate::{apis::jwks_api::JwksKey, validators::jwks::JwksProvider};
+use crate::validators::jwks::{JwksKey, JwksProvider};
 use jsonwebtoken::{decode, decode_header, errors::Error as jwtError, Algorithm, DecodingKey, Header, Validation};
+use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::{error::Error, fmt, sync::Arc};
 
@@ -188,7 +189,7 @@ fn get_token_header(token: &str) -> Result<Header, jwtError> {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use crate::{apis::jwks_api::JwksKey, validators::jwks::tests::StaticJwksProvider};
+	use crate::validators::jwks::{tests::StaticJwksProvider, JwksKey};
 	use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 	use base64::prelude::*;
 	use jsonwebtoken::{encode, errors::ErrorKind, Algorithm, EncodingKey, Header};

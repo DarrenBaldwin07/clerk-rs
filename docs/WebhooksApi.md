@@ -1,6 +1,6 @@
 # \WebhooksApi
 
-All URIs are relative to *https://api.clerk.dev/v1*
+All URIs are relative to *https://api.clerk.com/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -12,7 +12,7 @@ Method | HTTP request | Description
 
 ## create_svix_app
 
-> crate::models::SvixUrl create_svix_app()
+> models::SvixUrl create_svix_app()
 Create a Svix app
 
 Create a Svix app and associate it with the current instance
@@ -23,7 +23,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**crate::models::SvixUrl**](SvixURL.md)
+[**models::SvixUrl**](SvixURL.md)
 
 ### Authorization
 
@@ -66,10 +66,10 @@ This endpoint does not need any parameter.
 
 ## generate_svix_auth_url
 
-> crate::models::SvixUrl generate_svix_auth_url()
+> models::SvixUrl generate_svix_auth_url()
 Create a Svix Dashboard URL
 
-Generate a new url for accessing the Svix's management dashboard for that particular instance
+Generate a new URL for accessing the Svix's management dashboard for that particular instance
 
 ### Parameters
 
@@ -77,7 +77,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**crate::models::SvixUrl**](SvixURL.md)
+[**models::SvixUrl**](SvixURL.md)
 
 ### Authorization
 

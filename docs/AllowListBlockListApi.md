@@ -1,6 +1,6 @@
 # \AllowListBlockListApi
 
-All URIs are relative to *https://api.clerk.dev/v1*
+All URIs are relative to *https://api.clerk.com/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -15,18 +15,21 @@ Method | HTTP request | Description
 
 ## create_allowlist_identifier
 
-> crate::models::AllowlistIdentifier create_allowlist_identifier()
+> models::AllowlistIdentifier create_allowlist_identifier(create_allowlist_identifier_request)
 Add identifier to the allow-list
 
 Create an identifier allowed to sign up to an instance
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**create_allowlist_identifier_request** | Option<[**CreateAllowlistIdentifierRequest**](CreateAllowlistIdentifierRequest.md)> |  |  |
 
 ### Return type
 
-[**crate::models::AllowlistIdentifier**](AllowlistIdentifier.md)
+[**models::AllowlistIdentifier**](AllowlistIdentifier.md)
 
 ### Authorization
 
@@ -34,7 +37,7 @@ This endpoint does not need any parameter.
 
 ### HTTP request headers
 
-- **Content-Type**: Not defined
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -42,18 +45,21 @@ This endpoint does not need any parameter.
 
 ## create_blocklist_identifier
 
-> crate::models::BlocklistIdentifier create_blocklist_identifier()
+> models::BlocklistIdentifier create_blocklist_identifier(create_blocklist_identifier_request)
 Add identifier to the block-list
 
 Create an identifier that is blocked from accessing an instance
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**create_blocklist_identifier_request** | Option<[**CreateBlocklistIdentifierRequest**](CreateBlocklistIdentifierRequest.md)> |  |  |
 
 ### Return type
 
-[**crate::models::BlocklistIdentifier**](BlocklistIdentifier.md)
+[**models::BlocklistIdentifier**](BlocklistIdentifier.md)
 
 ### Authorization
 
@@ -61,7 +67,7 @@ This endpoint does not need any parameter.
 
 ### HTTP request headers
 
-- **Content-Type**: Not defined
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -69,7 +75,7 @@ This endpoint does not need any parameter.
 
 ## delete_allowlist_identifier
 
-> crate::models::DeletedObject delete_allowlist_identifier(identifier_id)
+> models::DeletedObject delete_allowlist_identifier(identifier_id)
 Delete identifier from allow-list
 
 Delete an identifier from the instance allow-list
@@ -83,7 +89,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::DeletedObject**](DeletedObject.md)
+[**models::DeletedObject**](DeletedObject.md)
 
 ### Authorization
 
@@ -99,7 +105,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_blocklist_identifier
 
-> crate::models::DeletedObject delete_blocklist_identifier(identifier_id)
+> models::DeletedObject delete_blocklist_identifier(identifier_id)
 Delete identifier from block-list
 
 Delete an identifier from the instance block-list
@@ -113,7 +119,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::DeletedObject**](DeletedObject.md)
+[**models::DeletedObject**](DeletedObject.md)
 
 ### Authorization
 
@@ -129,18 +135,23 @@ Name | Type | Description  | Required | Notes
 
 ## list_allowlist_identifiers
 
-> Vec<crate::models::AllowlistIdentifier> list_allowlist_identifiers()
+> Vec<models::AllowlistIdentifier> list_allowlist_identifiers(paginated, limit, offset)
 List all identifiers on the allow-list
 
 Get a list of all identifiers allowed to sign up to an instance
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**paginated** | Option<**bool**> | Whether to paginate the results. If true, the results will be paginated. If false, the results will not be paginated. |  |
+**limit** | Option<**u32**> | Applies a limit to the number of results returned. Can be used for paginating the results together with `offset`. |  |[default to 10]
+**offset** | Option<**u32**> | Skip the first `offset` results when paginating. Needs to be an integer greater or equal to zero. To be used in conjunction with `limit`. |  |[default to 0]
 
 ### Return type
 
-[**Vec<crate::models::AllowlistIdentifier>**](AllowlistIdentifier.md)
+[**Vec<models::AllowlistIdentifier>**](AllowlistIdentifier.md)
 
 ### Authorization
 
@@ -156,7 +167,7 @@ This endpoint does not need any parameter.
 
 ## list_blocklist_identifiers
 
-> crate::models::BlocklistIdentifiers list_blocklist_identifiers()
+> models::BlocklistIdentifiers list_blocklist_identifiers()
 List all identifiers on the block-list
 
 Get a list of all identifiers which are not allowed to access an instance
@@ -167,7 +178,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**crate::models::BlocklistIdentifiers**](BlocklistIdentifiers.md)
+[**models::BlocklistIdentifiers**](BlocklistIdentifiers.md)
 
 ### Authorization
 

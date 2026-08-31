@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **verified** | Option<**bool**> |  | [optional]
-**code_type** | Option<**String**> |  | [optional]
+**code_type** | Option<**CodeType**> |  (enum: totp, backup_code) | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
