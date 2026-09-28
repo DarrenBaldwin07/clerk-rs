@@ -28,16 +28,15 @@ Every generated function accepts `&ClerkConfiguration` as its first argument:
 ```rust,no_run
 use clerk_rs::{apis::organizations_api, ClerkConfiguration};
 
-# async fn example() -> Result<(), Box<dyn std::error::Error>> {
-let config = ClerkConfiguration::new("your_secret_key");
-let organization = organizations_api::get_organization(
-    &config,
-    "organization_id",
-    None,
-    None,
-).await?;
-# Ok(())
-# }
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let config = ClerkConfiguration::new("your_secret_key");
+    let organization =
+        organizations_api::get_organization(&config, "organization_id", None, None).await?;
+
+    println!("{}", organization.id);
+    Ok(())
+}
 ```
 
 See the generated [`docs`](docs/) directory for all API groups, request types, and response models.
