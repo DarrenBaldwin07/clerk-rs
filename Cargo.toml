@@ -43,7 +43,7 @@ serde_repr = "^0.1"
 serde_with = { version = "^3.8", default-features = false, features = ["base64", "std", "macros"] }
 url = "^2.5"
 regex = "1.10.6"
-jsonwebtoken = "9.3.0"
+jsonwebtoken = { version = "10.3", features = ["rust_crypto"] }
 futures-util = "0.3.28"
 tokio = { version = "^1.46", features = ["fs"] }
 tokio-util = { version = "^0.7", features = ["codec"] }

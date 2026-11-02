@@ -344,6 +344,52 @@ mod tests {
 	}
 
 	#[test]
+	fn test_validate_jwt_with_key_rejects_malformed_time_claims() {
+		let helper = Helper::new();
+		let (modulus, exponent) = helper.get_modulus_and_public_exponent();
+		let jwks_key = JwksKey {
+			use_key: String::new(),
+			kty: String::from("RSA"),
+			kid: String::from("test-key"),
+			alg: String::from("RS256"),
+			n: modulus,
+			e: exponent,
+		};
+		let pem = helper.private_key.to_pkcs1_pem(rsa::pkcs8::LineEnding::LF).unwrap();
+		let encoding_key = EncodingKey::from_rsa_pem(pem.as_bytes()).unwrap();
+		let header = Header::new(Algorithm::RS256);
+		let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+		let valid_claims = serde_json::json!({
+			"sub": "user",
+			"iss": "issuer",
+			"iat": now,
+			"nbf": now,
+			"exp": now + 1000,
+		});
+		let token = encode(&header, &valid_claims, &encoding_key).unwrap();
+		assert!(validate_jwt_with_key(&token, &jwks_key).is_ok());
+
+		for claim in ["exp", "nbf"] {
+			for malformed in [
+				serde_json::json!((now + 1000).to_string()),
+				Value::Null,
+				serde_json::json!(true),
+				serde_json::json!([]),
+				serde_json::json!({}),
+			] {
+				let mut claims = valid_claims.clone();
+				claims[claim] = malformed;
+				let token = encode(&header, &claims, &encoding_key).unwrap();
+				assert!(
+					matches!(validate_jwt_with_key(&token, &jwks_key), Err(ClerkError::Unauthorized(_))),
+					"expected rejection for malformed {claim}: {}",
+					claims[claim]
+				);
+			}
+		}
+	}
+
+	#[test]
 	fn test_validate_jwt_with_key_unexpected_key_algorithm() {
 		let helper = Helper::new();
 
