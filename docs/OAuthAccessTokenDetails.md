@@ -1,4 +1,4 @@
-# VerifyOAuthAccessToken200ResponseAnyOf
+# OAuthAccessTokenDetails
 
 ## Properties
 

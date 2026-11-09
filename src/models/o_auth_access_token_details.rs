@@ -12,7 +12,7 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct VerifyOAuthAccessToken200ResponseAnyOf {
+pub struct OAuthAccessTokenDetails {
 	#[serde(rename = "object")]
 	pub object: Object,
 	#[serde(rename = "id")]
@@ -37,7 +37,7 @@ pub struct VerifyOAuthAccessToken200ResponseAnyOf {
 	pub updated_at: f64,
 }
 
-impl VerifyOAuthAccessToken200ResponseAnyOf {
+impl OAuthAccessTokenDetails {
 	pub fn new(
 		object: Object,
 		id: String,
@@ -50,8 +50,8 @@ impl VerifyOAuthAccessToken200ResponseAnyOf {
 		expiration: Option<f64>,
 		created_at: f64,
 		updated_at: f64,
-	) -> VerifyOAuthAccessToken200ResponseAnyOf {
-		VerifyOAuthAccessToken200ResponseAnyOf {
+	) -> OAuthAccessTokenDetails {
+		OAuthAccessTokenDetails {
 			object,
 			id,
 			client_id,
