@@ -12,14 +12,14 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct VerifyOAuthAccessToken200ResponseAnyOf1 {
+pub struct ExpiredJwtAccessToken {
 	/// Indicates that a JWT access token is not active (expired)
 	#[serde(rename = "active")]
 	pub active: bool,
 }
 
-impl VerifyOAuthAccessToken200ResponseAnyOf1 {
-	pub fn new(active: bool) -> VerifyOAuthAccessToken200ResponseAnyOf1 {
-		VerifyOAuthAccessToken200ResponseAnyOf1 { active }
+impl ExpiredJwtAccessToken {
+	pub fn new(active: bool) -> ExpiredJwtAccessToken {
+		ExpiredJwtAccessToken { active }
 	}
 }

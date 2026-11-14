@@ -1,4 +1,4 @@
-# VerifyOAuthAccessToken200ResponseAnyOf1
+# ExpiredJwtAccessToken
 
 ## Properties
 

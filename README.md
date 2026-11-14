@@ -41,6 +41,35 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 See the generated [`docs`](docs/) directory for all API groups, request types, and response models.
 
+## Verifying OAuth tokens
+
+When Clerk acts as your OAuth 2.0 identity provider, its OAuth applications issue either JWT or opaque access tokens. An opaque token (prefixed `oat_`) contains no claims, so it can only be verified by asking Clerk. The Backend API's verify endpoint accepts both formats and returns either the token's details or, for an expired JWT access token, `{ "active": false }`:
+
+```rust,no_run
+use clerk_rs::{
+    apis::o_auth_access_tokens_api,
+    models::{VerifyOAuthAccessToken200Response, VerifyOAuthAccessTokenRequest},
+    Clerk,
+};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let clerk = Clerk::from_secret_key("your_secret_key");
+    let request = VerifyOAuthAccessTokenRequest {
+        access_token: Some("oauth_access_token".to_owned()),
+        ..Default::default()
+    };
+
+    match o_auth_access_tokens_api::verify_o_auth_access_token(&clerk.config, request).await? {
+        VerifyOAuthAccessToken200Response::OAuthAccessTokenDetails(token) => {
+            println!("{} granted {:?}", token.subject, token.scopes)
+        }
+        VerifyOAuthAccessToken200Response::ExpiredJwtAccessToken(_) => println!("expired JWT"),
+    }
+    Ok(())
+}
+```
+
 ## Authentication middleware
 
 Enable the integration for your web framework:

@@ -68,5 +68,56 @@ for (const insertion of insertions.reverse()) {
 	lines.splice(insertion.index, 0, insertion.line);
 }
 
+// A few responses are an `anyOf` of object schemas that cannot overlap. OpenAPI
+// Generator's Rust templates flatten `anyOf` into a single struct requiring
+// every member's properties, which no real response satisfies. `oneOf` produces
+// an untagged enum instead, so rewrite `anyOf` to `oneOf` for those operations
+// in the temporary spec only. The members are inline schemas, so also give each
+// one a `title`, which the generator uses as its model and enum variant name.
+const exclusiveAnyOfPaths = {
+	"/oauth_applications/access_tokens/verify": ["OAuthAccessTokenDetails", "ExpiredJwtAccessToken"],
+};
+let exclusiveAnyOfRewrites = 0;
+
+for (const [path, memberTitles] of Object.entries(exclusiveAnyOfPaths)) {
+	const start = lines.indexOf(`  ${path}:`);
+	if (start === -1) {
+		throw new Error(`expected path ${path} in the Clerk spec; review this normalization script`);
+	}
+
+	let end = start + 1;
+	while (end < lines.length && !lines[end].match(/^ {0,2}\S/)) end += 1;
+
+	const anyOfLines = [];
+	for (let index = start + 1; index < end; index += 1) {
+		if (lines[index].match(/^\s+anyOf:\s*$/)) anyOfLines.push(index);
+	}
+	if (anyOfLines.length !== 1) {
+		throw new Error(
+			`expected 1 anyOf schema under ${path}, found ${anyOfLines.length}; review the Clerk spec and this normalization script`,
+		);
+	}
+
+	const anyOfIndex = anyOfLines[0];
+	const memberIndent = `${lines[anyOfIndex].match(/^\s*/)[0]}  `;
+	const members = [];
+	for (let index = anyOfIndex + 1; index < end; index += 1) {
+		if (lines[index].trim() !== "" && lines[index].match(/^\s*/)[0].length < memberIndent.length) break;
+		if (lines[index] === `${memberIndent}- type: object`) members.push(index);
+	}
+	if (members.length !== memberTitles.length) {
+		throw new Error(
+			`expected ${memberTitles.length} anyOf members under ${path}, found ${members.length}; review the Clerk spec and this normalization script`,
+		);
+	}
+
+	lines[anyOfIndex] = lines[anyOfIndex].replace("anyOf:", "oneOf:");
+	for (let member = members.length - 1; member >= 0; member -= 1) {
+		lines.splice(members[member] + 1, 0, `${memberIndent}  title: ${memberTitles[member]}`);
+	}
+	exclusiveAnyOfRewrites += 1;
+}
+
 fs.writeFileSync(outputPath, lines.join("\n"));
 process.stdout.write(`normalized ${insertions.length} millisecond timestamp schemas to int64\n`);
+process.stdout.write(`normalized ${exclusiveAnyOfRewrites} mutually exclusive anyOf schemas to oneOf\n`);

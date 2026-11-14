@@ -11,64 +11,16 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct VerifyOAuthAccessToken200Response {
-	#[serde(rename = "object")]
-	pub object: Object,
-	#[serde(rename = "id")]
-	pub id: String,
-	#[serde(rename = "client_id")]
-	pub client_id: String,
-	#[serde(rename = "subject")]
-	pub subject: String,
-	#[serde(rename = "scopes")]
-	pub scopes: Vec<String>,
-	#[serde(rename = "revoked")]
-	pub revoked: bool,
-	#[serde(rename = "revocation_reason", deserialize_with = "Option::deserialize")]
-	pub revocation_reason: Option<String>,
-	#[serde(rename = "expired")]
-	pub expired: bool,
-	#[serde(rename = "expiration", deserialize_with = "Option::deserialize")]
-	pub expiration: Option<f64>,
-	#[serde(rename = "created_at")]
-	pub created_at: f64,
-	#[serde(rename = "updated_at")]
-	pub updated_at: f64,
-	/// Indicates that a JWT access token is not active (expired)
-	#[serde(rename = "active")]
-	pub active: bool,
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum VerifyOAuthAccessToken200Response {
+	OAuthAccessTokenDetails(Box<models::OAuthAccessTokenDetails>),
+	ExpiredJwtAccessToken(Box<models::ExpiredJwtAccessToken>),
 }
 
-impl VerifyOAuthAccessToken200Response {
-	pub fn new(
-		object: Object,
-		id: String,
-		client_id: String,
-		subject: String,
-		scopes: Vec<String>,
-		revoked: bool,
-		revocation_reason: Option<String>,
-		expired: bool,
-		expiration: Option<f64>,
-		created_at: f64,
-		updated_at: f64,
-		active: bool,
-	) -> VerifyOAuthAccessToken200Response {
-		VerifyOAuthAccessToken200Response {
-			object,
-			id,
-			client_id,
-			subject,
-			scopes,
-			revoked,
-			revocation_reason,
-			expired,
-			expiration,
-			created_at,
-			updated_at,
-			active,
-		}
+impl Default for VerifyOAuthAccessToken200Response {
+	fn default() -> Self {
+		Self::OAuthAccessTokenDetails(Default::default())
 	}
 }
 ///
